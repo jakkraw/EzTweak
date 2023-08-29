@@ -285,10 +285,47 @@ namespace EzTweak {
                 }
             };
 
+
             Func<string> description_func = () => {
                 var desc = $"⚡ {name} ⚡{Environment.NewLine}{Environment.NewLine}";
                 var current = lookup_func();
                 desc += $"⌕ Current: {Environment.NewLine}{linesLimit}{(current == Registry.REG_DELETE ? " 🗑" : $"=\"{current}\"")}{Environment.NewLine}";
+                return desc;
+            };
+
+            return AnyValue(name, lookup_func, set_func, description_func);
+        }
+        public static Control AffinityOverride(Device device)
+        {
+            var reg = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters";
+            var reg_val = $@"{reg}\Interrupt Management";
+            var assignmentSetOverride = $@"{reg_val}\Affinity Policy\AssignmentSetOverride";
+            var DevicePolicy = $@"{reg_val}\Affinity Policy\DevicePolicy";
+            var name = "Affinity Override";
+
+            if (!Registry.Exists(reg_val)) { return null; }
+            Func<string> lookup_func = () => Registry.Get(assignmentSetOverride, Microsoft.Win32.RegistryValueKind.Binary);
+
+            if (!Registry.Exists(assignmentSetOverride)) { return null; }
+
+            Action<string> set_func = (value) => {
+                if (value == null || value == Registry.REG_DELETE || value == "")
+                {
+                    Registry.Delete(assignmentSetOverride);
+                    Registry.Delete(DevicePolicy);
+                }
+                else
+                {
+                    Registry.Set(assignmentSetOverride, value, Microsoft.Win32.RegistryValueKind.Binary);
+                    Registry.Set(DevicePolicy, 4);
+                }
+            };
+
+            Func<string> description_func = () => {
+                var desc = $"⚡ {name} ⚡{Environment.NewLine}{Environment.NewLine}";
+                var current = lookup_func();
+                desc += $"⌕ Current: {Environment.NewLine}{assignmentSetOverride}{(current == Registry.REG_DELETE ? " 🗑" : $"=\"{current}\"")}{Environment.NewLine}";
+                desc += $"{Environment.NewLine}{DevicePolicy}{(Registry.Get(DevicePolicy) == Registry.REG_DELETE ? " 🗑" : $"=\"{Registry.Get(DevicePolicy)}\"")}{Environment.NewLine}";
                 return desc;
             };
 
@@ -305,13 +342,13 @@ namespace EzTweak {
 
             Action setSelection = () => { comboBox.Text = lookup_func() ?? ""; };
             Action update_info = () => { info_box.Text = description_func(); setSelection(); };
-
+            setSelection();
             comboBox.TextChanged += (s, e) => {
                 set_func(comboBox.Text);
                 update_info();
             };
 
-            setSelection();
+          
             var label = Label(text, update_info, 40);
             var panel = new Panel();
             panel.Controls.Add(comboBox);

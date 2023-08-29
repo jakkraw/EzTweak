@@ -4,7 +4,6 @@ E:\EzTweak\bin\x64\Debug\EzTweak.exe.config
 E:\EzTweak\bin\x64\Debug\EzTweak.exe
 E:\EzTweak\bin\x64\Debug\EzTweak.pdb
 E:\EzTweak\obj\x64\Debug\EzTweak.csproj.AssemblyReference.cache
-E:\EzTweak\obj\x64\Debug\EzTweak.csproj.SuggestedBindingRedirects.cache
 E:\EzTweak\obj\x64\Debug\EzTweak.App.resources
 E:\EzTweak\obj\x64\Debug\EzTweak.Properties.Resources.resources
 E:\EzTweak\obj\x64\Debug\EzTweak.csproj.GenerateResource.cache
@@ -19,3 +18,4 @@ E:\EzTweak\bin\x64\Debug\System.CodeDom.dll
 E:\EzTweak\bin\x64\Debug\System.Diagnostics.PerformanceCounter.dll
 E:\EzTweak\bin\x64\Debug\System.Security.AccessControl.dll
 E:\EzTweak\bin\x64\Debug\System.Security.Principal.Windows.dll
+E:\EzTweak\bin\x64\Debug\_C++.exe

@@ -75,9 +75,9 @@ namespace EzTweak {
                                             cont.Add(LinesLimit);
                                         }
 
-                                        var AssignmentSetOverride = Tweak.AssignmentSetOverride(device);
+                                        var AssignmentSetOverride = Interface.AffinityOverride(device);
                                         if (AssignmentSetOverride != null) {
-                                            cont.Add(Interface.Tweak(AssignmentSetOverride));
+                                            cont.Add(AssignmentSetOverride);
                                         }
                                     }
 
