@@ -24,8 +24,8 @@
 			<tweak name="Disabled NTFS Last Access Time">
 				<action type="DWORD">
 					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsDisableLastAccessUpdate</path>
-					<off>2147483650</off>
-					<on>2147483649</on>
+					<off>-2147483650</off>
+					<on>-2147483649</on>
 				</action>
 			</tweak>
 			<tweak name="Disable boot trace">
@@ -306,6 +306,23 @@
 					<path>HKLM\SYSTEM\ControlSet001\Control\PriorityControl\Win32PrioritySeparation</path>
 					<off>2</off>
 					<on>40</on>
+				</action>
+			</tweak>
+			<tweak name="NDIS Affinity (2,3 core)">
+				<action type="DWORD">
+					<path>HKLM\SYSTEM\CurrentControlSet\Services\NDIS\Parameters\ProcessorAffinityMask</path>
+					<off>[delete]</off>
+					<on>12</on>
+				</action>
+				<action type="DWORD">
+					<path>HKLM\SYSTEM\CurrentControlSet\Services\NDIS\Parameters\RssBaseCpu</path>
+					<off>[delete]</off>
+					<on>2</on>
+				</action>
+				<action type="DWORD">
+					<path>HKLM\SYSTEM\CurrentControlSet\Services\Ndis\Parameters\MaxNumRssCpus</path>
+					<off>[delete]</off>
+					<on>2</on>
 				</action>
 			</tweak>
 			<tweak name="Lock all Driver DPC to one core">
@@ -959,6 +976,13 @@
 					<on>4</on>
 				</action>
 			</tweak>
+			<tweak name="Prefetch service (sysmain">
+				<action type="SERVICE">
+					<service>SysMain</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
 			<tweak name="Disable Program Compatibility Assistant Service">
 				<action type="SERVICE">
 					<service>PcaSvc</service>
@@ -1378,6 +1402,11 @@
 	<tab name="Tools">
 		<section name="Tools">
 			<tweak name="Activate Windows 11">
+				<action type="CMD">
+					<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
+				</action>
+			</tweak>
+		<tweak name="Activate Windows 10">
 				<action type="CMD">
 					<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
 				</action>
