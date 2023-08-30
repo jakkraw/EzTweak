@@ -1089,6 +1089,20 @@
 					<on>4</on>
 				</action>
 			</tweak>
+			<tweak name="Background Intelligent Transfer Service">
+				<action type="SERVICE">
+					<service>BITS</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Connected Devices Platform Service">
+				<action type="SERVICE">
+					<service>cdpsvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
 			<tweak name="Disable Network Location Awareness">
 				<action type="SERVICE">
 					<service>NlaSvc</service>
@@ -1103,6 +1117,13 @@
 					<on>4</on>
 				</action>
 			</tweak>
+			<tweak name="WinHttpAutoProxySvc">
+				<action type="SERVICE">
+					<service>WinHttpAutoProxySvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>WinHttpAutoProxySvc
 			<tweak name="Disable IP Helper">
 				<action type="SERVICE">
 					<service>iphlpsvc</service>
