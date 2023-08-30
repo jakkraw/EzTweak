@@ -1422,12 +1422,17 @@
 	</tab>
 	<tab name="Tools">
 		<section name="Tools">
+			<tweak name="Set Rocket League Threads Priority">
+				<action type="CMD">
+					<on> start cmd.exe /c .\ThreadPriority.exe </on>
+				</action>
+			</tweak>
 			<tweak name="Activate Windows 11">
 				<action type="CMD">
 					<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
 				</action>
 			</tweak>
-		<tweak name="Activate Windows 10">
+			<tweak name="Activate Windows 10">
 				<action type="CMD">
 					<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
 				</action>
