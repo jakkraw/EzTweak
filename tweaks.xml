@@ -984,6 +984,42 @@
 					<on>4</on>
 				</action>
 			</tweak>
+			<tweak name="GameDVR and Broadcast User Service">
+				<action type="SERVICE">
+					<service>BcastDVRUserService_40c2d</service>
+					<service>BcastDVRUserService</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="XblGameSave">
+				<action type="SERVICE">
+					<service>XblGameSave</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="xboxgip">
+				<action type="SERVICE">
+					<service>xboxgip</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="XboxGipSvc">
+				<action type="SERVICE">
+					<service>XboxGipSvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="XboxNetApiSvc">
+				<action type="SERVICE">
+					<service>XboxNetApiSvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
 			<tweak name="Diagnostic System Host">
 				<action type="SERVICE">
 					<service>WdiSystemHost</service>
@@ -1565,6 +1601,11 @@
 					<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
 				</action>
 			</tweak>
+			<tweak name="Delete Game Bar">
+				<action type="CMD">
+					<on> del /F /A "C:\Windows\System32\GameBarPresenceWriter.exe" </on>
+				</action>
+			</tweak>
 			<tweak name="Activate Windows 10">
 				<action type="CMD">
 					<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
@@ -1648,6 +1689,13 @@
 					<off>1</off>
 				</action>
 			</tweak>
+			<tweak name="GameBar.PresenceWriter">
+			<action type="DWORD">
+				<path>HKLM\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter</path>
+				<on>0</on>
+				<off>1</off>
+			</action>
+		</tweak>
 			<tweak name="Disable Windows Error Reporting">
 				<action type="DWORD">
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Disabled</path>
