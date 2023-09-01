@@ -113,6 +113,7 @@
     <Compile Include="Bcdedit.cs" />
     <Compile Include="Powershell.cs" />
     <Compile Include="Cmd.cs" />
+    <Compile Include="TokenManipulator.cs" />
     <Compile Include="Tweak.cs" />
     <EmbeddedResource Include="App.resx">
       <DependentUpon>App.cs</DependentUpon>

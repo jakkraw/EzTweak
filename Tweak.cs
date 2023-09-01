@@ -90,7 +90,7 @@ namespace EzTweak {
             }
 
             if (lookup_cmd != null) {
-                action.lookup = () => Regex.Match(Powershell.Start(lookup_cmd), lookup_regex, RegexOptions.Multiline).Value;
+                action.lookup = () => Regex.Match(Powershell.Start(lookup_cmd, true), lookup_regex, RegexOptions.Multiline).Value;
 
                 if (lookup_regex != null && on_regex != null) {
                     action.is_on = () => Regex.Match(action.lookup(), on_regex, RegexOptions.Multiline).Success;

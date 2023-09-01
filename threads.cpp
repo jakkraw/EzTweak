@@ -357,6 +357,20 @@ int main() {
 		 t.set_priority();
 	 }
 	
+
+	{
+		auto ph = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+	while (true) {
+		SetPriorityClass(ph, REALTIME_PRIORITY_CLASS);
+		for (auto& t : listProcessThreads(pid)) {
+			t.set_priority();
+		}
+		std::wcout << "Updated" << std::endl;
+		Sleep(5000);
+	}
+	}
+
+	CloseHandle(ph);
 	//terminate(L"EpicGamesLauncher.exe");
 
 	//std::vector<ThreadInfo> toSuspend;

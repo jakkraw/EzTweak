@@ -858,6 +858,139 @@
 					<on>4</on>
 				</action>
 			</tweak>
+			<tweak name="Delivery Optimization">
+				<action type="SERVICE">
+					<service>DoSvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Microsoft Defender Antivirus Service">
+				<action type="SERVICE">
+					<service>WinDefend</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Power">
+				<action type="SERVICE">
+					<service>Power</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Radio Management Service">
+				<action type="SERVICE">
+					<service>RmSvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Realtek Audio Universal Service">
+				<action type="SERVICE">
+					<service>RtkAudioUniversalService</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="GraphicsPerfSvc">
+				<action type="SERVICE">
+					<service>GraphicsPerfSvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Distributed Link Tracking Client">
+				<action type="SERVICE">
+					<service>TrkWks</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="System Guard Runtime Monitor Broker">
+				<action type="SERVICE">
+					<service>SgrmBroker</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Windows Biometric Service">
+				<action type="SERVICE">
+					<service>WbioSrvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Windows Connection Manager">
+				<action type="SERVICE">
+					<service>Wcmsvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Windows Font Cache Service">
+				<action type="SERVICE">
+					<service>FontCache</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="WLAN AutoConfig">
+				<action type="SERVICE">
+					<service>WlanSvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Web Account Manager">
+				<action type="SERVICE">
+					<service>TokenBroker</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Sync Host">
+				<action type="SERVICE">
+					<service>OneSyncSvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Device Setup Manager">
+				<action type="SERVICE">
+					<service>DsmSvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Plug and Play">
+				<action type="SERVICE">
+					<service>PlugPlay</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Diagnostic Service Host">
+				<action type="SERVICE">
+					<service>WdiServiceHost</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Xbox Live Auth Manager">
+				<action type="SERVICE">
+					<service>XblAuthManager</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Diagnostic System Host">
+				<action type="SERVICE">
+					<service>WdiSystemHost</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
 			<tweak name="Disable Data Usage">
 				<action type="SERVICE">
 					<service>DusmSvc</service>

@@ -1,7 +1,10 @@
-﻿using Microsoft.Win32;
+﻿using CosmosKey.Utils;
+using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 namespace EzTweak {
     public static class Registry {
@@ -41,11 +44,10 @@ namespace EzTweak {
                 reg = Microsoft.Win32.Registry.CurrentUser;
             }
 
-            var key = reg.OpenSubKey(key_path, write);
+            var key = reg.OpenSubKey(key_path,write);
             if (key == null && create) {
                 key = reg.CreateSubKey(key_path);
             }
-
             return key;
         }
 
