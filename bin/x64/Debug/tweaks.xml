@@ -858,6 +858,13 @@
 					<on>4</on>
 				</action>
 			</tweak>
+			<tweak name="Update Orchestrator Service">
+				<action type="SERVICE">
+					<service>UsoSvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
 			<tweak name="Delivery Optimization">
 				<action type="SERVICE">
 					<service>DoSvc</service>
@@ -1643,6 +1650,12 @@
 				</action>
 				<description>Disable all features</description>
 			</tweak>
+				<tweak name="Task Scheduler">
+				<action type="CMD">
+					<on>taskschd.msc</on>
+				</action>
+				<description>Disable all features</description>
+			</tweak>
 			<tweak name="Install timer resolution service">
 				<action type="CMD">
 					<on>_C++.exe &amp; _SetTimerResolutionService.exe -install &amp; sc config STR start=auto &amp; net start STR</on>
@@ -1986,5 +1999,8 @@
 	</tab>
 	<tab name="Appx" >
 		<section name="Appx" type="APPX"></section>
+	</tab>
+	<tab name="Task Scheduler" >
+		<section name="Task Scheduler (Ordered by Last Run Time)" type="SCHEDULED_TASKS"></section>
 	</tab>
 </EzTweak>

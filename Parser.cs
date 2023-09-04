@@ -30,6 +30,8 @@ namespace EzTweak {
         APPXDELETE,
         [XmlEnum("DEVICES")]
         DEVICES,
+        [XmlEnum("SCHEDULED_TASKS")]
+        SCHEDULED_TASKS,
         [XmlEnum("APPX")]
         APPX
     }

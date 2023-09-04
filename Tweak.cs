@@ -183,10 +183,10 @@ namespace EzTweak {
 
         public static Tweak MsiSupported(Device device) {
             var reg = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters";
-            var reg_val = $@"{reg}\Interrupt Management";
+            var reg_val = $@"{reg}\Interrupt Management\MessageSignaledInterruptProperties";
 
             if (Registry.Exists(reg_val)) {
-                var MSISupported = $@"{reg_val}\MessageSignaledInterruptProperties\MSISupported";
+                var MSISupported = $@"{reg_val}\MSISupported";
                 Tweak tweak = new Tweak { };
                 tweak.name = "Enable MSI";
                 tweak.description = $"Enable MSI";
