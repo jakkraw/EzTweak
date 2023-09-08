@@ -1658,9 +1658,9 @@
 			</tweak>
 			<tweak name="Install timer resolution service">
 				<action type="CMD">
-					<on>_C++.exe &amp; _SetTimerResolutionService.exe -install &amp; sc config STR start=auto &amp; net start STR</on>
+					<on>_SetTimerResolutionService.exe -install &amp; sc config STR start=auto &amp; net start STR</on>
 				</action>
-				<description>Install DIRECT X runtime before !</description>
+				<description>Install C++ runtime  before ! https://aka.ms/vs/17/release/vc_redist.x64.exe</description>
 			</tweak>
 			<tweak name="Restart PC">
 				<action type="CMD">
