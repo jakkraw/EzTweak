@@ -245,6 +245,13 @@ struct ThreadInfo {
 		return true;
 	}
 
+	int get_priority() {
+		handle = ::OpenThread(THREAD_ALL_ACCESS, FALSE, id);
+		auto p = GetThreadPriority(handle);
+		CloseHandle(handle);
+		return p;
+	}
+
 };
 
 
@@ -316,105 +323,22 @@ bool filterOverlay(const ThreadInfo& ti) {
 	return false;
 }
 
-int main() {
-	DWORD pid{ GetProcessPIDByName(L"RocketLeague.exe") };
-	if (!pid) {
-		//system("start \"\" \"com.epicgames.launcher://apps/Sugar?action=launch&silent=true\"");
-	}
-	
-	std::wcout << "waiting for RL..." << std::endl;
-	while (!pid) {
-		pid = GetProcessPIDByName(L"RocketLeague.exe");
-		
-		Sleep(500);
-	}
+int main(int argc, wchar_t** argv) {
+	const std::wstring binary = argc > 1 ? argv[1] :  L"RocketLeague.exe";
 
-	std::wcout << "PID: " << pid << std::endl;
-	auto ph = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-	//SetProcessAffinityMask(ph, 0x1F);
-	SetPriorityClass(ph, REALTIME_PRIORITY_CLASS);
-	CloseHandle(ph);
-	
-	
-	int sameAmountOfThreads{ 0 };
-	auto threads{ listProcessThreads(pid) };
-	auto threadsNr{ threads.size() };
-	while (sameAmountOfThreads < 5 || threadsNr < 50) {
-		threads = listProcessThreads(pid);
-		
-		if (threads.size() == threadsNr) {
-			sameAmountOfThreads++;
-		}
-		else {
-			sameAmountOfThreads = 0;
-			threadsNr = threads.size();
-		}
-		Sleep(500);
-	}
-	std::wcout << "threads:" << threads.size() << ", same as before: " << sameAmountOfThreads << std::endl;
-	for (auto& t : threads) {
-		 t.print();
-		 t.set_priority();
-	 }
-	
-
-	{
-		auto ph = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
 	while (true) {
-		SetPriorityClass(ph, REALTIME_PRIORITY_CLASS);
+		auto pid = GetProcessPIDByName(binary.c_str());
+		auto hh = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+		SetPriorityClass(hh, REALTIME_PRIORITY_CLASS);
 		for (auto& t : listProcessThreads(pid)) {
-			t.set_priority();
+			if (t.get_priority() != REALTIME_PRIORITY_CLASS) {
+				t.set_priority();
+				t.printShort();
+			}
 		}
-		std::wcout << "Updated" << std::endl;
-		Sleep(5000);
+		CloseHandle(hh);
+		Sleep(1000);
 	}
-	}
 
-	CloseHandle(ph);
-	//terminate(L"EpicGamesLauncher.exe");
-
-	//std::vector<ThreadInfo> toSuspend;
-	/*std::copy_if(threads.begin(), threads.end(), std::back_inserter(toSuspend), filterOverlay);
-	for (auto& t : toSuspend) {
-		t.printShort();
-		t.suspend();
-	}*/
-
-	// std::vector<ThreadInfo> regSpam;
-	// std::copy_if(threads.begin(), threads.end(), std::back_inserter(regSpam), filterRegSpam);
-	// std::sort(regSpam.begin(), regSpam.end(), [](ThreadInfo& a, ThreadInfo& b) { return a.creation_time > b.creation_time; });
-	// for (auto& t : regSpam) {
-		// t.print();
-		// t.suspend();
-	// }
-
-
-	// std::unordered_map<DWORD64, int> prev_times{};
-	// std::unordered_map<DWORD64, int> changes{};
-	// auto suspends{ 0 };
-
-	// while (suspends < 2 && !regSpam.empty()) {
-		// for (auto& a : regSpam) {
-			// a.update();
-			// auto& prev = prev_times[a.id];
-			// auto& chang = changes[a.id];
-			// auto sum = a.kernel_time + a.user_time;
-			// if (prev_times[a.id] != sum) {
-				// changes[a.id]++;
-			// }
-			// prev_times[a.id] = sum;
-			// std::wcout << a.id << " " << a.kernel_time + a.user_time << " ch:" << changes[a.id] << " prev:" << prev_times[a.id] << std::endl;
-			// if (chang > 10) {
-				// suspends++;
-				// a.throttle();
-				// chang = 0;
-			// }
-		// }
-		// Sleep(500);
-	// }
-	//terminate(L"explorer.exe");
-	
-	//system("start \"\" \"explorer.exe\"");
-	
 	return 0;
 }

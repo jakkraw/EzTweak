@@ -1,6 +1,8 @@
 ﻿using CosmosKey.Utils;
+using Hardware.Info;
 using Microsoft.Win32;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
@@ -59,7 +61,14 @@ namespace EzTweak {
                     byte[] o = (byte[])key.GetValue(key_name);
                     if (o == null) return null;
                     return String.Join(",", o.Select(a => a.ToString("X").PadLeft(2, '0')));
-                } else {
+                }
+                if (type == RegistryValueKind.DWord)
+                {
+                    Object o = key.GetValue(key_name);
+                    if (o == null) return null;
+                    return $"0x{((Int32)o).ToString("X")}";
+                }
+                else {
                     Object o = key.GetValue(key_name);
                     if (o == null) return null;
                     return o.ToString();
@@ -83,7 +92,21 @@ namespace EzTweak {
                     var data = value.Split(',').Select(x => Convert.ToByte(x, 16))
     .ToArray();
                     key.SetValue(key_name, data, type);
-                } else {
+                }
+                if (type == RegistryValueKind.DWord)
+                {
+                    int n;
+                    if (value.StartsWith("0x"))
+                    {
+                        n = Int32.Parse(value.Substring(2), NumberStyles.HexNumber);
+                    }
+                    else
+                    {
+                        n = Int32.Parse(value);
+                    }
+                    key.SetValue(key_name, n, type);
+                }
+                else {
                     key.SetValue(key_name, value, type);
                 }
 
@@ -99,7 +122,7 @@ namespace EzTweak {
             }
         }
 
-        public static void Set(string path, int value) {
+        public static void Set(string path, uint value) {
             Set(path, value.ToString());
         }
 
@@ -107,5 +130,30 @@ namespace EzTweak {
             Set(path, value ? "1" : "0");
         }
 
+
+        public static string AsHex(string value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            if(value == Registry.REG_DELETE)
+            {
+                return value;
+            }
+
+            int n;
+            if (value.StartsWith("0x"))
+            {
+                n = Int32.Parse(value.Substring(2), NumberStyles.HexNumber);
+            }
+            else
+            {
+                n = Int32.Parse(value);
+            }
+
+            return $"0x{n.ToString("X")}";
+        }
     }
 }

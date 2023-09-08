@@ -24,8 +24,8 @@
 			<tweak name="Disabled NTFS Last Access Time">
 				<action type="DWORD">
 					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsDisableLastAccessUpdate</path>
-					<off>-2147483650</off>
-					<on>-2147483649</on>
+					<off>0x80000002</off>
+					<on>0x80000001</on>
 				</action>
 			</tweak>
 			<tweak name="Disable boot trace">
@@ -180,10 +180,10 @@
 				</action>
 			</tweak>
 			<tweak name="Enable smooth edges of screen fonts">
-				<action type="DWORD">
+				<action type="REG_SZ">
 					<path>HKCU\Control Panel\Desktop\FontSmoothing</path>
-					<off>1</off>
-					<on>2</on>
+					<off>01</off>
+					<on>02</on>
 				</action>
 			</tweak>
 			<tweak name="Turn off smooth scrolling">
@@ -469,8 +469,8 @@
 			<tweak name="Disable UAC">
 				<action type="DWORD">
 					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA</path>
-					<off>0</off>
-					<on>1</on>
+					<off>1</off>
+					<on>0</on>
 				</action>
 			</tweak>
 			<tweak name="Enable Kernel-Managed Memory and disable Meltdown/Spectre patches">

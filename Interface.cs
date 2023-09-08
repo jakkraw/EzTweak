@@ -66,7 +66,7 @@ namespace EzTweak {
             return label;
         }
 
-        public static Control Toggle(Action off_click, Action on_click, Func<bool> is_on) {
+        public static CustomControls.RJControls.RJToggleButton Toggle(Action off_click, Action on_click, Func<bool> is_on) {
             var toggle = new CustomControls.RJControls.RJToggleButton();
             toggle.AutoSize = true;
             if (is_on != null) {
@@ -105,11 +105,17 @@ namespace EzTweak {
             Action update_info = () => {
                 info_box.Text = get_description();
             };
+            var toggle = Toggle(off_func + update_info, on_func + update_info, is_on_func);
+
+            Action update_toggle = () => {
+                if (is_on_func != null) { toggle.Checked = is_on_func(); }
+            };
+
             var panel = new Panel();
             panel.Size = new Size(300, 28);
-            panel.Controls.Add(Label(name, update_info));
+            panel.Controls.Add(Label(name, update_info + update_toggle));
             if (is_on_func != null && off_func != null) {
-                panel.Controls.Add(Toggle(off_func + update_info, on_func + update_info, is_on_func));
+                panel.Controls.Add(toggle);
             } else {
                 if (off_func != null) {
                     panel.Controls.Add(Button("off", off_func + update_info, button_location, button_size));
@@ -154,7 +160,7 @@ namespace EzTweak {
             var on_func = tweak.actions.Count == 0 || tweak.actions.Any(a => a.on_func == null) == true ? null : tweak.actions.Select(a => wrap(a.on_func)).Aggregate((a, b) => a + b);
             var on_description = tweak.actions.Aggregate<TweakAction, string>("", (a, b) => b.on_description == null ? a : $"{a}{b.on_description}{Environment.NewLine}");
             var off_description = tweak.actions.Aggregate<TweakAction, string>("", (a, b) => b.off_description == null ? a : $"{a}{b.off_description}{Environment.NewLine}");
-            Func<string> lookup_func = () => tweak.actions.Aggregate<TweakAction, string>("", (a, b) => b.lookup == null ? a : $"{a}{b.lookup()}{Environment.NewLine}");
+            Func<string> lookup_func = () => tweak.actions.Aggregate<TweakAction, string>("", (a, b) => b.lookup == null ? a : $"{a}{b.name}=\"{b.lookup() ?? "🗑"}\"{Environment.NewLine}");
             Func<bool> is_on_func = tweak.actions.Count == 0 || tweak.actions.Any(a => a.is_on == null) == true ? (Func<bool>)null : () => !tweak.actions.Select(a => a.is_on != null ? wrap_bool(a.is_on)() : false).Any(a => a == false);
             Func<string> get_description = () => {
                 var desc = $"⚡ {name} ⚡{Environment.NewLine}{Environment.NewLine}";
@@ -186,9 +192,9 @@ namespace EzTweak {
             var reg = $@"HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl\IRQ{IRQ}Priority";
             var values = new Dictionary<string, string> {
                 { Registry.REG_DELETE, "" },
-            { "0", "0 (highest)" }, { "1", "1" }, { "2", "2" }, { "3", "3" }, { "4", "4" }, { "5", "5" },
-            { "6", "6" }, { "7", "7" }, { "8", "8" }, { "9", "9" }, { "10", "10" }, { "11", "11" },
-            { "12", "12" }, { "13", "13" }, { "14", "14" }, { "15", "15 (lowest)" }
+            { "0x0", "0 (highest)" }, { "0x1", "1" }, { "0x2", "2" }, { "0x3", "3" }, { "0x4", "4" }, { "0x5", "5" },
+            { "0x6", "6" }, { "0x7", "7" }, { "0x8", "8" }, { "0x9", "9" }, { "0x10", "10" }, { "0x11", "11" },
+            { "0x12", "12" }, { "0x13", "13" }, { "0x14", "14" }, { "0x15", "15 (lowest)" }
             };
 
             Func<string> lookup_func = () => Registry.Get(reg) ?? Registry.REG_DELETE;
@@ -217,7 +223,7 @@ namespace EzTweak {
             var name = "Device Priority";
             var values = new Dictionary<string, string> {
                 { Registry.REG_DELETE, "" },
-            { "0", "Undefined" }, { "1", "Low" }, { "2", "Medium" }, { "3", "High" }
+            { "0x0", "Undefined" }, { "0x1", "Low" }, { "0x2", "Medium" }, { "0x3", "High" }
             };
 
             Func<string> lookup_func = () => Registry.Get(DevicePriority) ?? Registry.REG_DELETE;
@@ -250,8 +256,7 @@ namespace EzTweak {
             comboBox.Location = new Point(4, 3);
             comboBox.MinimumSize = new Size(45, 22);
             comboBox.Size = new Size(80, 22);
-
-            Action setSelection = () => { comboBox.SelectedIndex = comboBox.FindStringExact(values[lookup_func()]); };
+            Action setSelection = () => { var x = lookup_func(); comboBox.SelectedIndex = comboBox.FindStringExact(values[x]); };
             Action update_info = () => { info_box.Text = description_func(); setSelection(); };
 
             comboBox.SelectionChangeCommitted += (s, e) => {

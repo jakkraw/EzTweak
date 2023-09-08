@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace EzTweak {
@@ -23,8 +24,19 @@ namespace EzTweak {
             this.value = value;
         }
 
-        public static TweakAction REGISTRY(string path, string off, string on, RegistryValueKind type) {
+        public static TweakAction REGISTRY(string path, string off_str, string on_str, RegistryValueKind type) {
+            var on = on_str;
+            var off = off_str;
+
+            if (type == RegistryValueKind.DWord)
+            {
+                on = Registry.AsHex(on_str);
+                off = Registry.AsHex(off_str);
+            }
+            
+
             TweakAction action = new TweakAction();
+            action.name = path;
             action.lookup = () => { return Registry.Get(path, type); };
             action.is_on = () => action.lookup() == on;
 
@@ -47,6 +59,7 @@ namespace EzTweak {
         public static TweakAction REGISTRY_MULTI(string path, RegistryValueKind type) {
             TweakAction action = new TweakAction();
             action.lookup = () => { return Registry.Get(path, type); };
+            action.name = path;
             var delete = action.value == Registry.REG_DELETE;
             action.off_description = $"\"{path}\"{(delete ? " 🗑" : $"=\"{action.value}\"")}";
             action.set_func = (v) => { if (delete) Registry.Delete(path); else Registry.Set(path, action.value, type); };
@@ -60,16 +73,17 @@ namespace EzTweak {
         public static TweakAction CMD(string off_cmd, string on_cmd, string lookup_cmd = null, string lookup_regex = null, string on_regex = null) {
             TweakAction action = new TweakAction();
             action.lookup_func = lookup_cmd;
+            action.name = lookup_cmd;
             if (off_cmd != null) {
                 action.off_func = () => Cmd.Start(off_cmd);
                 action.off_description = $"[CMD] {off_cmd}";
             }
 
             if (lookup_cmd != null && lookup_regex != null) {
-                action.lookup = () => Regex.Match(Cmd.Start(lookup_cmd, true), lookup_regex, RegexOptions.Multiline).Value;
+                action.lookup = () => Regex.Match(Cmd.Start(lookup_cmd, true), lookup_regex, RegexOptions.Multiline).Groups[1].Value;
 
                 if (lookup_regex != null && on_regex != null) {
-                    action.is_on = () => Regex.Match(action.lookup(), on_regex, RegexOptions.Multiline).Success;
+                    action.is_on = () => Regex.Match(Cmd.Start(lookup_cmd, true), on_regex, RegexOptions.Multiline).Success;
                 }
             }
 
@@ -84,16 +98,17 @@ namespace EzTweak {
         public static TweakAction POWERSHELL(string off_cmd, string on_cmd, string lookup_cmd = null, string lookup_regex = null, string on_regex = null) {
             TweakAction action = new TweakAction();
             action.lookup_func = lookup_cmd;
+            action.name = lookup_cmd;
             if (off_cmd != null) {
                 action.off_func = () => Powershell.Start(off_cmd);
                 action.off_description = $"[Powershell] {off_cmd}";
             }
 
             if (lookup_cmd != null) {
-                action.lookup = () => Regex.Match(Powershell.Start(lookup_cmd, true), lookup_regex, RegexOptions.Multiline).Value;
+                action.lookup = () => Regex.Match(Powershell.Start(lookup_cmd, true), lookup_regex, RegexOptions.Multiline).Groups[1].Value;
 
                 if (lookup_regex != null && on_regex != null) {
-                    action.is_on = () => Regex.Match(action.lookup(), on_regex, RegexOptions.Multiline).Success;
+                    action.is_on = () => Regex.Match(Powershell.Start(lookup_cmd, true), on_regex, RegexOptions.Multiline).Success;
                 }
             }
 
@@ -111,7 +126,8 @@ namespace EzTweak {
             var off_delete = value_off == Registry.REG_DELETE;
             var on_delete = value_on == Registry.REG_DELETE;
 
-            action.lookup = () => $"{property} {Bcdedit.Query(property)}";
+            action.lookup = () => Bcdedit.Query(property);
+            action.name = property;
 
             if (value_off != null) {
                 if (off_delete) {

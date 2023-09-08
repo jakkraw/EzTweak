@@ -10,7 +10,7 @@ namespace EzTweak
         public static string Query(string property)
         {
             IList<string> output = Cmd.Start("bcdedit /enum {current}", true).Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
-            var regex = new Regex($@"^{property}\s+(.+)$", RegexOptions.IgnoreCase);
+            var regex = new Regex($@"^{property}\s([^\s\\].+)$", RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
             foreach (string line in output)
             {

@@ -160,9 +160,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ExecTI.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="tweaks.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
