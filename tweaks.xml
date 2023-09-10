@@ -641,6 +641,16 @@
 					<on>1</on>
 				</action>
 				<action type="DWORD">
+					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableScanOnRealtimeEnable</path>
+					<off>0</off>
+					<on>1</on>
+				</action>
+				<action type="DWORD">
+					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableScanOnRealtimeEnable</path>
+					<off>0</off>
+					<on>1</on>
+				</action>
+				<action type="DWORD">
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableRoutinelyTakingAction</path>
 					<off>0</off>
 					<on>1</on>
@@ -851,6 +861,83 @@
 					<on>4</on>
 				</action>
 			</tweak>
+			<tweak name="Disable Error Reporting Service">
+				<action type="SERVICE">
+					<service>WerSvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Disable Windows Push Notifications User Service">
+				<action type="SERVICE">
+					<service>WpnUserService</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Disable Windows Defender Service (use Safe Boot)">
+				<action type="SERVICE">
+					<service>WinDefend</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Windows Defender Advanced Threat Protection Service">
+				<action type="SERVICE">
+					<service>Sense</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Microsoft Defender Antivirus Network Inspection Service (use Safe Boot)">
+				<action type="SERVICE">
+					<service>WdNisSvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Microsoft Account Sign-in Assistant">
+				<action type="SERVICE">
+					<service>wlidsvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Clipboard User Service">
+				<action type="SERVICE">
+					<service>cbdhsvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Windows Update">
+				<action type="SERVICE">
+					<service>wuauserv</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Update Orchestrator Service">
+				<action type="SERVICE">
+					<service>UsoSvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Microsoft Store Install Service">
+				<action type="SERVICE">
+					<service>InstallService</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Disable Connected Devices Platform User Service">
+				<action type="SERVICE">
+					<service>CDPUserSvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
 			<tweak name="Disable Spooler Service">
 				<action type="SERVICE">
 					<service>Spooler</service>
@@ -868,13 +955,6 @@
 			<tweak name="Delivery Optimization">
 				<action type="SERVICE">
 					<service>DoSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</action>
-			</tweak>
-			<tweak name="Microsoft Defender Antivirus Service">
-				<action type="SERVICE">
-					<service>WinDefend</service>
 					<off>2</off>
 					<on>4</on>
 				</action>
@@ -1515,6 +1595,14 @@
 				</action>
 			</tweak>
 
+			<tweak name="Disable Nvidia Control Panel">
+				<action type="SERVICE">
+					<service>NVDisplay.ContainerLocalSystem</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+
 			<tweak name="Force contiguous memory allocation in the NVIDIA driver">
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\PreferSystemMemoryContiguous</path>
@@ -1623,6 +1711,26 @@
 					<on>eventvwr</on>
 				</action>
 			</tweak>
+			<tweak name="Open Internet Options">
+				<action type="CMD">
+					<on>inetcpl.cpl</on>
+				</action>
+			</tweak>
+			<tweak name="Open System Configuration">
+				<action type="CMD">
+					<on>msconfig</on>
+				</action>
+			</tweak>
+			<tweak name="Open Group Policy">
+				<action type="CMD">
+					<on>gpedit.msc</on>
+				</action>
+			</tweak>
+			<tweak name="Open CMD">
+				<action type="CMD">
+					<on>start cmd.exe</on>
+				</action>
+			</tweak>
 			<tweak name="Open Startup Programs Tab">
 				<action type="CMD">
 					<on>taskmgr /0 /startup</on>
@@ -1704,7 +1812,7 @@
 			</tweak>
 			<tweak name="GameBar.PresenceWriter">
 			<action type="DWORD">
-				<path>HKLM\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter</path>
+				<path>HKLM\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter\ActivationType</path>
 				<on>0</on>
 				<off>1</off>
 			</action>
@@ -1747,6 +1855,13 @@
 					<path>HKCU\Software\Microsoft\GameBar\AutoGameModeEnabled</path>
 					<off>1</off>
 					<on>0</on>
+				</action>
+			</tweak>
+			<tweak name="Disable SmartScreen">
+				<action type="REG_SZ">
+					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SmartScreenEnabled</path>
+					<off>[delete]</off>
+					<on>Off</on>
 				</action>
 			</tweak>
 			<tweak name="Disable Notifications">

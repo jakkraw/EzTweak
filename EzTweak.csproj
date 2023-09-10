@@ -163,9 +163,6 @@
     <Content Include="tweaks.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="_C++.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="_SetTimerResolutionService.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -31,7 +31,6 @@ E:\EzTweak\bin\x64\Debug\ru\Microsoft.Win32.TaskScheduler.resources.dll
 E:\EzTweak\bin\x64\Debug\zh-CN\Microsoft.Win32.TaskScheduler.resources.dll
 E:\EzTweak\bin\x64\Debug\zh-Hant\Microsoft.Win32.TaskScheduler.resources.dll
 F:\EzTweak\bin\x64\Debug\tweaks.xml
-F:\EzTweak\bin\x64\Debug\_C++.exe
 F:\EzTweak\bin\x64\Debug\_SetTimerResolutionService.exe
 F:\EzTweak\bin\x64\Debug\EzTweak.exe.config
 F:\EzTweak\bin\x64\Debug\EzTweak.exe
