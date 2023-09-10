@@ -325,20 +325,18 @@ bool filterOverlay(const ThreadInfo& ti) {
 
 int main(int argc, wchar_t** argv) {
 	const std::wstring binary = argc > 1 ? argv[1] :  L"RocketLeague.exe";
-
+	auto pid = GetProcessPIDByName(binary.c_str());
+	auto hh = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+	SetPriorityClass(hh, REALTIME_PRIORITY_CLASS);
 	while (true) {
-		auto pid = GetProcessPIDByName(binary.c_str());
-		auto hh = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-		SetPriorityClass(hh, REALTIME_PRIORITY_CLASS);
 		for (auto& t : listProcessThreads(pid)) {
-			if (t.get_priority() != REALTIME_PRIORITY_CLASS) {
+			if (t.get_priority() != THREAD_PRIORITY_TIME_CRITICAL) {
 				t.set_priority();
 				t.printShort();
 			}
 		}
-		CloseHandle(hh);
 		Sleep(1000);
 	}
-
+	CloseHandle(hh);
 	return 0;
 }

@@ -879,19 +879,12 @@
 				<action type="SERVICE">
 					<service>WinDefend</service>
 					<off>2</off>
-					<on>4</on>
+					<on>3</on>
 				</action>
 			</tweak>
 			<tweak name="Windows Defender Advanced Threat Protection Service">
 				<action type="SERVICE">
 					<service>Sense</service>
-					<off>3</off>
-					<on>4</on>
-				</action>
-			</tweak>
-			<tweak name="Microsoft Defender Antivirus Network Inspection Service (use Safe Boot)">
-				<action type="SERVICE">
-					<service>WdNisSvc</service>
 					<off>3</off>
 					<on>4</on>
 				</action>
