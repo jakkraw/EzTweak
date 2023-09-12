@@ -160,6 +160,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="loading.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\loading.bmp" />
     <Content Include="tweaks.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

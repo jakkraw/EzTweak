@@ -641,6 +641,16 @@
 					<on>1</on>
 				</action>
 				<action type="DWORD">
+					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableScanOnRealtimeEnable</path>
+					<off>0</off>
+					<on>1</on>
+				</action>
+				<action type="DWORD">
+					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableScanOnRealtimeEnable</path>
+					<off>0</off>
+					<on>1</on>
+				</action>
+				<action type="DWORD">
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableRoutinelyTakingAction</path>
 					<off>0</off>
 					<on>1</on>
@@ -851,6 +861,76 @@
 					<on>4</on>
 				</action>
 			</tweak>
+			<tweak name="Disable Error Reporting Service">
+				<action type="SERVICE">
+					<service>WerSvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Disable Windows Push Notifications User Service">
+				<action type="SERVICE">
+					<service>WpnUserService</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Disable Windows Defender Service (use Safe Boot)">
+				<action type="SERVICE">
+					<service>WinDefend</service>
+					<off>2</off>
+					<on>3</on>
+				</action>
+			</tweak>
+			<tweak name="Windows Defender Advanced Threat Protection Service">
+				<action type="SERVICE">
+					<service>Sense</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Microsoft Account Sign-in Assistant">
+				<action type="SERVICE">
+					<service>wlidsvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Clipboard User Service">
+				<action type="SERVICE">
+					<service>cbdhsvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Windows Update">
+				<action type="SERVICE">
+					<service>wuauserv</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Update Orchestrator Service">
+				<action type="SERVICE">
+					<service>UsoSvc</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Microsoft Store Install Service">
+				<action type="SERVICE">
+					<service>InstallService</service>
+					<off>3</off>
+					<on>4</on>
+				</action>
+			</tweak>
+			<tweak name="Disable Connected Devices Platform User Service">
+				<action type="SERVICE">
+					<service>CDPUserSvc</service>
+					<off>2</off>
+					<on>4</on>
+				</action>
+			</tweak>
 			<tweak name="Disable Spooler Service">
 				<action type="SERVICE">
 					<service>Spooler</service>
@@ -868,13 +948,6 @@
 			<tweak name="Delivery Optimization">
 				<action type="SERVICE">
 					<service>DoSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</action>
-			</tweak>
-			<tweak name="Microsoft Defender Antivirus Service">
-				<action type="SERVICE">
-					<service>WinDefend</service>
 					<off>2</off>
 					<on>4</on>
 				</action>
@@ -1387,32 +1460,32 @@
 			<tweak name="Disable NetBIOS">
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{20f268ce-1371-44a9-a17b-6747fd954fd6}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{20f96c54-758b-41f6-a9d1-786a11a0bd29}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{33bd6d05-dc8c-4790-87e8-49b0c9c832ae}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{8cdf3d99-6dfa-44e1-8401-fb2268234faf}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{dbe28f8b-226d-412c-9db2-1c8d18d49865}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{f3eb37e5-a37e-4a04-b472-ff7d45fb2020}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 			</tweak>
@@ -1512,6 +1585,14 @@
 					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\nvlddmkm\DisableWriteCombining</path>
 					<off>[delete]</off>
 					<on>1</on>
+				</action>
+			</tweak>
+
+			<tweak name="Disable Nvidia Control Panel">
+				<action type="SERVICE">
+					<service>NVDisplay.ContainerLocalSystem</service>
+					<off>2</off>
+					<on>4</on>
 				</action>
 			</tweak>
 
@@ -1623,6 +1704,26 @@
 					<on>eventvwr</on>
 				</action>
 			</tweak>
+			<tweak name="Open Internet Options">
+				<action type="CMD">
+					<on>inetcpl.cpl</on>
+				</action>
+			</tweak>
+			<tweak name="Open System Configuration">
+				<action type="CMD">
+					<on>msconfig</on>
+				</action>
+			</tweak>
+			<tweak name="Open Group Policy">
+				<action type="CMD">
+					<on>gpedit.msc</on>
+				</action>
+			</tweak>
+			<tweak name="Open CMD">
+				<action type="CMD">
+					<on>start cmd.exe</on>
+				</action>
+			</tweak>
 			<tweak name="Open Startup Programs Tab">
 				<action type="CMD">
 					<on>taskmgr /0 /startup</on>
@@ -1704,7 +1805,7 @@
 			</tweak>
 			<tweak name="GameBar.PresenceWriter">
 			<action type="DWORD">
-				<path>HKLM\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter</path>
+				<path>HKLM\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter\ActivationType</path>
 				<on>0</on>
 				<off>1</off>
 			</action>
@@ -1747,6 +1848,13 @@
 					<path>HKCU\Software\Microsoft\GameBar\AutoGameModeEnabled</path>
 					<off>1</off>
 					<on>0</on>
+				</action>
+			</tweak>
+			<tweak name="Disable SmartScreen">
+				<action type="REG_SZ">
+					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SmartScreenEnabled</path>
+					<off>[delete]</off>
+					<on>Off</on>
 				</action>
 			</tweak>
 			<tweak name="Disable Notifications">

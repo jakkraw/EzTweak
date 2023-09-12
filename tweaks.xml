@@ -1460,32 +1460,32 @@
 			<tweak name="Disable NetBIOS">
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{20f268ce-1371-44a9-a17b-6747fd954fd6}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{20f96c54-758b-41f6-a9d1-786a11a0bd29}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{33bd6d05-dc8c-4790-87e8-49b0c9c832ae}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{8cdf3d99-6dfa-44e1-8401-fb2268234faf}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{dbe28f8b-226d-412c-9db2-1c8d18d49865}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 				<action type="DWORD">
 					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{f3eb37e5-a37e-4a04-b472-ff7d45fb2020}\NetbiosOptions</path>
-					<off>0</off>
+					<off>[delete]</off>
 					<on>2</on>
 				</action>
 			</tweak>
