@@ -2099,8 +2099,8 @@
 			</tweak>
 		</section>
 	</tab>
-	<tab name="IRQ Priority" >
-		<section name="IRQ Priority" type="IRQPRIORITY"></section> 
+	<tab name="IRQ" >
+		<section name="IRQ" type="IRQPRIORITY"></section> 
 	</tab>
 	<tab name="Devices" >
 		<section name="Devices" type="DEVICES"></section>
@@ -2108,7 +2108,7 @@
 	<tab name="Appx" >
 		<section name="Appx" type="APPX"></section>
 	</tab>
-	<tab name="Task Scheduler" >
+	<tab name="Tasks" >
 		<section name="Task Scheduler (Ordered by Last Run Time)" type="SCHEDULED_TASKS"></section>
 	</tab>
 </EzTweak>

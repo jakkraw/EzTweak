@@ -1,18 +1,26 @@
 ﻿using System;
+using System.IO;
 
 namespace EzTweak
 {
     public static class Log
     {
-        public static Action<string> pipe = (text) => { Console.Out.Write(text); };
+        public static string log_file = "EzTweak.log";
+
+        public static Action<string> pipe = (text) => { 
+            Console.Out.Write(text);
+            
+        };
         public static void Write(string text)
         {
             pipe(text);
+            File.AppendAllText(log_file, text);
         }
 
         public static void WriteLine(string text)
         {
-            Write(text); Write(Environment.NewLine);
+            var level = "info";
+            Write($"{DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss")} {level}: {text}{Environment.NewLine}");
         }
     }
 }

@@ -66,7 +66,7 @@ namespace EzTweak {
             return label;
         }
 
-        public static CustomControls.RJControls.RJToggleButton Toggle(Action off_click, Action on_click, Func<bool> is_on) {
+        public static CustomControls.RJControls.RJToggleButton Toggle(string name, Action off_click, Action on_click, Func<bool> is_on) {
             var toggle = new CustomControls.RJControls.RJToggleButton();
             toggle.AutoSize = true;
             if (is_on != null) {
@@ -89,10 +89,14 @@ namespace EzTweak {
 
                 if (active) {
                     toggle.Checked = false;
+                    Log.WriteLine($"Turning \"{name}\" OFF...");
                     off_click();
+                    Log.WriteLine($"\"{name}\" Turned OFF");
                 } else {
                     toggle.Checked = true;
+                    Log.WriteLine($"Turning \"{name}\" ON...");
                     on_click();
+                    Log.WriteLine($"\"{name}\" Turned ON");
                 }
 
                 toggle.Checked = is_on();
@@ -105,7 +109,7 @@ namespace EzTweak {
             Action update_info = () => {
                 info_box.Text = get_description();
             };
-            var toggle = Toggle(off_func + update_info, on_func + update_info, is_on_func);
+            var toggle = Toggle(name, off_func + update_info, on_func + update_info, is_on_func);
 
             Action update_toggle = () => {
                 if (is_on_func != null) { toggle.Checked = is_on_func(); }
