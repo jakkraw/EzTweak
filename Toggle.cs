@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using System.Windows.Forms;
+﻿using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.ComponentModel;
+using System.Windows.Forms;
 
-namespace CustomControls.RJControls
+namespace EzTweak
 {
-    public class RJToggleButton : CheckBox
+    public class Toggle : CheckBox
     {
-        //Fields
         private Color onBackColor = Color.MediumSlateBlue;
         private Color onToggleColor = Color.WhiteSmoke;
         private Color offBackColor = Color.Gray;
         private Color offToggleColor = Color.Gainsboro;
         private bool solidStyle = true;
 
-        //Properties
-        [Category("RJ Code Advance")]
+        [Category("Color")]
         public Color OnBackColor
         {
             get
@@ -36,7 +28,7 @@ namespace CustomControls.RJControls
             }
         }
 
-        [Category("RJ Code Advance")]
+        [Category("Color")]
         public Color OnToggleColor
         {
             get
@@ -51,7 +43,7 @@ namespace CustomControls.RJControls
             }
         }
 
-        [Category("RJ Code Advance")]
+        [Category("Color")]
         public Color OffBackColor
         {
             get
@@ -66,7 +58,7 @@ namespace CustomControls.RJControls
             }
         }
 
-        [Category("RJ Code Advance")]
+        [Category("Color")]
         public Color OffToggleColor
         {
             get
@@ -95,7 +87,7 @@ namespace CustomControls.RJControls
             }
         }
 
-        [Category("RJ Code Advance")]
+        [Category("Color")]
         [DefaultValue(true)]
         public bool SolidStyle
         {
@@ -110,14 +102,10 @@ namespace CustomControls.RJControls
                 this.Invalidate();
             }
         }
-
-        //Constructor
-        public RJToggleButton()
+        public Toggle()
         {
             this.MinimumSize = new Size(45, 22);
         }
-
-        //Methods
         private GraphicsPath GetFigurePath()
         {
             int arcSize = this.Height - 1;
@@ -139,23 +127,19 @@ namespace CustomControls.RJControls
             pevent.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             pevent.Graphics.Clear(this.Parent.BackColor);
 
-            if (this.Checked) //ON
+            if (this.Checked)
             {
-                //Draw the control surface
                 if (solidStyle)
                     pevent.Graphics.FillPath(new SolidBrush(onBackColor), GetFigurePath());
                 else pevent.Graphics.DrawPath(new Pen(onBackColor, 2), GetFigurePath());
-                //Draw the toggle
                 pevent.Graphics.FillEllipse(new SolidBrush(onToggleColor),
                     new Rectangle(this.Width - this.Height + 1, 2, toggleSize, toggleSize));
             }
-            else //OFF
+            else
             {
-                //Draw the control surface
                 if (solidStyle)
                     pevent.Graphics.FillPath(new SolidBrush(offBackColor), GetFigurePath());
                 else pevent.Graphics.DrawPath(new Pen(offBackColor, 2), GetFigurePath());
-                //Draw the toggle
                 pevent.Graphics.FillEllipse(new SolidBrush(offToggleColor),
                     new Rectangle(2, 2, toggleSize, toggleSize));
             }

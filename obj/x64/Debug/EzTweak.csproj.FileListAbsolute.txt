@@ -61,4 +61,3 @@ F:\EzTweak\obj\x64\Debug\EzTweak.csproj.CoreCompileInputs.cache
 F:\EzTweak\obj\x64\Debug\EzTweak.csproj.CopyComplete
 F:\EzTweak\obj\x64\Debug\EzTweak.exe
 F:\EzTweak\obj\x64\Debug\EzTweak.pdb
-F:\EzTweak\bin\x64\Debug\loading.gif

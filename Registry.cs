@@ -1,159 +1,246 @@
-﻿using CosmosKey.Utils;
-using Hardware.Info;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.AccessControl;
-using System.Security.Principal;
 
-namespace EzTweak {
-    public static class Registry {
-        public static string REG_DELETE = "[delete]";
+namespace EzTweak
+{
+    public static class Registry
+    {
+        public static string REG_DELETE = "🗑";
         public static readonly string LocalMachineShort = @"HKLM";
         public static readonly string LocalMachine = @"HKEY_LOCAL_MACHINE";
 
         public static readonly string CurrentUserShort = @"HKCU";
         public static readonly string CurrentUser = @"HKEY_CURRENT_USER";
 
-        public static bool GetBool(string path) {
-            var value = Get(path);
-            return !(value is "0" || value is null);
-        }
 
-        private static RegistryKey GetSubKey(string path, bool write = false, bool create = true) {
+        private static RegistryKey GetSubKey(string path, bool write = false, bool create = true)
+        {
             string key_path = null;
             RegistryKey reg = null;
 
-            if (path.StartsWith(LocalMachine)) {
+            if (path.StartsWith(LocalMachine))
+            {
                 key_path = Path.GetDirectoryName(path.Remove(0, LocalMachine.Length + 1));
                 reg = Microsoft.Win32.Registry.LocalMachine;
             }
 
-            if (path.StartsWith(LocalMachineShort)) {
+            if (path.StartsWith(LocalMachineShort))
+            {
                 key_path = Path.GetDirectoryName(path.Remove(0, LocalMachineShort.Length + 1));
                 reg = Microsoft.Win32.Registry.LocalMachine;
             }
 
-            if (path.StartsWith(CurrentUser)) {
+            if (path.StartsWith(CurrentUser))
+            {
                 key_path = Path.GetDirectoryName(path.Remove(0, CurrentUser.Length + 1));
                 reg = Microsoft.Win32.Registry.CurrentUser;
             }
 
-            if (path.StartsWith(CurrentUserShort)) {
+            if (path.StartsWith(CurrentUserShort))
+            {
                 key_path = Path.GetDirectoryName(path.Remove(0, CurrentUserShort.Length + 1));
                 reg = Microsoft.Win32.Registry.CurrentUser;
             }
 
-            var key = reg.OpenSubKey(key_path,write);
-            if (key == null && create) {
+            var key = reg.OpenSubKey(key_path, write);
+            if (key == null && create)
+            {
                 key = reg.CreateSubKey(key_path);
             }
             return key;
         }
 
-        public static string Get(string path, RegistryValueKind type = RegistryValueKind.DWord) {
+
+        public static void Set(string path, string value, RegistryValueKind type)
+        {
+            if (type == RegistryValueKind.String)
+            {
+                Set_REG_SZ(path, To_REG_SZ(value));
+            }
+
+            if (type == RegistryValueKind.DWord)
+            {
+                Set_DWORD(path, To_DWORD(value));
+            }
+
+            if (type == RegistryValueKind.Binary)
+            {
+                Set_BINARY(path, To_BINARY(value));
+            }
+        }
+
+        public static void Set(string path, object value, RegistryValueKind type)
+        {
             string key_name = Path.GetFileName(path);
-            using (RegistryKey key = GetSubKey(path)) {
-                if (key == null) return null;
-                if (type == RegistryValueKind.Binary) {
-                    byte[] o = (byte[])key.GetValue(key_name);
-                    if (o == null) return null;
-                    return String.Join(",", o.Select(a => a.ToString("X").PadLeft(2, '0')));
-                }
-                if (type == RegistryValueKind.DWord)
+            using (RegistryKey key = GetSubKey(path, true))
+            {
+                if (value != null)
                 {
-                    Object o = key.GetValue(key_name);
-                    if (o == null) return null;
-                    return $"0x{((Int32)o).ToString("X")}";
+                    key.SetValue(key_name, value, type);
+                    Log.WriteLine($"{path} {type} {value}");
                 }
-                else {
-                    Object o = key.GetValue(key_name);
-                    if (o == null) return null;
-                    return o.ToString();
+                else
+                {
+                    key.DeleteValue(key_name, false);
+                    Log.WriteLine($"{path} {Registry.REG_DELETE}");
                 }
             }
         }
 
-        public static bool Exists(string path) {
+        public static object Get(string path)
+        {
             string key_name = Path.GetFileName(path);
-            using (RegistryKey key = GetSubKey(path, false, false)) {
+            using (RegistryKey key = GetSubKey(path))
+            {
+                return key.GetValue(key_name);
+            }
+        }
+
+        public static string From(string path, RegistryValueKind type)
+        {
+            switch (type)
+            {
+                case RegistryValueKind.DWord:
+                    return From_DWORD(Get_DWORD(path));
+                case RegistryValueKind.Binary:
+                    return From_BINARY(Get_BINARY(path));
+                case RegistryValueKind.String:
+                    return From_REG_SZ(Get_REG_SZ(path));
+                default: return null;
+            }
+        }
+
+        public static string From_REG_SZ(string value)
+        {
+            return value ?? Registry.REG_DELETE;
+        }
+
+        public static string From_BINARY(byte[] value)
+        {
+            var v = value?.Select(a => a.ToString("X").PadLeft(2, '0'));
+            return v != null ? string.Join(",", v) : Registry.REG_DELETE;
+        }
+
+        public static string From_DWORD(UInt32? v)
+        {
+            return v != null && v.HasValue ? $"0x{v.Value:X}" : Registry.REG_DELETE;
+        }
+
+        public static UInt32? To_DWORD(string v)
+        {
+            if (v == null || v == Registry.REG_DELETE)
+            {
+                return null;
+            }
+
+            return v.StartsWith("0x") ? UInt32.Parse(v.Substring(2), NumberStyles.HexNumber) : UInt32.Parse(v);
+        }
+
+        public static string To_REG_SZ(string v)
+        {
+            if (v == null || v == Registry.REG_DELETE)
+            {
+                return null;
+            }
+
+            return v;
+        }
+
+        public static byte[] To_BINARY(string v)
+        {
+            if (v == null || v == Registry.REG_DELETE || v == "")
+            {
+                return null;
+            }
+            return v.Split(',').Select(x => Convert.ToByte(x, 16)).ToArray();
+        }
+
+        public static UInt32? Get_DWORD(string path)
+        {
+            var v = Get(path);
+            if (v == null) return null;
+            return (UInt32?)Convert.ToInt32(v.ToString());
+        }
+
+        public static void Set_DWORD(string path, UInt32? value)
+        {
+            Set(path, value, RegistryValueKind.DWord);
+        }
+
+        public static byte[] Get_BINARY(string path)
+        {
+            return Get(path) as byte[];
+        }
+
+        public static void Set_BINARY(string path, byte[] value)
+        {
+            Set(path, value, RegistryValueKind.Binary);
+        }
+
+        public static string Get_REG_SZ(string path)
+        {
+            return Get(path) as string;
+        }
+
+        public static void Set_REG_SZ(string path, string value)
+        {
+            Set(path, (object)value, RegistryValueKind.String);
+        }
+
+        public static bool Exists(string path)
+        {
+            using (RegistryKey key = GetSubKey(path, false, false))
+            {
                 return key != null;
             }
         }
 
 
-        public static void Set(string path, string value, RegistryValueKind type = RegistryValueKind.DWord) {
-            string key_name = Path.GetFileName(path);
-            using (RegistryKey key = GetSubKey(path, true)) {
+        //    public static void Set(string path, string value, RegistryValueKind type = RegistryValueKind.DWord)
+        //    {
+        //        string key_name = Path.GetFileName(path);
+        //        using (RegistryKey key = GetSubKey(path, true))
+        //        {
 
-                if (type == RegistryValueKind.Binary) {
-                    var data = value.Split(',').Select(x => Convert.ToByte(x, 16))
-    .ToArray();
-                    key.SetValue(key_name, data, type);
-                }
-                if (type == RegistryValueKind.DWord)
-                {
-                    int n;
-                    if (value.StartsWith("0x"))
-                    {
-                        n = Int32.Parse(value.Substring(2), NumberStyles.HexNumber);
-                    }
-                    else
-                    {
-                        n = Int32.Parse(value);
-                    }
-                    key.SetValue(key_name, n, type);
-                }
-                else {
-                    key.SetValue(key_name, value, type);
-                }
+        //            if (type == RegistryValueKind.Binary)
+        //            {
+        //                var data = value.Split(',').Select(x => Convert.ToByte(x, 16))
+        //.ToArray();
+        //                key.SetValue(key_name, data, type);
+        //            }
+        //            else if (type == RegistryValueKind.DWord)
+        //            {
+        //                UInt32 n;
+        //                if (value.StartsWith("0x"))
+        //                {
+        //                    n = UInt32.Parse(value.Substring(2), NumberStyles.HexNumber);
+        //                }
+        //                else
+        //                {
+        //                    n = UInt32.Parse(value);
+        //                }
+        //                key.SetValue(key_name, n, type);
+        //            }
+        //            else
+        //            {
+        //                key.SetValue(key_name, value, type);
+        //            }
 
-                Log.WriteLine($"{path}=\"{value}\"");
-            }
-        }
+        //            Log.WriteLine($"{Thread.CurrentThread.ManagedThreadId} {path}=\"{value}\"");
+        //        }
+        //    }
 
-        public static void Delete(string path) {
-            string key_name = Path.GetFileName(path);
-            using (RegistryKey key = GetSubKey(path, true)) {
-                key.DeleteValue(key_name, false);
-                Log.WriteLine($"{path} 🗑");
-            }
-        }
-
-        public static void Set(string path, uint value) {
-            Set(path, value.ToString());
-        }
-
-        public static void Set(string path, bool value) {
-            Set(path, value ? "1" : "0");
-        }
-
-
-        public static string AsHex(string value)
+        public static void Delete(string path)
         {
-            if (value == null)
+            string key_name = Path.GetFileName(path);
+            using (RegistryKey key = GetSubKey(path, true))
             {
-                return null;
+                key.DeleteValue(key_name, false);
+                Log.WriteLine($"{path} {Registry.REG_DELETE}");
             }
-
-            if(value == Registry.REG_DELETE)
-            {
-                return value;
-            }
-
-            int n;
-            if (value.StartsWith("0x"))
-            {
-                n = Int32.Parse(value.Substring(2), NumberStyles.HexNumber);
-            }
-            else
-            {
-                n = Int32.Parse(value);
-            }
-
-            return $"0x{n.ToString("X")}";
         }
     }
 }

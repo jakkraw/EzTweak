@@ -7,14 +7,23 @@ namespace EzTweak
     {
         public static string log_file = "EzTweak.log";
 
-        public static Action<string> pipe = (text) => { 
+        public static Action<string> pipe = (text) =>
+        {
             Console.Out.Write(text);
-            
+
         };
         public static void Write(string text)
         {
             pipe(text);
-            File.AppendAllText(log_file, text);
+            try
+            {
+                File.AppendAllText(log_file, text);
+            }
+            catch (Exception e)
+            {
+                e.ToString();
+            }
+
         }
 
         public static void WriteLine(string text)

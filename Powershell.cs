@@ -3,13 +3,17 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management.Automation;
 
-namespace EzTweak {
-    public static class Powershell {
-        public static string Start(string command, bool quiet = false) {
+namespace EzTweak
+{
+    public static class Powershell
+    {
+        public static string Start(string command, bool quiet = false)
+        {
             var script = $"{command} | Out-String";
             PowerShell ps = PowerShell.Create();
 
-            if (!quiet) {
+            if (!quiet)
+            {
                 Log.WriteLine(command);
             }
 

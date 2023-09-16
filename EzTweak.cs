@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Principal;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace EzTweak
@@ -16,12 +13,12 @@ namespace EzTweak
         static void Main()
         {
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length == 1  &&!IsTrustedInstaller())
+            if (args.Length == 1 && !IsTrustedInstaller())
             {
                 TrustedInstaller.StartAsChild(args);
                 return;
             }
-           
+
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

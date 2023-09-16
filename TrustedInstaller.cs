@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EzTweak
 {
@@ -150,7 +146,7 @@ namespace EzTweak
             PROTECT_FROM_CLOSE = 2
         }
 
-    public static void StartAsChild(string[] args)
+        public static void StartAsChild(string[] args)
         {
             ServiceController sc = new ServiceController
             {

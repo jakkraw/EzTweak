@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Threading;
 using System.Windows.Forms;
-using static System.Collections.Specialized.BitVector32;
+
 
 
 namespace EzTweak
@@ -18,7 +17,7 @@ namespace EzTweak
         {
             Log.WriteLine("EzTweak Started");
             InitializeComponent();
-            Interface.info_box = description_textbox;
+            info_box = description_textbox;
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -38,7 +37,7 @@ namespace EzTweak
             };
 
             var panel = CreateFlyoutPanel();
-            var loading_text = Interface.Divider("[   Loading   ]", "");
+            var loading_text = Divider("[   Loading   ]", "");
             panel.Controls.Add(loading_text);
 
             new Thread(() =>
@@ -79,10 +78,10 @@ namespace EzTweak
         {
             var panel = CreateFlyoutPanel();
 
-            panel.Controls.Add(Interface.Divider(section.name, ""));
+            panel.Controls.Add(Divider(section.name, ""));
             foreach (var tweak in section.tweaks)
             {
-                panel.Controls.Add(Interface.Tweak(tweak));
+                panel.Controls.Add(TweakControl(tweak));
             }
 
             return panel;
@@ -95,23 +94,16 @@ namespace EzTweak
 
             foreach (var pair in devices_dict)
             {
-                panel.Controls.Add(Interface.Divider(pair.Key, ""));
+                panel.Controls.Add(Divider(pair.Key, ""));
                 foreach (var irq in pair.Value)
                 {
-                    panel.Controls.Add(Interface.IRQPrioritySelect(irq));
+                    panel.Controls.Add(IRQPrioritySelectControl(irq));
                 }
             }
             return panel;
         }
 
-        private static FlowLayoutPanel CreateFlyoutPanel()
-        {
-            return new FlowLayoutPanel
-            {
-                AutoSize = true,
-                MaximumSize = new Size(365, 0),
-            };
-        }
+
 
         private FlowLayoutPanel CreateAPPXSection(Section section)
         {
@@ -121,13 +113,13 @@ namespace EzTweak
             {
                 var tweak = new Tweak();
                 tweak.name = $"Remove {app}";
-                var action = TweakAction.POWERSHELL(null, $"Get-AppxPackage *{app}* | Remove-AppxPackage", null, null, null);
-                tweak.actions.Add(action);
-                var ta = new TweakAction();
-                tweak.actions.Add(ta);
+                var action = Tweak.POWERSHELL(null, $"Get-AppxPackage *{app}* | Remove-AppxPackage", null, null, null);
+                tweak.tweaks.Add(action);
+                var ta = new Tweak();
+                tweak.tweaks.Add(ta);
                 Control c = null;
                 ta.on_func = () => c.Hide();
-                c = Interface.Tweak(tweak);
+                c = TweakControl(tweak);
                 panel.Controls.Add(c);
             }
 
@@ -144,13 +136,13 @@ namespace EzTweak
                 var tweak = new Tweak();
                 tweak.name = $"Disable {task.Name}";
                 tweak.description = $"Name: {task.Name}{Environment.NewLine}Path: {task.Path}{Environment.NewLine}Definition: {task.Definition}{Environment.NewLine}Task Service: {task.TaskService}{Environment.NewLine}Folder: {task.Folder}{Environment.NewLine}Last Run Time: {task.LastRunTime}{Environment.NewLine}State: {task.State}";
-                var ta = new TweakAction();
+                var ta = new Tweak();
                 ta.on_func = () => { task.Stop(); task.Enabled = false; };
                 ta.off_func = () => { task.Enabled = true; };
                 ta.lookup = () => task.Enabled ? "Enabled" : "Disabled";
                 ta.is_on = () => !task.Enabled;
-                tweak.actions.Add(ta);
-                panel.Controls.Add(Interface.Tweak(tweak));
+                tweak.tweaks.Add(ta);
+                panel.Controls.Add(TweakControl(tweak));
             }
 
             return panel;
@@ -185,43 +177,43 @@ namespace EzTweak
                 foreach (var device in pair.Value)
                 {
                     var p3 = CreateFlyoutPanel();
-                    p3.Controls.Add(Interface.Divider(device.Name, device.FullInfo));
-                    p3.Controls.Add(Interface.Tweak(Tweak.DeviceDisable(device)));
+                    p3.Controls.Add(Divider(device.Name, device.FullInfo));
+                    p3.Controls.Add(TweakControl(Tweak.DeviceDisable(device)));
 
                     var deviceIdleRPIN = Tweak.DeviceIdleRPIN(device);
                     if (deviceIdleRPIN != null)
                     {
-                        p3.Controls.Add(Interface.Tweak(deviceIdleRPIN));
+                        p3.Controls.Add(TweakControl(deviceIdleRPIN));
                         controls_dict[idle_r_pin].Add(p3);
                     }
 
                     var enhancedPowerManagementEnabled = Tweak.EnhancedPowerManagementEnabled(device);
                     if (enhancedPowerManagementEnabled != null)
                     {
-                        p3.Controls.Add(Interface.Tweak(enhancedPowerManagementEnabled));
+                        p3.Controls.Add(TweakControl(enhancedPowerManagementEnabled));
                         controls_dict[power_label].Add(p3);
                     }
 
                     var MSISupported = Tweak.MsiSupported(device);
                     if (MSISupported != null)
                     {
-                        p3.Controls.Add(Interface.Tweak(MSISupported));
+                        p3.Controls.Add(TweakControl(MSISupported));
                         //controls_dict[msi_label].Add(panel);
                     }
 
-                    var DevicePriority = Tweak.DevicePriority(device);
-                    if (DevicePriority != null)
+                    var devicePriority = Tweak.DevicePriority(device);
+                    if (devicePriority != null)
                     {
-                        p3.Controls.Add(Interface.DevicePriority(device));
+                        p3.Controls.Add(DevicePriorityControl(device));
                     }
 
-                    var LinesLimit = Interface.LinesLimit(device);
-                    if (LinesLimit != null)
+                    var linesLimit = LinesLimitControl(device);
+                    if (linesLimit != null)
                     {
-                        p3.Controls.Add(LinesLimit);
+                        p3.Controls.Add(linesLimit);
                     }
 
-                    var AssignmentSetOverride = Interface.AffinityOverride(device);
+                    var AssignmentSetOverride = AffinityOverrideControl(device);
                     if (AssignmentSetOverride != null)
                     {
                         p3.Controls.Add(AssignmentSetOverride);
