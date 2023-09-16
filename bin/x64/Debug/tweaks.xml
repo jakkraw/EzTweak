@@ -1,1607 +1,1287 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<EzTweak>
-	<tab name="Power">
-		<section name="Power">
-			<tweak name="Disable disk power savings">
-				<tweak type="DWORD">
+<EZTWEAK>
+	<TAB name="Power">
+		<SECTION name="Power">
+			<TWEAKS name="Disable disk power savings">
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Services\stornvme\Parameters\Device\IdlePowerMode</path>
 					<off>1</off>
 					<on>0</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Storage\StorageD3InModernStandby</path>
 					<off>1</off>
 					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable prefetcher">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters\EnablePrefetcher</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disabled NTFS Last Access Time">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsDisableLastAccessUpdate</path>
-					<off>0x80000002</off>
-					<on>0x80000001</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable boot trace">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters\EnableBootTrace</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable RAM compression">
-				<tweak type="POWERSHELL">
-					<on>Disable-MMAgent -MemoryCompression</on>
-					<off>Enable-MMAgent -MemoryCompression</off>
-					<lookup>Get-MMAgent</lookup>
-					<lookup_regex>^MemoryCompression\s+:\s+(.*)$</lookup_regex>
-					<on_regex>^MemoryCompression\s+:\s+False.*$</on_regex>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Hibernation">
-				<tweak type="DWORD">
+				</DWORD>
+			</TWEAKS>
+			<DWORD name="Disable prefetcher">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters\EnablePrefetcher</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disabled NTFS Last Access Time">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsDisableLastAccessUpdate</path>
+				<off>0x80000002</off>
+				<on>0x80000001</on>
+			</DWORD>
+			<DWORD name="Disable boot trace">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters\EnableBootTrace</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<POWERSHELL name="Disable RAM compression">
+				<on>Disable-MMAgent -MemoryCompression</on>
+				<off>Enable-MMAgent -MemoryCompression</off>
+				<lookup>Get-MMAgent</lookup>
+				<lookup_regex>^MemoryCompression\s+:\s+(.*)$</lookup_regex>
+				<on_regex>^MemoryCompression\s+:\s+False.*$</on_regex>
+			</POWERSHELL>
+			<TWEAKS name="Disable Hibernation">
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Power\HibernateEnabled</path>
 					<off>1</off>
 					<on>0</on>
-				</tweak>
-				<tweak type="CMD">
+				</DWORD>
+				<CMD>
 					<off>powercfg /h on &amp; powercfg -setactive scheme_current</off>
 					<on>powercfg /h off &amp; powercfg -setactive scheme_current</on>
-				</tweak>
-			</tweak>
-			<tweak name="Ultimate Power Plan">
-				<tweak type="CMD">
-					<off>powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e</off>
-					<on>powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 11111111-1111-1111-1111-111111111111 &amp; powercfg -setactive 11111111-1111-1111-1111-111111111111</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable idle states">
-				<tweak type="CMD">
-					<off>powercfg -setacvalueindex scheme_current sub_processor 5d76a2ca-e8c0-402f-a133-2158492d58ad 0 &amp; powercfg -setactive scheme_current</off>
-					<on>powercfg -setacvalueindex scheme_current sub_processor 5d76a2ca-e8c0-402f-a133-2158492d58ad 1 &amp; powercfg -setactive scheme_current</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable power throttling">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling\PowerThrottlingOff</path>
-					<off>0</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-
-		</section>
-	</tab>
-	<tab name="Appearance">
-		<section name="Appearance">
-			<tweak name="Disable Animations">
-				<tweak type="DWORD">
+				</CMD>
+			</TWEAKS>
+			<CMD name="Ultimate Power Plan">
+				<off>powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e</off>
+				<on>powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 11111111-1111-1111-1111-111111111111 &amp; powercfg -setactive 11111111-1111-1111-1111-111111111111</on>
+			</CMD>
+			<CMD name="Disable idle states">
+				<off>powercfg -setacvalueindex scheme_current sub_processor 5d76a2ca-e8c0-402f-a133-2158492d58ad 0 &amp; powercfg -setactive scheme_current</off>
+				<on>powercfg -setacvalueindex scheme_current sub_processor 5d76a2ca-e8c0-402f-a133-2158492d58ad 1 &amp; powercfg -setactive scheme_current</on>
+			</CMD>
+			<DWORD name="Disable power throttling">
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling\PowerThrottlingOff</path>
+				<off>0</off>
+				<on>1</on>
+			</DWORD>
+		</SECTION>
+	</TAB>
+	<TAB name="Appearance">
+		<SECTION name="Appearance">
+			<TWEAKS name="Disable Animations">
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\DWM\DisallowAnimations</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKCU\Control Panel\Desktop\WindowMetrics\MinAnimate</path>
 					<off>1</off>
 					<on>0</on>
-				</tweak>
-				<tweak name="Disable Transparency">
-					<tweak type="DWORD">
-						<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize\EnableTransparency</path>
-						<off>1</off>
-						<on>0</on>
-					</tweak>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD name="Disable Transparency">
+					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize\EnableTransparency</path>
+					<off>1</off>
+					<on>0</on>
+				</DWORD>
+				<DWORD>
 					<path>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarAnimations</path>
 					<off>1</off>
 					<on>0</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\VisualFXSetting</path>
 					<off>0</off>
 					<on>3</on>
-				</tweak>
-			</tweak>
-			<tweak name="Enable detailed startup/shutdown messages" type="DWORD">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\VerboseStatus</path>
-					<off>0</off>
-					<on>1</on>
-			</tweak>
-			<tweak name="Set performance Windows appearance">
-				<tweak type="BINARY">
-					<path>HKEY_CURRENT_USER\Control Panel\Desktop\UserPreferencesMask</path>
-					<on>90,12,03,80,10,00,00,00</on>
-					<off>9E,1E,07,80,12,00,00,00</off>
-				</tweak>
-			</tweak>
-			<tweak name="Dark Mode">
-				<tweak type="DWORD">
+				</DWORD>
+			</TWEAKS>
+			<DWORD name="Enable detailed startup/shutdown messages">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\VerboseStatus</path>
+				<off>0</off>
+				<on>1</on>
+			</DWORD>
+			<BINARY name="Set performance Windows appearance">
+				<path>HKEY_CURRENT_USER\Control Panel\Desktop\UserPreferencesMask</path>
+				<on>90,12,03,80,10,00,00,00</on>
+				<off>9E,1E,07,80,12,00,00,00</off>
+			</BINARY>
+			<TWEAKS name="Dark Mode">
+				<DWORD>
 					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize\SystemUsesLightTheme</path>
 					<off>1</off>
 					<on>0</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize\AppsUseLightTheme</path>
 					<off>1</off>
 					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Black Wallpaper">
-				<tweak type="REG_SZ">
+				</DWORD>
+			</TWEAKS>
+			<TWEAKS name="Black Wallpaper">
+				<REG_SZ>
 					<path>HKCU\Control Panel\Desktop\WallPaper</path>
 					<on> </on>
-				</tweak>
-				<tweak type="REG_SZ">
+				</REG_SZ>
+				<REG_SZ>
 					<path>HKCU\Control Panel\Colors\Background</path>
 					<on>0 0 0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable enable Peek">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\DWM\EnableAeroPeek</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable save taskbar thumbnail previews">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\DWM\AlwaysHibernateThumbnails</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Enable show thumbnails instead of icons">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\IconsOnly</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable show translucent selection rectangle">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ListviewAlphaSelect</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable show window contents while dragging">
-				<tweak type="DWORD">
-					<path>HKCU\Control Panel\Desktop\DragFullWindows</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Enable smooth edges of screen fonts">
-				<tweak type="REG_SZ">
-					<path>HKCU\Control Panel\Desktop\FontSmoothing</path>
-					<off>01</off>
-					<on>02</on>
-				</tweak>
-			</tweak>
-			<tweak name="Turn off smooth scrolling">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Policies\Microsoft\Internet Explorer\Main\SmoothScroll</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Show Hidden Folders">
-				<tweak type="DWORD">
+				</REG_SZ>
+			</TWEAKS>
+			<DWORD name="Disable enable Peek">
+				<path>HKCU\Software\Microsoft\Windows\DWM\EnableAeroPeek</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable save taskbar thumbnail previews">
+				<path>HKCU\Software\Microsoft\Windows\DWM\AlwaysHibernateThumbnails</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Enable show thumbnails instead of icons">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\IconsOnly</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable show translucent selection rectangle">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ListviewAlphaSelect</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable show window contents while dragging">
+				<path>HKCU\Control Panel\Desktop\DragFullWindows</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<REG_SZ name="Enable smooth edges of screen fonts">
+				<path>HKCU\Control Panel\Desktop\FontSmoothing</path>
+				<off>01</off>
+				<on>02</on>
+			</REG_SZ>
+			<DWORD name="Turn off smooth scrolling">
+				<path>HKCU\Software\Policies\Microsoft\Internet Explorer\Main\SmoothScroll</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<TWEAKS name="Show Hidden Folders">
+				<DWORD>
 					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\Hidden</path>
 					<off>2</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ShowSuperHidden</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-			</tweak>
-			<tweak name="Show File Extensions">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\HideFileExt</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable use drop shadows for icon labels on the desktop">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ListviewShadow</path>
-					<off>1</off>
-					<on>2</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable use drop shadows for icon labels on the desktop">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ListviewShadow</path>
-					<off>1</off>
-					<on>2</on>
-				</tweak>
-			</tweak>
-		</section>
-		<section name="Taskbar">
-			<tweak name="Remove chat from taskbar">
-				<tweak type="DWORD">
-					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarMn</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Remove task view from taskbar">
-				<tweak type="DWORD">
-					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ShowTaskViewButton</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Remove search from taskbar">
-				<tweak type="DWORD">
-					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Search\SearchboxTaskbarMode</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Remove meet now">
-				<tweak type="DWORD">
-					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\HideSCAMeetNow</path>
-					<off>🗑</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-			<tweak name="Remove action center">
-				<tweak type="DWORD">
-					<path>HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\Explorer\DisableNotificationCenter</path>
-					<off>🗑</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-			<tweak name="Remove news and interests">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds\EnableFeeds</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Remove taskbar pins">
-				<tweak type="DWORD">
-					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband</path>
-					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband\AuxilliaryPins</path>
-					<on>🗑</on>
-				</tweak>
-			</tweak>
-			<tweak name="Show all taskbar icons">
-				<tweak type="DWORD">
-					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\EnableAutoTray</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-		</section>
-		<section name="Start Menu">
-			<tweak name="Always hide most used list in start menu">
-				<tweak type="DWORD">
+				</DWORD>
+			</TWEAKS>
+			<DWORD name="Show File Extensions">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\HideFileExt</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable use drop shadows for icon labels on the desktop">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ListviewShadow</path>
+				<off>1</off>
+				<on>2</on>
+			</DWORD>
+			<DWORD name="Disable use drop shadows for icon labels on the desktop">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ListviewShadow</path>
+				<off>1</off>
+				<on>2</on>
+			</DWORD>
+		</SECTION>
+		<SECTION name="Taskbar">
+			<DWORD name="Remove chat from taskbar">
+				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarMn</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Remove task view from taskbar">
+				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ShowTaskViewButton</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Remove search from taskbar">
+				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Search\SearchboxTaskbarMode</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Remove meet now">
+				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\HideSCAMeetNow</path>
+				<off>🗑</off>
+				<on>1</on>
+			</DWORD>
+			<DWORD name="Remove action center">
+				<path>HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\Explorer\DisableNotificationCenter</path>
+				<off>🗑</off>
+				<on>1</on>
+			</DWORD>
+			<DWORD name="Remove news and interests">
+				<path>HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds\EnableFeeds</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Remove taskbar pins">
+				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband</path>
+				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband\AuxilliaryPins</path>
+				<on>🗑</on>
+			</DWORD>
+			<DWORD name="Show all taskbar icons">
+				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\EnableAutoTray</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+		</SECTION>
+		<SECTION name="Start Menu">
+			<TWEAKS name="Always hide most used list in start menu">
+				<DWORD>
 					<path>HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer\ShowOrHideMostUsedApps</path>
 					<off>1</off>
 					<on>2</on>
-				</tweak>
-				<tweak type="REG_SZ">
+				</DWORD>
+				<REG_SZ>
 					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoStartMenuMFUprogramsList</path>
 					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoInstrumentation</path>
 					<path>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoStartMenuMFUprogramsList</path>
 					<path>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoInstrumentation</path>
 					<on>-</on>
 					<off>🗑</off>
-				</tweak>
-			</tweak>
-			<tweak name="Disable show recently added apps">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer\HideRecentlyAddedApps</path>
-					<path>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\HideRecentlyAddedApps</path>
-					<off>0</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable show recently opened items in start, jump lists and file explorer">
-				<tweak type="DWORD">
-					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\Start_TrackDocs</path>
-					<on>0</on>
-					<off>1</off>
-				</tweak>
-			</tweak>
-		</section>
-	</tab>
-	<tab name="Priority">
-		<section name="Priority">
-			<tweak name="Priority Separation 40">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\ControlSet001\Control\PriorityControl\Win32PrioritySeparation</path>
-					<off>2</off>
-					<on>40</on>
-				</tweak>
-			</tweak>
-			<tweak name="NDIS Affinity (2,3 core)">
-				<tweak type="DWORD">
+				</REG_SZ>
+			</TWEAKS>
+			<DWORD name="Disable show recently added apps">
+				<path>HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer\HideRecentlyAddedApps</path>
+				<path>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\HideRecentlyAddedApps</path>
+				<off>0</off>
+				<on>1</on>
+			</DWORD>
+			<DWORD name="Disable show recently opened items in start, jump lists and file explorer">
+				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\Start_TrackDocs</path>
+				<on>0</on>
+				<off>1</off>
+			</DWORD>
+		</SECTION>
+	</TAB>
+	<TAB name="Priority">
+		<SECTION name="Priority">
+			<DWORD name="Priority Separation 40">
+				<path>HKLM\SYSTEM\ControlSet001\Control\PriorityControl\Win32PrioritySeparation</path>
+				<off>2</off>
+				<on>40</on>
+			</DWORD>
+			<TWEAKS name="NDIS Affinity (2,3 core)">
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Services\NDIS\Parameters\ProcessorAffinityMask</path>
 					<off>🗑</off>
 					<on>12</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Services\NDIS\Parameters\RssBaseCpu</path>
 					<off>🗑</off>
 					<on>2</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Services\Ndis\Parameters\MaxNumRssCpus</path>
 					<off>🗑</off>
 					<on>2</on>
-				</tweak>
-			</tweak>
-			<tweak name="Lock all Driver DPC to one core">
-				<tweak type="DWORD">
-					<path>HKLM\System\CurrentControlSet\Control\Session Manager\kernel\ThreadDpcEnable</path>
-					<off>🗑</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Enable X2Apic and enable Memory Mapping for PCI-E devices">
-				<tweak type="BCDEDIT">
+				</DWORD>
+			</TWEAKS>
+			<DWORD name="Lock all Driver DPC to one core">
+				<path>HKLM\System\CurrentControlSet\Control\Session Manager\kernel\ThreadDpcEnable</path>
+				<off>🗑</off>
+				<on>0</on>
+			</DWORD>
+			<TWEAKS name="Enable X2Apic and enable Memory Mapping for PCI-E devices">
+				<BCDEDIT>
 					<property>x2apicpolicy</property>
 					<on>Enable</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>configaccesspolicy</property>
 					<on>Default</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>MSI</property>
 					<on>Default</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>usephysicaldestination</property>
 					<on>No</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>usefirmwarepcisettings</property>
 					<on>No</on>
 					<off>🗑</off>
-				</tweak>
-			</tweak>
-			<tweak name="Disable synthetic TSC tick and use accurate RTC instead">
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+			</TWEAKS>
+			<TWEAKS name="Disable synthetic TSC tick and use accurate RTC instead">
+				<BCDEDIT>
 					<property>useplatformclock</property>
 					<on>🗑</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>disabledynamictick</property>
 					<on>🗑</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>useplatformtick</property>
 					<on>Yes</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>tscsyncpolicy</property>
 					<on>Enhanced</on>
 					<off>🗑</off>
-				</tweak>
+				</BCDEDIT>
 				<description>
 					Disable synthetic TSC tick and use accurate RTC instead (not to be confused with useplatformclock). Enable HPET in BIOS for best results. Only for untweaked systems (TSC recommended instead on tweaked systems).
 				</description>
-			</tweak>
-			<tweak name="Set a reliable 1 ms (minimum) timestamp">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Reliability\TimeStampInterval</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
+			</TWEAKS>
+			<DWORD name="Set a reliable 1 ms (minimum) timestamp">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Reliability\TimeStampInterval</path>
+				<off>1</off>
+				<on>0</on>
 				<description>Set a reliable 1 ms (minimum) timestamp. Only for untweaked systems (disabling it with 0 is recommended on tweaked systems).</description>
-			</tweak>
-			<tweak name="System responsiveness">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\SystemResponsiveness</path>
-					<off>20</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Use realtime priority for csrss.exe">
-				<tweak type="DWORD">
+			</DWORD>
+			<DWORD name="System responsiveness">
+				<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\SystemResponsiveness</path>
+				<off>20</off>
+				<on>0</on>
+			</DWORD>
+			<TWEAKS name="Use realtime priority for csrss.exe">
+				<DWORD>
 					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions\CpuPriorityClass</path>
 					<on>4</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions\IoPriority</path>
 					<on>3</on>
 					<off>🗑</off>
-				</tweak>
-			</tweak>
-		</section>
-		<section name="Thread Priority">
-			<tweak name="NDIS">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NDIS\Parameters\ThreadPriority</path>
-					<off>🗑</off>
-					<on>31</on>
-				</tweak>
-			</tweak>
-			<tweak name="Dxgkrnl">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Dxgkrnl\Parameters\ThreadPriority</path>
-					<off>🗑</off>
-					<on>31</on>
-				</tweak>
-			</tweak>
-			<tweak name="Mouhid">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Mouhid\Parameters\ThreadPriority</path>
-					<off>🗑</off>
-					<on>31</on>
-				</tweak>
-			</tweak>
-			<tweak name="Usbxhci">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Usbxhci\Parameters\ThreadPriority</path>
-					<off>🗑</off>
-					<on>31</on>
-				</tweak>
-			</tweak>
-			<tweak name="Usbhub3">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Usbhub3\Parameters\ThreadPriority</path>
-					<off>🗑</off>
-					<on>31</on>
-				</tweak>
-			</tweak>
-			<tweak name="nvlddmkm">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\nvlddmkm\Parameters\ThreadPriority</path>
-					<off>🗑</off>
-					<on>31</on>
-				</tweak>
-			</tweak>
-			<tweak name="Amdkmdap">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Amdkmdap\Parameters\ThreadPriority</path>
-					<off>🗑</off>
-					<on>31</on>
-				</tweak>
-			</tweak>
-		</section>
-	</tab>
-	<tab name="Security">
-		<section name="Security">
-			<tweak name="Disable UAC">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Enable Kernel-Managed Memory and disable Meltdown/Spectre patches">
-				<tweak type="DWORD">
+				</DWORD>
+			</TWEAKS>
+		</SECTION>
+		<SECTION name="Thread Priority">
+			<DWORD name="NDIS">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NDIS\Parameters\ThreadPriority</path>
+				<off>🗑</off>
+				<on>31</on>
+			</DWORD>
+			<DWORD  name="Dxgkrnl">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Dxgkrnl\Parameters\ThreadPriority</path>
+				<off>🗑</off>
+				<on>31</on>
+			</DWORD>
+			<DWORD name="Mouhid">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Mouhid\Parameters\ThreadPriority</path>
+				<off>🗑</off>
+				<on>31</on>
+			</DWORD>
+			<DWORD name="Usbxhci">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Usbxhci\Parameters\ThreadPriority</path>
+				<off>🗑</off>
+				<on>31</on>
+			</DWORD>
+			<DWORD name="Usbhub3">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Usbhub3\Parameters\ThreadPriority</path>
+				<off>🗑</off>
+				<on>31</on>
+			</DWORD>
+			<DWORD name="nvlddmkm">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\nvlddmkm\Parameters\ThreadPriority</path>
+				<off>🗑</off>
+				<on>31</on>
+			</DWORD>
+			<DWORD name="Amdkmdap">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Amdkmdap\Parameters\ThreadPriority</path>
+				<off>🗑</off>
+				<on>31</on>
+			</DWORD>
+		</SECTION>
+	</TAB>
+	<TAB name="Security">
+		<SECTION name="Security">
+			<DWORD name="Disable UAC">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<TWEAKS name="Enable Kernel-Managed Memory and disable Meltdown/Spectre patches">
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\FeatureSettings</path>
 					<on>1</on>
 					<off>0</off>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\FeatureSettingsOverride</path>
 					<on>3</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\FeatureSettingsOverrideMask</path>
 					<on>3</on>
 					<off>🗑</off>
-				</tweak>
-			</tweak>
-			<tweak name="Disallow drivers to get paged into virtual memory">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\DisablePagingExecutive</path>
-					<on>1</on>
-					<off>0</off>
-				</tweak>
-			</tweak>
-			<tweak name="Use big system memory caching to improve microstuttering">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\LargeSystemCache</path>
-					<on>1</on>
-					<off>0</off>
-				</tweak>
-			</tweak>
-			<tweak name="Disable auditing of successful events">
-				<tweak type="CMD">
-					<on>Auditpol /set /category:* /Success:disable</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Virtual Memory Pagefile Encryption">
-				<tweak type="DWORD">
+				</DWORD>
+			</TWEAKS>
+			<DWORD name="Disallow drivers to get paged into virtual memory">
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\DisablePagingExecutive</path>
+				<on>1</on>
+				<off>0</off>
+			</DWORD>
+			<DWORD name="Use big system memory caching to improve microstuttering">
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\LargeSystemCache</path>
+				<on>1</on>
+				<off>0</off>
+			</DWORD>
+			<CMD name="Disable auditing of successful events">
+				<on>Auditpol /set /category:* /Success:disable</on>
+			</CMD>
+			<TWEAKS name="Disable Virtual Memory Pagefile Encryption">
+				<DWORD>
 					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsEncryptPagingFile</path>
 					<on>0</on>
 					<off>1</off>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Policies\NtfsEncryptPagingFile</path>
 					<on>🗑</on>
 					<off>🗑</off>
-				</tweak>
-			</tweak>
-			<tweak name="Use big pagefile to improve microstuttering">
-				<tweak type="CMD">
-					<on>wmic computersystem where name="%computername%" set AutomaticManagedPagefile=False &amp; wmic pagefileset where name="C:\\pagefile.sys" set InitialSize=32768,MaximumSize=32768</on>
-					<off>wmic computersystem where name="%computername%" set AutomaticManagedPagefile=True</off>
-					<lookup>wmic computersystem where name="%computername%" get AutomaticManagedPagefile</lookup>
-					<lookup_regex>^AutomaticManagedPagefile.*\n(.*)$</lookup_regex>
-					<on_regex>^AutomaticManagedPagefile.*\nFALSE.*$</on_regex>
-				</tweak>
-			</tweak>
-			<tweak name="Disable additional NTFS/ReFS mitigations">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\ProtectionMode</path>
-					<on>0</on>
-					<off>1</off>
-				</tweak>
-			</tweak>
-			<tweak name="Disable DMA memory protection">
-				<tweak type="BCDEDIT">
+				</DWORD>
+			</TWEAKS>
+			<CMD name="Use big pagefile to improve microstuttering">
+				<on>wmic computersystem where name="%computername%" set AutomaticManagedPagefile=False &amp; wmic pagefileset where name="C:\\pagefile.sys" set InitialSize=32768,MaximumSize=32768</on>
+				<off>wmic computersystem where name="%computername%" set AutomaticManagedPagefile=True</off>
+				<lookup>wmic computersystem where name="%computername%" get AutomaticManagedPagefile</lookup>
+				<lookup_regex>^AutomaticManagedPagefile.*\n(.*)$</lookup_regex>
+				<on_regex>^AutomaticManagedPagefile.*\nFALSE.*$</on_regex>
+			</CMD>
+			<DWORD name="Disable additional NTFS/ReFS mitigations">
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\ProtectionMode</path>
+				<on>0</on>
+				<off>1</off>
+			</DWORD>
+			<TWEAKS name="Disable DMA memory protection">
+				<BCDEDIT>
 					<property>vsmlaunchtype</property>
 					<on>Off</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>vm</property>
 					<on>No</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="DWORD">
+				</BCDEDIT>
+				<BCDEDIT>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\FVE\DisableExternalDMAUnderLock</path>
 					<on>0</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="DWORD">
+				</BCDEDIT>
+				<BCDEDIT>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard\EnableVirtualizationBasedSecurity</path>
 					<on>0</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="DWORD">
+				</BCDEDIT>
+				<BCDEDIT>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard\HVCIMATRequired</path>
 					<on>0</on>
 					<off>🗑</off>
-				</tweak>
+				</BCDEDIT>
 				<description>Disable DMA memory protection and cores isolation ("virtualization-based protection").</description>
-			</tweak>
-			<tweak name="Disable kernel Memory Mitigations">
-				<tweak type="BCDEDIT">
+			</TWEAKS>
+			<TWEAKS name="Disable kernel Memory Mitigations">
+				<BCDEDIT>
 					<property>allowedinmemorysettings</property>
 					<on>0x0</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>isolatedcontext</property>
 					<on>No</on>
 					<off>🗑</off>
-				</tweak>
+				</BCDEDIT>
 				<description>Disable some of the kernel memory mitigations. Causes boot crash/loops if Intel SGX is enforced and not set to \"Application Controlled\" or \"Off\" in your Firmware. Gamers don't use SGX under any possible circumstance.</description>
-			</tweak>
-			<tweak name="Avoid uncontiguous portions of low-memory">
-				<tweak type="BCDEDIT">
+			</TWEAKS>
+			<TWEAKS name="Avoid uncontiguous portions of low-memory">
+				<BCDEDIT>
 					<property>firstmegabytepolicy</property>
 					<on>UseAll</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>avoidlowmemory</property>
 					<on>0x8000000</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>nolowmem</property>
 					<on>Yes</on>
 					<off>🗑</off>
-				</tweak>
+				</BCDEDIT>
 				<description>Avoid the use of uncontiguous portions of low-memory from the OS. Boosts memory performance and improves microstuttering at least 80% of the cases. Also fixes the command buffer stutter after disabling 5-level paging on 10th gen Intel. Causes system freeze on unstable memory sticks.</description>
-			</tweak>
-			<tweak name="Disable 57-bits 5-level paging">
-				<tweak type="BCDEDIT">
+			</TWEAKS>
+			<TWEAKS name="Disable 57-bits 5-level paging">
+				<BCDEDIT>
 					<property>linearaddress57</property>
 					<on>OptOut</on>
 					<off>OptIn</off>
-				</tweak>
-				<tweak type="BCDEDIT">
+				</BCDEDIT>
+				<BCDEDIT>
 					<property>increaseuserva</property>
 					<on>268435328</on>
 					<off>2048</off>
-				</tweak>
+				</BCDEDIT>
 				<description>Disable 57-bits 5-level paging, also known as "Linear Address 57". Only 100% effective on 10th gen Intel. 256 TB of virtual memory per-disk is way much more than enough anyway.</description>
-			</tweak>
-			<tweak name="Disable Process and Kernel Mitigations">
-				<tweak type="CMD">
+			</TWEAKS>
+			<TWEAKS name="Disable Process and Kernel Mitigations">
+				<CMD>
 					<on>powershell "ForEach($v in (Get-Command -Name \"Set-ProcessMitigation\").Parameters[\"Disable\"].Attributes.ValidValues){Set-ProcessMitigation -System -Disable $v.ToString() -ErrorAction SilentlyContinue}"</on>
-				</tweak>
-				<tweak type="CMD">
+				</CMD>
+				<CMD>
 					<on>powershell "Remove-Item -Path \"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\*\" -Recurse -ErrorAction SilentlyContinue"</on>
-				</tweak>
-				<tweak type="DWORD">
+				</CMD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel\DisableExceptionChainValidation</path>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel\KernelSEHOPEnabled</path>
 					<on>0</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management</path>
 					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Windows Defender Antivirus">
-				<tweak type="BCDEDIT">
+				</DWORD>
+			</TWEAKS>
+			<TWEAKS name="Disable Windows Defender Antivirus">
+				<BCDEDIT>
 					<property>disableelamdrivers</property>
 					<on>Yes</on>
 					<off>No</off>
-				</tweak>
-				<tweak type="DWORD">
+				</BCDEDIT>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableAntiSpyware</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableScanOnRealtimeEnable</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableScanOnRealtimeEnable</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\DisableRoutinelyTakingAction</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\ServiceKeepAlive</path>
 					<off>1</off>
 					<on>0</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection\DisableBehaviorMonitoring</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection\DisableIOAVProtection</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection\DisableOnAccessProtection</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection\DisableRealtimeMonitoring</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Reporting\DisableEnhancedNotifications</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-			</tweak>
-		</section>
-		<section name="Deny Access">
-			<tweak name="Location">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Camera">
-				<tweak type="REG_SZ">
-					<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Notifications">
-				<tweak type="REG_SZ">
-					<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userNotificationListener\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Account info">
-				<tweak type="REG_SZ">
-					<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userAccountInformation\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Contacts">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\contacts\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Calendar">
-				<tweak type="REG_SZ">
-					<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\appointments\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Phone calls">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\phoneCall\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Call history">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\phoneCallHistory\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Email">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\email\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Tasks">
-				<tweak type="REG_SZ">
-					<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userDataTasks\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Messaging">
-				<tweak type="REG_SZ">
-					<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\chat\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Radios">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\radios\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Other devices">
-				<tweak type="REG_SZ">
-					<path>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\bluetoothSync\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="App diagnostics">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\appDiagnostics\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Documents">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\documentsLibrary\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Downloads folder">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\downloadsFolder\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Music library">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\musicLibrary\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Pictures">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\picturesLibrary\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Videos">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\videosLibrary\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="File system">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\broadFileSystemAccess\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Screenshot borders">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\graphicsCaptureWithoutBorder\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Screenshots and apps">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\graphicsCaptureProgrammatic\Value</path>
-					<off>Allow</off>
-					<on>Deny</on>
-				</tweak>
-			</tweak>
-			<tweak name="Voice activation">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps\AgentActivationEnabled</path>
-					<path>HKCU\SOFTWARE\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps\AgentActivationLastUsed</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-		</section>
-	</tab>
-	<tab name="Services">
-		<section name="Services">
-			<tweak name="Disable WSearch Service">
-				<tweak type="SERVICE">
-					<service>WSearch</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Error Reporting Service">
-				<tweak type="SERVICE">
-					<service>WerSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Windows Push Notifications User Service">
-				<tweak type="SERVICE">
-					<service>WpnUserService</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Windows Defender Service (use Safe Boot)">
-				<tweak type="SERVICE">
-					<service>WinDefend</service>
-					<off>2</off>
-					<on>3</on>
-				</tweak>
-			</tweak>
-			<tweak name="Windows Defender Advanced Threat Protection Service">
-				<tweak type="SERVICE">
-					<service>Sense</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Microsoft Account Sign-in Assistant">
-				<tweak type="SERVICE">
-					<service>wlidsvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Clipboard User Service">
-				<tweak type="SERVICE">
-					<service>cbdhsvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Windows Update">
-				<tweak type="SERVICE">
-					<service>wuauserv</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Update Orchestrator Service">
-				<tweak type="SERVICE">
-					<service>UsoSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Microsoft Store Install Service">
-				<tweak type="SERVICE">
-					<service>InstallService</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Connected Devices Platform User Service">
-				<tweak type="SERVICE">
-					<service>CDPUserSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Spooler Service">
-				<tweak type="SERVICE">
-					<service>Spooler</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Update Orchestrator Service">
-				<tweak type="SERVICE">
-					<service>UsoSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Delivery Optimization">
-				<tweak type="SERVICE">
-					<service>DoSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Power">
-				<tweak type="SERVICE">
-					<service>Power</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Radio Management Service">
-				<tweak type="SERVICE">
-					<service>RmSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Realtek Audio Universal Service">
-				<tweak type="SERVICE">
-					<service>RtkAudioUniversalService</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="GraphicsPerfSvc">
-				<tweak type="SERVICE">
-					<service>GraphicsPerfSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Distributed Link Tracking Client">
-				<tweak type="SERVICE">
-					<service>TrkWks</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="System Guard Runtime Monitor Broker">
-				<tweak type="SERVICE">
-					<service>SgrmBroker</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Windows Biometric Service">
-				<tweak type="SERVICE">
-					<service>WbioSrvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Windows Connection Manager">
-				<tweak type="SERVICE">
-					<service>Wcmsvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Windows Font Cache Service">
-				<tweak type="SERVICE">
-					<service>FontCache</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="WLAN AutoConfig">
-				<tweak type="SERVICE">
-					<service>WlanSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Web Account Manager">
-				<tweak type="SERVICE">
-					<service>TokenBroker</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Sync Host">
-				<tweak type="SERVICE">
-					<service>OneSyncSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Device Setup Manager">
-				<tweak type="SERVICE">
-					<service>DsmSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Plug and Play">
-				<tweak type="SERVICE">
-					<service>PlugPlay</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Diagnostic Service Host">
-				<tweak type="SERVICE">
-					<service>WdiServiceHost</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Xbox Live Auth Manager">
-				<tweak type="SERVICE">
-					<service>XblAuthManager</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="GameDVR and Broadcast User Service">
-				<tweak type="SERVICE">
-					<service>BcastDVRUserService_40c2d</service>
-					<service>BcastDVRUserService</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="XblGameSave">
-				<tweak type="SERVICE">
-					<service>XblGameSave</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="xboxgip">
-				<tweak type="SERVICE">
-					<service>xboxgip</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="XboxGipSvc">
-				<tweak type="SERVICE">
-					<service>XboxGipSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="XboxNetApiSvc">
-				<tweak type="SERVICE">
-					<service>XboxNetApiSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Diagnostic System Host">
-				<tweak type="SERVICE">
-					<service>WdiSystemHost</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Data Usage">
-				<tweak type="SERVICE">
-					<service>DusmSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Edge elevation service">
-				<tweak type="SERVICE">
-					<service>MicrosoftEdgeElevationService</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Edge Update service">
-				<tweak type="SERVICE">
+				</DWORD>
+			</TWEAKS>
+		</SECTION>
+		<SECTION name="Deny Access">
+			<REG_SZ name="Location">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Camera">
+				<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Notifications">
+				<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userNotificationListener\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Account info">
+				<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userAccountInformation\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Contacts">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\contacts\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Calendar">
+				<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\appointments\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Phone calls">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\phoneCall\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Call history">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\phoneCallHistory\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ  name="Email">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\email\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Tasks">
+				<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\userDataTasks\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Messaging">
+				<path>HKLM\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\chat\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Radios">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\radios\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Other devices">
+				<path>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\bluetoothSync\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="App diagnostics">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\appDiagnostics\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Documents">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\documentsLibrary\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Downloads folder">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\downloadsFolder\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Music library">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\musicLibrary\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Pictures">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\picturesLibrary\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Videos">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\videosLibrary\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="File system">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\broadFileSystemAccess\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Screenshot borders">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\graphicsCaptureWithoutBorder\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<REG_SZ name="Screenshots and apps">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\graphicsCaptureProgrammatic\Value</path>
+				<off>Allow</off>
+				<on>Deny</on>
+			</REG_SZ>
+			<DWORD name="Voice activation">
+				<path>HKCU\Software\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps\AgentActivationEnabled</path>
+				<path>HKCU\SOFTWARE\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps\AgentActivationLastUsed</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+		</SECTION>
+	</TAB>
+	<TAB name="Services">
+		<SECTION name="Services">
+			<SERVICE name="Disable WSearch Service">
+				<service>WSearch</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Error Reporting Service">
+				<service>WerSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Windows Push Notifications User Service">
+				<service>WpnUserService</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Windows Defender Service (use Safe Boot)">
+				<service>WinDefend</service>
+				<off>2</off>
+				<on>3</on>
+			</SERVICE>
+			<SERVICE name="Windows Defender Advanced Threat Protection Service">
+				<service>Sense</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Microsoft Account Sign-in Assistant">
+				<service>wlidsvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Clipboard User Service">
+				<service>cbdhsvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Windows Update">
+				<service>wuauserv</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Update Orchestrator Service">
+				<service>UsoSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Microsoft Store Install Service">
+				<service>InstallService</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Connected Devices Platform User Service">
+				<service>CDPUserSvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Spooler Service">
+				<service>Spooler</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Update Orchestrator Service">
+				<service>UsoSvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Delivery Optimization">
+				<service>DoSvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Power">
+				<service>Power</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Radio Management Service">
+				<service>RmSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Realtek Audio Universal Service">
+				<service>RtkAudioUniversalService</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="GraphicsPerfSvc">
+				<service>GraphicsPerfSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Distributed Link Tracking Client">
+				<service>TrkWks</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="System Guard Runtime Monitor Broker">
+				<service>SgrmBroker</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Windows Biometric Service">
+				<service>WbioSrvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Windows Connection Manager">
+				<service>Wcmsvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Windows Font Cache Service">
+				<service>FontCache</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="WLAN AutoConfig">
+				<service>WlanSvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Web Account Manager">
+				<service>TokenBroker</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Sync Host">
+				<service>OneSyncSvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Device Setup Manager">
+				<service>DsmSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Plug and Play">
+				<service>PlugPlay</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Diagnostic Service Host">
+				<service>WdiServiceHost</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Xbox Live Auth Manager">
+				<service>XblAuthManager</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="GameDVR and Broadcast User Service">
+				<service>BcastDVRUserService_40c2d</service>
+				<service>BcastDVRUserService</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="XblGameSave">
+				<service>XblGameSave</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="xboxgip">
+				<service>xboxgip</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="XboxGipSvc">
+				<service>XboxGipSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="XboxNetApiSvc">
+				<service>XboxNetApiSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Diagnostic System Host">
+				<service>WdiSystemHost</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Data Usage">
+				<service>DusmSvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Edge elevation service">
+				<service>MicrosoftEdgeElevationService</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<TWEAKS name="Disable Edge Update service">
+				<SERVICE>
 					<service>edgeupdate</service>
 					<off>2</off>
 					<on>4</on>
-				</tweak>
-				<tweak type="SERVICE">
+				</SERVICE>
+				<SERVICE>
 					<service>edgeupdatem</service>
 					<off>2</off>
 					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Chrome elevation service">
-				<tweak type="SERVICE">
-					<service>GoogleChromeElevationService</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Chrome update service">
-				<tweak type="SERVICE">
+				</SERVICE>
+			</TWEAKS>
+			<SERVICE name="Disable Chrome elevation service">
+				<service>GoogleChromeElevationService</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<TWEAKS name="Disable Chrome update service">
+				<SERVICE>
 					<service>gupdate</service>
 					<off>2</off>
 					<on>4</on>
-				</tweak>
-				<tweak type="SERVICE">
+				</SERVICE>
+				<SERVICE>
 					<service>gupdatem</service>
 					<off>2</off>
 					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Connected User Experiences and Telemetry">
-				<tweak type="SERVICE">
-					<service>DiagTrack</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Themes">
-				<tweak type="SERVICE">
-					<service>Themes</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Diagnostic policy service">
-				<tweak type="SERVICE">
-					<service>DPS</service>
-					<service>WdiSystemHost</service>
-					<service>WdiServiceHost</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Display Enchancement Service">
-				<tweak type="SERVICE">
-					<service>DisplayEnhancementService</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Display Policy Service">
-				<tweak type="SERVICE">
-					<service>DispBrokerDesktopSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Distributed Link Tracking Client">
-				<tweak type="SERVICE">
-					<service>TrkWks</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Human Interface Device Service">
-				<tweak type="SERVICE">
-					<service>hidserv</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Geolocation Service">
-				<tweak type="SERVICE">
-					<service>lfsvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Phone Service">
-				<tweak type="SERVICE">
-					<service>PhoneSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Windows Defender Firewall and BFE">
-				<tweak type="SERVICE">
-					<service>mpssvc</service>
-					<service>BFE</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Prefetch service (sysmain">
-				<tweak type="SERVICE">
-					<service>SysMain</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Program Compatibility Assistant Service">
-				<tweak type="SERVICE">
-					<service>PcaSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Remote Access Connection Manager">
-				<tweak type="SERVICE">
-					<service>RasMan</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Secure Socket Tunneling Protocol Service">
-				<tweak type="SERVICE">
-					<service>SstpSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Security Center">
-				<tweak type="SERVICE">
-					<service>wscsvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Server">
-				<tweak type="SERVICE">
-					<service>LanmanServer</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Shell Hardware Detection">
-				<tweak type="SERVICE">
-					<service>ShellHWDetection</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Storage Service">
-				<tweak type="SERVICE">
-					<service>StorSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable TCP/IP NetBIOS Helper">
-				<tweak type="SERVICE">
-					<service>lmhosts</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Update Orchestrator Service">
-				<tweak type="SERVICE">
-					<service>UsoSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Windows Security Service">
-				<tweak type="SERVICE">
-					<service>SecurityHealthService</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable AMD bloat services">
-				<tweak type="SERVICE">
-					<service>amd3dvcacheSvc</service>
-					<service>AMD Crash Defender Service</service>
-					<service>AMD External Events Utility</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable AMD turbo services (stable clock)">
-				<tweak type="SERVICE">
-					<service>intelppm</service>
-					<service>AMDPPM</service>
-					<service>Processor</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<description>https://www.youtube.com/watch?v=X0OsY0_HvpE&amp;t=628s</description>
-		</section>
+				</SERVICE>
+			</TWEAKS>
+			<SERVICE name="Disable Connected User Experiences and Telemetry">
+				<service>DiagTrack</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Themes">
+				<service>Themes</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Diagnostic policy service">
+				<service>DPS</service>
+				<service>WdiSystemHost</service>
+				<service>WdiServiceHost</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Display Enchancement Service">
+				<service>DisplayEnhancementService</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Display Policy Service">
+				<service>DispBrokerDesktopSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Distributed Link Tracking Client">
+				<service>TrkWks</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Human Interface Device Service">
+				<service>hidserv</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Geolocation Service">
+				<service>lfsvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Phone Service">
+				<service>PhoneSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Windows Defender Firewall and BFE">
+				<service>mpssvc</service>
+				<service>BFE</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Prefetch service (sysmain)">
+				<service>SysMain</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Program Compatibility Assistant Service">
+				<service>PcaSvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Remote Access Connection Manager">
+				<service>RasMan</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Secure Socket Tunneling Protocol Service">
+				<service>SstpSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Security Center">
+				<service>wscsvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Server">
+				<service>LanmanServer</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Shell Hardware Detection">
+				<service>ShellHWDetection</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Storage Service">
+				<service>StorSvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable TCP/IP NetBIOS Helper">
+				<service>lmhosts</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Update Orchestrator Service">
+				<service>UsoSvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Windows Security Service">
+				<service>SecurityHealthService</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable AMD bloat services">
+				<service>amd3dvcacheSvc</service>
+				<service>AMD Crash Defender Service</service>
+				<service>AMD External Events Utility</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable AMD turbo services (stable clock)">
+				<service>intelppm</service>
+				<service>AMDPPM</service>
+				<service>Processor</service>
+				<off>3</off>
+				<on>4</on>
+				<description>https://www.youtube.com/watch?v=X0OsY0_HvpE&amp;t=628s</description>
+			</SERVICE>
+		</SECTION>
 
-		<section name="After setting IP manually ip config">
-			<tweak name="Disable Network Connection Broker">
-				<tweak type="SERVICE">
-					<service>NcbService</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Network List Service">
-				<tweak type="SERVICE">
-					<service>netprofm</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Background Intelligent Transfer Service">
-				<tweak type="SERVICE">
-					<service>BITS</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Connected Devices Platform Service">
-				<tweak type="SERVICE">
-					<service>cdpsvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Network Location Awareness">
-				<tweak type="SERVICE">
-					<service>NlaSvc</service>
-					<off>3</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable DHCP Client">
-				<tweak type="SERVICE">
-					<service>Dhcp</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="WinHttpAutoProxySvc">
-				<tweak type="SERVICE">
-					<service>WinHttpAutoProxySvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>WinHttpAutoProxySvc
-			<tweak name="Disable IP Helper">
-				<tweak type="SERVICE">
-					<service>iphlpsvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable DNS Client">
-				<tweak type="SERVICE">
-					<service>Dnscache</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Data Usage">
-				<tweak type="SERVICE">
-					<service>DusmSvc</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-		</section>
-	</tab>
-	<tab name="USB">
-		<section name="USB">
-			<tweak name="Disable mouse acceleration">
-				<tweak type="REG_SZ">
+		<SECTION name="After setting IP manually ip config">
+			<SERVICE name="Disable Network Connection Broker">
+				<service>NcbService</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Network List Service">
+				<service>netprofm</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Background Intelligent Transfer Service">
+				<service>BITS</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Connected Devices Platform Service">
+				<service>cdpsvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Network Location Awareness">
+				<service>NlaSvc</service>
+				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable DHCP Client">
+				<service>Dhcp</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="WinHttpAutoProxySvc">
+				<service>WinHttpAutoProxySvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable IP Helper">
+				<service>iphlpsvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable DNS Client">
+				<service>Dnscache</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Data Usage">
+				<service>DusmSvc</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+		</SECTION>
+	</TAB>
+	<TAB name="USB">
+		<SECTION name="USB">
+			<TWEAKS name="Disable mouse acceleration">
+				<REG_SZ>
 					<path>HKCU\Control Panel\Mouse\MouseSpeed</path>
 					<off>1</off>
 					<on>0</on>
-				</tweak>
-				<tweak type="REG_SZ">
+				</REG_SZ>
+				<REG_SZ>
 					<path>HKCU\Control Panel\Mouse\MouseThreshold1</path>
 					<off>6</off>
 					<on>0</on>
-				</tweak>
-				<tweak type="REG_SZ">
+				</REG_SZ>
+				<REG_SZ>
 					<path>HKCU\Control Panel\Mouse\MouseThreshold2</path>
 					<off>10</off>
 					<on>0</on>
-				</tweak>
+				</REG_SZ>
 				<description>
 					https://geekstrive.com/turn-off-mouse-acceleration-windows-10-and-mac/
 				</description>
-			</tweak>
-			<tweak name="Decrease mouse and keyboard buffer sizes">
-				<tweak type="DWORD">
+			</TWEAKS>
+			<TWEAKS name="Decrease mouse and keyboard buffer sizes">
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Services\mouclass\Parameters\MouseDataQueueSize</path>
 					<off>🗑</off>
 					<on>16</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters\KeyboardDataQueueSize</path>
 					<off>100</off>
 					<on>16</on>
-				</tweak>
-			</tweak>
-		</section>
-	</tab>
-	<tab name="Sound">
-		<section name="Sound">
-			<tweak name="Sound communications do nothing">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Multimedia\Audio\UserDuckingPreference</path>
-					<on>3</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable startup sound">
-				<tweak type="DWORD">
-					<path>HKLM\Software\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\BootAnimation\DisableStartupSound</path>
-					<on>1</on>
-					<off>🗑</off>
-				</tweak>
-			</tweak>
-			<tweak name="Sound scheme none">
-				<tweak type="REG_SZ">
-					<path>HKCU\AppEvents\Schemes\@</path>
-					<on>.None</on>
-				</tweak>
-			</tweak>
-		</section>
-	</tab>
-	<tab name="Network">
-		<section name="Network">
-			<tweak name="Disable NetBIOS">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{20f268ce-1371-44a9-a17b-6747fd954fd6}\NetbiosOptions</path>
-					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{20f96c54-758b-41f6-a9d1-786a11a0bd29}\NetbiosOptions</path>
-					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{33bd6d05-dc8c-4790-87e8-49b0c9c832ae}\NetbiosOptions</path>
-					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{8cdf3d99-6dfa-44e1-8401-fb2268234faf}\NetbiosOptions</path>
-					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{dbe28f8b-226d-412c-9db2-1c8d18d49865}\NetbiosOptions</path>
-					<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{f3eb37e5-a37e-4a04-b472-ff7d45fb2020}\NetbiosOptions</path>
-					<off>🗑</off>
-					<on>2</on>
-				</tweak>
-			</tweak>
-			<tweak name="Enable Experimental Autotuning and NEWRENO congestion provider">
-				<tweak type="CMD">
+				</DWORD>
+			</TWEAKS>
+		</SECTION>
+	</TAB>
+	<TAB name="Sound">
+		<SECTION name="Sound">
+			<DWORD name="Sound communications do nothing">
+				<path>HKCU\Software\Microsoft\Multimedia\Audio\UserDuckingPreference</path>
+				<on>3</on>
+			</DWORD>
+			<DWORD name="Disable startup sound">
+				<path>HKLM\Software\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\BootAnimation\DisableStartupSound</path>
+				<on>1</on>
+				<off>🗑</off>
+			</DWORD>
+			<REG_SZ name="Sound scheme none">
+				<path>HKCU\AppEvents\Schemes\@</path>
+				<on>.None</on>
+			</REG_SZ>
+		</SECTION>
+	</TAB>
+	<TAB name="Network">
+		<SECTION name="Network">
+			<DWORD name="Disable NetBIOS">
+				<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{20f268ce-1371-44a9-a17b-6747fd954fd6}\NetbiosOptions</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{20f96c54-758b-41f6-a9d1-786a11a0bd29}\NetbiosOptions</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{33bd6d05-dc8c-4790-87e8-49b0c9c832ae}\NetbiosOptions</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{8cdf3d99-6dfa-44e1-8401-fb2268234faf}\NetbiosOptions</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{dbe28f8b-226d-412c-9db2-1c8d18d49865}\NetbiosOptions</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\Tcpip_{f3eb37e5-a37e-4a04-b472-ff7d45fb2020}\NetbiosOptions</path>
+				<off>🗑</off>
+				<on>2</on>
+			</DWORD>
+			<TWEAKS name="Enable Experimental Autotuning and NEWRENO congestion provider">
+				<CMD>
 					<on>netsh int tcp set global autotuning=experimental &amp; netsh int tcp set supp internet congestionprovider=newreno</on>
-				</tweak>
-				<tweak type="REG_SZ">
+				</CMD>
+				<REG_SZ>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\Tcp Autotuning Level</path>
 					<on>Experimental</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="REG_SZ">
+				</REG_SZ>
+				<REG_SZ>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\QoS\Application DSCP Marking Request</path>
 					<on>Allowed</on>
 					<off>🗑</off>
-				</tweak>
-			</tweak>
-			<tweak name="Enable WH send and WH receive">
-				<tweak type="CMD">
-					<on>powershell "Get-NetAdapter -IncludeHidden | Set-NetIPInterface -WeakHostSend Enabled -WeakHostReceive Enabled -ErrorAction SilentlyContinue"</on>
-				</tweak>
-			</tweak>
-			<tweak name="Enable UDP offloading">
-				<tweak type="CMD">
-					<on>netsh int udp set global uro=enabled</on>
-					<off>netsh int udp set global uro=disabled</off>
-					<lookup>netsh int udp show global | findstr /c:"Receive Offload State"</lookup>
-					<lookup_regex>^Receive Offload State\s+(.+)\s*$</lookup_regex>
-					<on_regex>^Receive Offload State\s+:\s+enabled\s*$</on_regex>
-				</tweak>
-			</tweak>
-			<tweak name="Enable Teredo and 6to4">
-				<tweak type="CMD">
-					<on>netsh int teredo set state natawareclient &amp; netsh int 6to4 set state state=enabled</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable local firewall">
-				<tweak type="CMD">
-					<on>netsh advfirewall set allprofiles state off</on>
-					<off>netsh advfirewall set allprofiles state on</off>
-					<lookup>netsh advfirewall show allprofiles state | findstr /c:"State"</lookup>
-					<lookup_regex>^(State\s+(.+)\s*\n{0,1}){3}$</lookup_regex>
-					<on_regex>^(State\s+OFF\s*\n{0,1}){3}$</on_regex>
-				</tweak>
-			</tweak>
-			<tweak name="Enable Winsock Send Autotuning (dynamic send-buffer)">
-				<tweak type="CMD">
-					<on>netsh winsock set autotuning on</on>
-					<off>netsh winsock set autotuning off</off>
-					<lookup>netsh winsock show autotuning</lookup>
-					<lookup_regex>Winsock send autotuning is .*</lookup_regex>
-					<on_regex>Winsock send autotuning is enabled\.</on_regex>
-				</tweak>
-			</tweak>
-			<tweak name="Disable network discovery">
-				<tweak type="CMD">
-					<on>netsh advfirewall firewall set rule group="Network Discovery" new enable=No &amp; netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=No</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Network throttling">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\NetworkThrottlingIndex</path>
-					<off>10</off>
-					<on>0xFFFFFFFF</on>
-				</tweak>
-			</tweak>
-		</section>
-	</tab>
-	<tab name="GPU">
-		<section name="GPU">
-			<tweak name="Disable GPU P-State">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\DisableDynamicPstate</path>
-					<off>🗑</off>
-					<on>1</on>
-				</tweak>
+				</REG_SZ>
+			</TWEAKS>
+			<CMD name="Enable WH send and WH receive">
+				<on>powershell "Get-NetAdapter -IncludeHidden | Set-NetIPInterface -WeakHostSend Enabled -WeakHostReceive Enabled -ErrorAction SilentlyContinue"</on>
+			</CMD>
+			<CMD name="Enable UDP offloading">
+				<on>netsh int udp set global uro=enabled</on>
+				<off>netsh int udp set global uro=disabled</off>
+				<lookup>netsh int udp show global | findstr /c:"Receive Offload State"</lookup>
+				<lookup_regex>^Receive Offload State\s+(.+)\s*$</lookup_regex>
+				<on_regex>^Receive Offload State\s+:\s+enabled\s*$</on_regex>
+			</CMD>
+			<CMD name="Enable Teredo and 6to4">
+				<on>netsh int teredo set state natawareclient &amp; netsh int 6to4 set state state=enabled</on>
+			</CMD>
+			<CMD name="Disable local firewall">
+				<on>netsh advfirewall set allprofiles state off</on>
+				<off>netsh advfirewall set allprofiles state on</off>
+				<lookup>netsh advfirewall show allprofiles state | findstr /c:"State"</lookup>
+				<lookup_regex>^(State\s+(.+)\s*\n{0,1}){3}$</lookup_regex>
+				<on_regex>^(State\s+OFF\s*\n{0,1}){3}$</on_regex>
+			</CMD>
+			<CMD name="Enable Winsock Send Autotuning (dynamic send-buffer)">
+				<on>netsh winsock set autotuning on</on>
+				<off>netsh winsock set autotuning off</off>
+				<lookup>netsh winsock show autotuning</lookup>
+				<lookup_regex>Winsock send autotuning is .*</lookup_regex>
+				<on_regex>Winsock send autotuning is enabled\.</on_regex>
+			</CMD>
+			<CMD name="Disable network discovery">
+				<on>netsh advfirewall firewall set rule group="Network Discovery" new enable=No &amp; netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=No</on>
+			</CMD>
+			<DWORD name="Disable Network throttling">
+				<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\NetworkThrottlingIndex</path>
+				<off>10</off>
+				<on>0xFFFFFFFF</on>
+			</DWORD>
+		</SECTION>
+	</TAB>
+	<TAB name="GPU">
+		<SECTION name="GPU">
+			<DWORD name="Disable GPU P-State">
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\DisableDynamicPstate</path>
+				<off>🗑</off>
+				<on>1</on>
 				<description>https://youtu.be/TW-2wKZFJx8?t=416</description>
-			</tweak>
-			<tweak name="Hardware accelerated GPU scheduling">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\HwSchMode</path>
-					<off>1</off>
-					<on>2</on>
-				</tweak>
-			</tweak>
-			<tweak name="Force contiguous memory allocation in the DirectX Graphics Kernel">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\DpiMapIommuContiguous</path>
-					<off>🗑</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-
-			<tweak name="Disable Write Combining">
-				<tweak type="DWORD">
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\nvlddmkm\DisableWriteCombining</path>
-					<off>🗑</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-
-			<tweak name="Disable Nvidia Control Panel">
-				<tweak type="SERVICE">
-					<service>NVDisplay.ContainerLocalSystem</service>
-					<off>2</off>
-					<on>4</on>
-				</tweak>
-			</tweak>
-
-			<tweak name="Force contiguous memory allocation in the NVIDIA driver">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\PreferSystemMemoryContiguous</path>
-					<off>🗑</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-			<tweak name="(ALL) Stop tolerating high DPC/ISR latencies">
-				<tweak type="DWORD">
+			</DWORD>
+			<DWORD name="Hardware accelerated GPU scheduling">
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\HwSchMode</path>
+				<off>1</off>
+				<on>2</on>
+			</DWORD>
+			<DWORD name="Force contiguous memory allocation in the DirectX Graphics Kernel">
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\DpiMapIommuContiguous</path>
+				<off>🗑</off>
+				<on>1</on>
+			</DWORD>
+			<DWORD name="Disable Write Combining">
+				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\nvlddmkm\DisableWriteCombining</path>
+				<off>🗑</off>
+				<on>1</on>
+			</DWORD>
+			<SERVICE name="Disable Nvidia Control Panel">
+				<service>NVDisplay.ContainerLocalSystem</service>
+				<off>2</off>
+				<on>4</on>
+			</SERVICE>
+			<DWORD name="Force contiguous memory allocation in the NVIDIA driver">
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\PreferSystemMemoryContiguous</path>
+				<off>🗑</off>
+				<on>1</on>
+			</DWORD>
+			<TWEAKS name="(ALL) Stop tolerating high DPC/ISR latencies">
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Power\ExitLatency</path>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Power\ExitLatencyCheckEnabled</path>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Power\Latency</path>
@@ -1613,8 +1293,8 @@
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Power\RtlCapabilityCheckLatency</path>
 					<off>🗑</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Power\DefaultD3TransitionLatencyActivelyUsed</path>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Power\DefaultD3TransitionLatencyIdleLongTime</path>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Power\DefaultD3TransitionLatencyIdleMonitorOff</path>
@@ -1641,10 +1321,10 @@
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Power\TransitionLatency</path>
 					<off>🗑</off>
 					<on>1</on>
-				</tweak>
-			</tweak>
-			<tweak name="(NVIDIA GPU) Stop tolerating high DPC/ISR latencies">
-				<tweak type="DWORD">
+				</DWORD>
+			</TWEAKS>
+			<TWEAKS name="(NVIDIA GPU) Stop tolerating high DPC/ISR latencies">
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\D3PCLatency</path>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\F1TransitionLatency</path>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\LOWLATENCY</path>
@@ -1665,452 +1345,353 @@
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\vrrDeflickerMaxUs</path>
 					<off>🗑</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\PciLatencyTimerControl</path>
 					<on>32</on>
 					<off>🗑</off>
-				</tweak>
-			</tweak>
-		</section>
-	</tab>
-	<tab name="Tools">
-		<section name="Tools">
-			<tweak name="Set Rocket League Threads Priority">
-				<tweak type="CMD">
-					<on> start cmd.exe /c .\ThreadPriority.exe </on>
-				</tweak>
-			</tweak>
-			<tweak name="Activate Windows 11">
-				<tweak type="CMD">
-					<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
-				</tweak>
-			</tweak>
-			<tweak name="Delete Game Bar">
-				<tweak type="CMD">
-					<on> del /F /A "C:\Windows\System32\GameBarPresenceWriter.exe" </on>
-				</tweak>
-			</tweak>
-			<tweak name="Activate Windows 10">
-				<tweak type="CMD">
-					<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
-				</tweak>
-			</tweak>
-			<tweak name="Open Event Log">
-				<tweak type="CMD">
-					<on>eventvwr</on>
-				</tweak>
-			</tweak>
-			<tweak name="Open Internet Options">
-				<tweak type="CMD">
-					<on>inetcpl.cpl</on>
-				</tweak>
-			</tweak>
-			<tweak name="Kill Antivirus">
-				<tweak type="CMD">
-					<on>"F:\INSTALLERS\PSTools\pskill64.exe" -t MsMpEng.exe</on>
-				</tweak>
-			</tweak>
-			<tweak name="Open System Configuration">
-				<tweak type="CMD">
-					<on>msconfig</on>
-				</tweak>
-			</tweak>
-			<tweak name="Open Group Policy">
-				<tweak type="CMD">
-					<on>gpedit.msc</on>
-				</tweak>
-			</tweak>
-			<tweak name="Open CMD">
-				<tweak type="CMD">
-					<on>start cmd.exe</on>
-				</tweak>
-			</tweak>
-			<tweak name="Open Startup Programs Tab">
-				<tweak type="CMD">
-					<on>taskmgr /0 /startup</on>
-				</tweak>
-			</tweak>
-			<tweak name="Open Appearance and performance of Windows">
-				<tweak type="CMD">
-					<on>%windir%\system32\SystemPropertiesPerformance.exe</on>
-				</tweak>
-			</tweak>
-			<tweak name="Open Regedit">
-				<tweak type="CMD">
-					<on>regedit</on>
-				</tweak>
-			</tweak>
-			<tweak name="Open Optional Windows Features">
-				<tweak type="CMD">
-					<on>optionalfeatures</on>
-				</tweak>
+				</DWORD>
+			</TWEAKS>
+		</SECTION>
+	</TAB>
+	<TAB name="Tools">
+		<SECTION name="Tools">
+			<CMD name="Set Rocket League Threads Priority">
+				<on> start cmd.exe /c .\ThreadPriority.exe </on>
+			</CMD>
+			<CMD name="Activate Windows 11">
+				<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
+			</CMD>
+			<CMD name="Delete Game Bar">
+				<on> del /F /A "C:\Windows\System32\GameBarPresenceWriter.exe" </on>
+			</CMD>
+			<CMD name="Activate Windows 10">
+				<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
+			</CMD>
+			<CMD name="Open Event Log">
+				<on>eventvwr</on>
+			</CMD>
+			<CMD name="Open Internet Options">
+				<on>inetcpl.cpl</on>
+			</CMD>
+			<CMD name="Kill Antivirus">
+				<on>"F:\INSTALLERS\PSTools\pskill64.exe" -t MsMpEng.exe</on>
+			</CMD>
+			<CMD name="Open System Configuration">
+				<on>msconfig</on>
+			</CMD>
+			<CMD name="Open Group Policy">
+				<on>gpedit.msc</on>
+			</CMD>
+			<CMD name="Open CMD">
+				<on>start cmd.exe</on>
+			</CMD>
+			<CMD name="Open Startup Programs Tab">
+				<on>taskmgr /0 /startup</on>
+			</CMD>
+			<CMD name="Open Appearance and performance of Windows">
+				<on>%windir%\system32\SystemPropertiesPerformance.exe</on>
+			</CMD>
+			<CMD name="Open Regedit">
+				<on>regedit</on>
+			</CMD>
+			<CMD name="Open Optional Windows Features">
+				<on>optionalfeatures</on>
 				<description>Disable all features</description>
-			</tweak>
-			<tweak name="Open Add and Remove Programs">
-				<tweak type="CMD">
-					<on>appwiz.cpl</on>
-				</tweak>
+			</CMD>
+			<CMD name="Open Add and Remove Programs">
+				<on>appwiz.cpl</on>
 				<description>Disable all features</description>
-			</tweak>
-				<tweak name="Task Scheduler">
-				<tweak type="CMD">
-					<on>taskschd.msc</on>
-				</tweak>
+			</CMD>
+			<CMD name="Task Scheduler">
+				<on>taskschd.msc</on>
 				<description>Disable all features</description>
-			</tweak>
-			<tweak name="Install timer resolution service">
-				<tweak type="CMD">
-					<on>_SetTimerResolutionService.exe -install &amp; sc config STR start=auto &amp; net start STR</on>
-				</tweak>
+			</CMD>
+			<CMD name="Install timer resolution service">
+				<on>_SetTimerResolutionService.exe -install &amp; sc config STR start=auto &amp; net start STR</on>
 				<description>Install C++ runtime  before ! https://aka.ms/vs/17/release/vc_redist.x64.exe</description>
-			</tweak>
-			<tweak name="Restart PC">
-				<tweak type="CMD">
-					<on>shutdown -r</on>
-				</tweak>
-			</tweak>
-			<tweak name="Create restore point">
-				<tweak type="CMD">
-					<on>wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "EzTweak restore point", 100, 7</on>
-				</tweak>
-			</tweak>
-			<tweak name="Open restore points">
-				<tweak type="CMD">
-					<on>rstrui.exe</on>
-				</tweak>
-			</tweak>
-			<tweak name="Allow scripts in CMD set-executionpolicy remotesigned">
-				<tweak type="REG_SZ">
+			</CMD>
+			<CMD name="Restart PC">
+				<on>shutdown -r</on>
+			</CMD>
+			<CMD name="Create restore point">
+				<on>wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "EzTweak restore point", 100, 7</on>
+			</CMD>
+			<CMD name="Open restore points">
+				<on>rstrui.exe</on>
+			</CMD>
+			<TWEAKS name="Allow scripts in CMD set-executionpolicy remotesigned">
+				<REG_SZ>
 					<path>HKLM\SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell\Path</path>
 					<path>HKLM\SOFTWARE\Wow6432Node\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell\Path</path>
 					<on>C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe</on>
-				</tweak>
-				<tweak type="REG_SZ">
+				</REG_SZ>
+				<REG_SZ>
 					<path>HKLM\SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell\ExecutionPolicy</path>
 					<path>HKLM\SOFTWARE\Wow6432Node\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell\ExecutionPolicy</path>
 					<on>RemoteSigned</on>
-				</tweak>
-			</tweak>
-
-		</section>
-	</tab>
-	<tab name="Windows">
-		<section name="Windows">
-			<tweak name="Disable Telemetry">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat\AITEnable</path>
-					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection\AllowTelemetry</path>
-					<on>0</on>
-					<off>1</off>
-				</tweak>
-			</tweak>
-			<tweak name="GameBar.PresenceWriter">
-			<tweak type="DWORD">
+				</REG_SZ>
+			</TWEAKS>
+		</SECTION>
+	</TAB>
+	<TAB name="Windows">
+		<SECTION name="Windows">
+			<DWORD name="Disable Telemetry">
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat\AITEnable</path>
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection\AllowTelemetry</path>
+				<on>0</on>
+				<off>1</off>
+			</DWORD>
+			<DWORD name="Disable GameBar.PresenceWriter">
 				<path>HKLM\SOFTWARE\Microsoft\WindowsRuntime\ActivatableClassId\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter\ActivationType</path>
 				<on>0</on>
 				<off>1</off>
-			</tweak>
-		</tweak>
-			<tweak name="Disable Windows Error Reporting">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Disabled</path>
-					<on>1</on>
-					<off>🗑</off>
-				</tweak>
-			</tweak>
-			<tweak name="Stop Tablet mode from automatically enabling in Registry">
-				<tweak type="DWORD">
-					<path>HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell\ConvertibleSlateModePromptPreference</path>
-					<on>0</on>
-					<off>1</off>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Game bar">
-				<tweak type="DWORD">
+			</DWORD>
+			<DWORD name="Disable Windows Error Reporting">
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Disabled</path>
+				<on>1</on>
+				<off>🗑</off>
+			</DWORD>
+			<DWORD name="Stop Tablet mode from automatically enabling in Registry">
+				<path>HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell\ConvertibleSlateModePromptPreference</path>
+				<on>0</on>
+				<off>1</off>
+			</DWORD>
+			<TWEAKS name="Disable Game bar">
+				<DWORD>
 					<path>HKCU\System\GameConfigStore\GameDVR_Enabled</path>
 					<off>1</off>
 					<on>0</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\GameDVR\AppCaptureEnabled</path>
 					<on>0</on>
 					<off>1</off>
-				</tweak>
-			</tweak>
-			<tweak name="Disable enable open xbox game bar using game controller">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\GameBar\UseNexusForGameBarEnabled</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Enable Game mode">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\GameBar\AutoGameModeEnabled</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable SmartScreen">
-				<tweak type="REG_SZ">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SmartScreenEnabled</path>
-					<off>🗑</off>
-					<on>Off</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Notifications">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\PushNotifications\ToastEnabled</path>
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance\Enabled</path>
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel\Enabled</path>
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.CapabilityAccess\Enabled</path>
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.StartupApp\Enabled</path>
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\SubscribedContent-338389Enabled</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable driver searching">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching\SearchOrderConfig</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable automatic maintenance">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\Maintenance\MaintenanceDisabled</path>
-					<off>🗑</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable background apps global">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications\GlobalUserDisabled</path>
-					<off>🗑</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable automatically update maps">
-				<tweak type="DWORD">
-					<path>HKLM\SYSTEM\Maps\AutoUpdateEnabled</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable sleep icon">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings\ShowSleepOption</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Update apps automatically">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Policies\Microsoft\WindowsStore\AutoDownload</path>
-					<off>🗑</off>
-					<on>2</on>
-				</tweak>
-			</tweak>
-			<tweak name="Tweak Edge">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Policies\Microsoft\Edge\StartupBoostEnabled</path>
-					<path>HKLM\SOFTWARE\Policies\Microsoft\Edge\HardwareAccelerationModeEnabled</path>
-					<path>HKLM\SOFTWARE\Policies\Microsoft\Edge\BackgroundModeEnabled</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Tweak Chrome">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Policies\Google\Chrome\StartupBoostEnabled</path>
-					<path>HKLM\SOFTWARE\Policies\Google\Chrome\HardwareAccelerationModeEnabled</path>
-					<path>HKLM\SOFTWARE\Policies\Google\Chrome\BackgroundModeEnabled</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable lock icon">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings\ShowLockOption</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Alt tab open windows only">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\MultiTaskingAltTabFilter</path>
-					<on>3</on>
-					<off>0</off>
-				</tweak>
-			</tweak>
-			<tweak name="Disable let websites show me locally relevant content by accessing my language list ">
-				<tweak type="DWORD">
-					<path>HKCU\Control Panel\International\User Profile\HttpAcceptLanguageOptOut</path>
-					<off>0</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable let windows improve start and search results by tracking app launches">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Policies\Microsoft\Windows\EdgeUI\DisableMFUTracking</path>
-					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\EdgeUI\DisableMFUTracking</path>
-					<off>🗑</off>
-					<on>1</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable personal inking and typing dictionary">
-				<tweak type="DWORD">
+				</DWORD>
+			</TWEAKS>
+			<DWORD name="Disable enable open xbox game bar using game controller">
+				<path>HKCU\Software\Microsoft\GameBar\UseNexusForGameBarEnabled</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Enable Game mode">
+				<path>HKCU\Software\Microsoft\GameBar\AutoGameModeEnabled</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<REG_SZ name="Disable SmartScreen">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SmartScreenEnabled</path>
+				<off>🗑</off>
+				<on>Off</on>
+			</REG_SZ>
+			<DWORD name="Disable Notifications">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\PushNotifications\ToastEnabled</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance\Enabled</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel\Enabled</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.CapabilityAccess\Enabled</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.StartupApp\Enabled</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager\SubscribedContent-338389Enabled</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable driver searching">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching\SearchOrderConfig</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable automatic maintenance">
+				<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\Maintenance\MaintenanceDisabled</path>
+				<off>🗑</off>
+				<on>1</on>
+			</DWORD>
+			<DWORD name="Disable background apps global">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications\GlobalUserDisabled</path>
+				<off>🗑</off>
+				<on>1</on>
+			</DWORD>
+			<DWORD name="Disable automatically update maps">
+				<path>HKLM\SYSTEM\Maps\AutoUpdateEnabled</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable sleep icon">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings\ShowSleepOption</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable Update apps automatically">
+				<path>HKLM\SOFTWARE\Policies\Microsoft\WindowsStore\AutoDownload</path>
+				<off>🗑</off>
+				<on>2</on>
+			</DWORD>
+			<DWORD name="Tweak Edge">
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Edge\StartupBoostEnabled</path>
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Edge\HardwareAccelerationModeEnabled</path>
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Edge\BackgroundModeEnabled</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Tweak Chrome">
+				<path>HKLM\SOFTWARE\Policies\Google\Chrome\StartupBoostEnabled</path>
+				<path>HKLM\SOFTWARE\Policies\Google\Chrome\HardwareAccelerationModeEnabled</path>
+				<path>HKLM\SOFTWARE\Policies\Google\Chrome\BackgroundModeEnabled</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable lock icon">
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings\ShowLockOption</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Alt tab open windows only">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\MultiTaskingAltTabFilter</path>
+				<on>3</on>
+				<off>0</off>
+			</DWORD>
+			<DWORD name="Disable let websites show me locally relevant content by accessing my language list">
+				<path>HKCU\Control Panel\International\User Profile\HttpAcceptLanguageOptOut</path>
+				<off>0</off>
+				<on>1</on>
+			</DWORD>
+			<DWORD name="Disable let windows improve start and search results by tracking app launches">
+				<path>HKCU\Software\Policies\Microsoft\Windows\EdgeUI\DisableMFUTracking</path>
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\EdgeUI\DisableMFUTracking</path>
+				<off>🗑</off>
+				<on>1</on>
+			</DWORD>
+			<TWEAKS name="Disable personal inking and typing dictionary">
+				<DWORD>
 					<path>HKCU\Software\Microsoft\InputPersonalization\RestrictImplicitInkCollection</path>
 					<path>HKCU\Software\Microsoft\InputPersonalization\RestrictImplicitTextCollection</path>
 					<off>0</off>
 					<on>1</on>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKCU\Software\Microsoft\InputPersonalization\TrainedDataStore\HarvestContacts</path>
 					<path>HKCU\Software\Microsoft\Personalization\Settings\AcceptedPrivacyPolicy</path>
 					<on>0</on>
 					<off>1</off>
-				</tweak>
-			</tweak>
-			<tweak name="Feedback frequency never">
-				<tweak type="DWORD">
+				</DWORD>
+			</TWEAKS>
+			<TWEAKS name="Feedback frequency never">
+				<DWORD>
 					<path>HKCU\SOFTWARE\Microsoft\Siuf\Rules\NumberOfSIUFInPeriod</path>
 					<on>0</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="REG_SZ">
+				</DWORD>
+				<REG_SZ>
 					<path>HKCU\SOFTWARE\Microsoft\Siuf\Rules\PeriodInNanoSeconds</path>
 					<on>-</on>
 					<off>🗑</off>
-				</tweak>
-			</tweak>
-			<tweak name="Disable store my activity history on this device ">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\System\PublishUserActivities</path>
-					<on>0</on>
-					<off>🗑</off>
-				</tweak>
-			</tweak>
-			<tweak name="Safe search off">
-				<tweak type="DWORD">
-					<path>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings\SafeSearchMode</path>
-					<on>0</on>
-					<off>1</off>
-				</tweak>
-			</tweak>
-			<tweak name="Disable cloud content search for work or school account">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\SearchSettings\IsAADCloudSearchEnabled</path>
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\SearchSettings\IsMSACloudSearchEnabled</path>
-					<on>0</on>
-					<off>1</off>
-				</tweak>
-			</tweak>
-			<tweak name="Open file explorer to this pc">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced</path>
-					<on>1</on>
-					<off>🗑</off>
-				</tweak>
-			</tweak>
-			<tweak name="Hide frequent folders in quick access">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\ShowFrequent</path>
-					<on>0</on>
-					<off>1</off>
-				</tweak>
-			</tweak>
-			<tweak name="Show file name extensions">
-				<tweak type="DWORD">
-					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\HideFileExt</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable Search histroy">
-				<tweak type="DWORD">
-					<path>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings\IsDeviceSearchHistoryEnabled</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable menu show delay">
-				<tweak type="DWORD">
-					<path>HKCU\Control Panel\Desktop\MenuShowDelay</path>
-					<off>400</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="Disable windows widgets">
-				<tweak type="DWORD">
-					<path>HKLM\SOFTWARE\Policies\Microsoft\Dsh\AllowNewsAndInterests</path>
-					<off>1</off>
-					<on>0</on>
-				</tweak>
-			</tweak>
-			<tweak name="100% DPI">
-				<tweak type="DWORD">
+				</REG_SZ>
+			</TWEAKS>
+			<DWORD name="Disable store my activity history on this device">
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\System\PublishUserActivities</path>
+				<on>0</on>
+				<off>🗑</off>
+			</DWORD>
+			<DWORD name="Safe search off">
+				<path>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings\SafeSearchMode</path>
+				<on>0</on>
+				<off>1</off>
+			</DWORD>
+			<DWORD name="Disable cloud content search for work or school account">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\SearchSettings\IsAADCloudSearchEnabled</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\SearchSettings\IsMSACloudSearchEnabled</path>
+				<on>0</on>
+				<off>1</off>
+			</DWORD>
+			<DWORD name="Open file explorer to this pc">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced</path>
+				<on>1</on>
+				<off>🗑</off>
+			</DWORD>
+			<DWORD name="Hide frequent folders in quick access">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\ShowFrequent</path>
+				<on>0</on>
+				<off>1</off>
+			</DWORD>
+			<DWORD name="Show file name extensions">
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\HideFileExt</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable Search histroy">
+				<path>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\SearchSettings\IsDeviceSearchHistoryEnabled</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable menu show delay">
+				<path>HKCU\Control Panel\Desktop\MenuShowDelay</path>
+				<off>400</off>
+				<on>0</on>
+			</DWORD>
+			<DWORD name="Disable windows widgets">
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Dsh\AllowNewsAndInterests</path>
+				<off>1</off>
+				<on>0</on>
+			</DWORD>
+			<TWEAKS name="100% DPI">
+				<DWORD>
 					<path>HKCU\Control Panel\Desktop\LogPixels</path>
 					<on>150</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKCU\Control Panel\Desktop\Win8DpiScaling</path>
 					<on>0</on>
 					<off>1</off>
-				</tweak>
-			</tweak>
-			<tweak name="Games scheduling">
-				<tweak type="DWORD">
+				</DWORD>
+			</TWEAKS>
+			<TWEAKS name="Games scheduling">
+				<DWORD>
 					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games\Affinity</path>
 					<on>0</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="REG_SZ">
+				</DWORD>
+				<REG_SZ>
 					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games\Background Only</path>
 					<on>False</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="DWORD">
+				</REG_SZ>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games\Clock Rate</path>
 					<on>10000</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games\GPU Priority</path>
 					<on>8</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="DWORD">
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games\Priority</path>
 					<on>6</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="REG_SZ">
+				</DWORD>
+				<REG_SZ>
 					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games\Scheduling Category</path>
 					<on>High</on>
 					<off>🗑</off>
-				</tweak>
-				<tweak type="REG_SZ">
+				</REG_SZ>
+				<REG_SZ>
 					<path>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games\SFIO Priority</path>
 					<on>High</on>
 					<off>🗑</off>
-				</tweak>
-			</tweak>
-		</section>
-	</tab>
-	<tab name="IRQ" >
-		<section name="IRQ" type="IRQPRIORITY"></section> 
-	</tab>
-	<tab name="Devices" >
-		<section name="Devices" type="DEVICES"></section>
-	</tab>
-	<tab name="Appx" >
-		<section name="Appx" type="APPX"></section>
-	</tab>
-	<tab name="Tasks" >
-		<section name="Task Scheduler (Ordered by Last Run Time)" type="SCHEDULED_TASKS"></section>
-	</tab>
-</EzTweak>
+				</REG_SZ>
+			</TWEAKS>
+		</SECTION>
+	</TAB>
+	<TAB name="IRQ" >
+		<IRQPRIORITY name="IRQ"></IRQPRIORITY>
+	</TAB>
+	<TAB name="Devices" >
+		<DEVICES name="Devices"></DEVICES>
+	</TAB>
+	<TAB name="Appx" >
+		<APPX name="Appx"></APPX>
+	</TAB>
+	<TAB name="Tasks" >
+		<SCHEDULED_TASKS name="Task Scheduler (Ordered by Last Run Time)"></SCHEDULED_TASKS>
+	</TAB>
+</EZTWEAK>

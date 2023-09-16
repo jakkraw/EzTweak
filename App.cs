@@ -44,6 +44,10 @@ namespace EzTweak
             {
                 Thread.CurrentThread.IsBackground = true;
                 var controls = tab.sections.Select(CreateSection).ToArray();
+
+                while (!panel.IsHandleCreated)
+                    Thread.Sleep(100);
+
                 panel.Invoke((MethodInvoker)(() =>
                 {
                     panel.Controls.Remove(loading_text);
@@ -60,7 +64,7 @@ namespace EzTweak
         {
             switch (section.type)
             {
-                case SectionType.TWEAKS:
+                case SectionType.SECTION:
                     return CreateTweaksSection(section);
                 case SectionType.IRQPRIORITY:
                     return CreateIRQPRIORITYSection(section);
@@ -81,7 +85,7 @@ namespace EzTweak
             panel.Controls.Add(Divider(section.name, ""));
             foreach (var tweak in section.tweaks)
             {
-                panel.Controls.Add(TweakControl(tweak));
+                if(tweak != null) { panel.Controls.Add(TweakControl(tweak)); }
             }
 
             return panel;

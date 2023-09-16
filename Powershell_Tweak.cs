@@ -15,7 +15,7 @@ namespace EzTweak
         string current_regex;
         string is_on_regex;
 
-        public Powershell_Tweak(string name, string description, string on_command, string off_command, string status_command,string current_regex, string is_on_regex) : base(name, description, ActionType.POWERSHELL)
+        public Powershell_Tweak(string name, string description, string on_command, string off_command, string status_command,string current_regex, string is_on_regex) : base(name, description, TweakType.POWERSHELL)
         {
             this.on_command = on_command;
             this.off_command = off_command;

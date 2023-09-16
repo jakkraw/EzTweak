@@ -11,9 +11,9 @@ namespace EzTweak
     {
         public string name;
         public string description;
-        public ActionType type;
+        public TweakType type;
 
-        protected Tk(string name, string description, ActionType type)
+        protected Tk(string name, string description, TweakType type)
         {
             this.name = name;
             this.description = description;
@@ -28,10 +28,6 @@ namespace EzTweak
         {
             return description;
         }
-        public void run()
-        {
-            turn_on();
-        }
 
         public abstract void turn_on();
         public abstract void turn_off();
@@ -45,24 +41,24 @@ namespace EzTweak
 
     public class Container_Tweak : Tk
     {
-        List<Tk> tweaks = new List<Tk>();
+        public Tk[] tweaks;
 
-        public Container_Tweak(string name, string description, List<Tk> tweaks) : base(name, description, ActionType.CONTAINER)
+        public Container_Tweak(string name, string description, Tk[] tweaks) : base(name, description, TweakType.TWEAKS)
         {
             this.tweaks = tweaks;
         }
 
         public override void turn_on()
         {
-            tweaks.ForEach(t=> t.turn_on());   
+            Array.ForEach(tweaks, t => t.turn_on());   
         }
         public override void turn_off()
         {
-            tweaks.ForEach(t => t.turn_off());
+            Array.ForEach(tweaks, t => t.turn_off());
         }
         public override void activate_value(string value)
         {
-            tweaks.ForEach(t => t.activate_value(value));
+            Array.ForEach(tweaks, t => t.activate_value(value));
         }
         public override List<string> valid_values()
         {
@@ -130,7 +126,7 @@ namespace EzTweak
             var name = "Disable AllowIdleIrpInD3";
             var description = "Disable power saving option";
             var path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\AllowIdleIrpInD3";
-            var type = ActionType.DWORD;
+            var type = TweakType.DWORD;
             var off_value = "1";
             var on_value = "0";
             var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
@@ -147,7 +143,7 @@ namespace EzTweak
             var name = "Disable Enhanced Power Management";
             var description = "Disable Enhanced Power Management";
             var path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\EnhancedPowerManagementEnabled";
-            var type = ActionType.DWORD;
+            var type = TweakType.DWORD;
             var off_value = "1";
             var on_value = "0";
             var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
@@ -165,7 +161,7 @@ namespace EzTweak
             var description = "Enable MSI";
             var base_path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties";
             var path = $@"{base_path}\MSISupported";
-            var type = ActionType.DWORD;
+            var type = TweakType.DWORD;
             var off_value = "0";
             var on_value = "1";
 
@@ -184,7 +180,7 @@ namespace EzTweak
             var description = "Device Priority High";
             var base_path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
             var path = $@"{base_path}\Affinity Policy\DevicePriority";
-            var type = ActionType.DWORD;
+            var type = TweakType.DWORD;
             var off_value = Registry.REG_DELETE;
             var on_value = "3";
 
@@ -203,7 +199,7 @@ namespace EzTweak
             var description = "Set Affinity";
             var base_path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
             var path = $@"{base_path}\Affinity Policy\AssignmentSetOverride";
-            var type = ActionType.DWORD;
+            var type = TweakType.DWORD;
             var off_value = Registry.REG_DELETE;
             var on_value = "3F";
 

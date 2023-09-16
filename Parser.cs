@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.PowerShell.Cmdletization.Xml;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace EzTweak
 {
-    public enum ActionType
+    public enum TweakType
     {
         [XmlEnum("DWORD")]
         DWORD = RegistryValueKind.DWord,
@@ -23,14 +25,14 @@ namespace EzTweak
         BCDEDIT,
         [XmlEnum("SERVICE")]
         SERVICE,
-        [XmlEnum("CONTAINER")]
-        CONTAINER,
+        [XmlEnum("TWEAKS")]
+        TWEAKS
     }
 
     public enum SectionType
     {
-        [XmlEnum("TWEAKS")]
-        TWEAKS,
+        [XmlEnum("SECTION")]
+        SECTION,
         [XmlEnum("IRQPRIORITY")]
         IRQPRIORITY,
         [XmlEnum("APPXDELETE")]
@@ -45,9 +47,6 @@ namespace EzTweak
 
     public class XmlTweak
     {
-        [XmlAttribute]
-        public ActionType type { get; set; } = ActionType.CONTAINER;
-
         [XmlAttribute]
         public string name { get; set; } = "";
 
@@ -68,46 +67,49 @@ namespace EzTweak
         [XmlElement("service")]
         public List<string> services { get; set; } = new List<string> { };
 
-        [XmlElement("tweak")]
-        public List<XmlTweak> tweaks { get; set; } = new List<XmlTweak> { };
+        [XmlChoiceIdentifier("tweakTypes")]
+        [XmlElement("DWORD")]
+        [XmlElement("REG_SZ")]
+        [XmlElement("BINARY")]
+        [XmlElement("CMD")]
+        [XmlElement("POWERSHELL")]
+        [XmlElement("BCDEDIT")]
+        [XmlElement("SERVICE")]
+        [XmlElement("TWEAKS")]
+        public XmlTweak[] tweaks { get; set; }
 
+        [XmlIgnore]
+        public TweakType[] tweakTypes { get; set; }
 
-        public Tk parse()
+        public Tk parse(TweakType type)
         {
-            if (type == ActionType.CONTAINER)
+            switch (type)
             {
-                var tks = tweaks.Select(t => t.parse()).ToList<Tk>();
-                return tks.Count > 1 ? new Container_Tweak(name, description, tks) : tks.First();
-            }
-
-            if (type == ActionType.SERVICE)
-            {
-                var tks = services.Select(service => new ServiceTweak(name, description, service, on, off)).ToList<Tk>();
-                return tks.Count > 1 ? new Container_Tweak(name, description, tks) : tks.First();
-            }
-
-            if (new[] { ActionType.DWORD, ActionType.REG_SZ, ActionType.BINARY }.Contains(type))
-            {
-                var tks = paths.Select(path => new RegistryTweak(name, description, type, path, on, off)).ToList<Tk>();
-                return tks.Count > 1 ? new Container_Tweak(name, description, tks) : tks.First();
-            }
-
-            if (type == ActionType.BCDEDIT)
-            {
-                return new BCDEDIT_Tweak(name, description,property,on,off);
-            }
-
-            if (type == ActionType.POWERSHELL)
-            {
-                return new Powershell_Tweak(name, description, on, off,lookup, lookup_regex, on_regex);
-            }
-
-            if (type == ActionType.CMD)
-            {
-                return new CMD_Tweak(name, description, on, off, lookup, lookup_regex, on_regex);
-            }
-
-            return null;
+                case TweakType.TWEAKS:
+                    {
+                        var tks = tweaks?.Zip(tweakTypes, (t, at) => t.parse(at)).ToArray() ?? new Tk[] { };
+                        return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
+                    }
+                case TweakType.SERVICE:
+                    {
+                    var tks = services?.Select(service => new ServiceTweak(name, description, service, on, off)).ToArray<Tk>() ?? new Tk[] { };
+                    return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
+                    }
+                case TweakType.DWORD:
+                case TweakType.REG_SZ:
+                case TweakType.BINARY:
+                    {
+                        var tks = paths?.Select(path => new RegistryTweak(name, description, type, path, on, off)).ToArray() ?? new Tk[] { };
+                        return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
+                    }
+                case TweakType.BCDEDIT:
+                    return new BCDEDIT_Tweak(name, description, property, on, off);
+                case TweakType.POWERSHELL:
+                    return new Powershell_Tweak(name, description, on, off, lookup, lookup_regex, on_regex);
+                case TweakType.CMD:
+                    return new CMD_Tweak(name, description, on, off, lookup, lookup_regex, on_regex);
+                default: throw new Exception($"Unknown TweakType {type}");
+            }       
         }
     }
 
@@ -116,11 +118,19 @@ namespace EzTweak
         [XmlAttribute]
         public string name { get; set; }
 
-        [XmlAttribute]
-        public SectionType type { get; set; } = SectionType.TWEAKS;
+        [XmlChoiceIdentifier("tweakTypes")]
+        [XmlElement("DWORD")]
+        [XmlElement("REG_SZ")]
+        [XmlElement("BINARY")]
+        [XmlElement("CMD")]
+        [XmlElement("POWERSHELL")]
+        [XmlElement("BCDEDIT")]
+        [XmlElement("SERVICE")]
+        [XmlElement("TWEAKS")]
+        public XmlTweak[] tweaks { get; set; }
 
-        [XmlElement("tweak")]
-        public List<XmlTweak> tweaks { get; set; } = new List<XmlTweak> { };
+        [XmlIgnore]
+        public TweakType[] tweakTypes { get; set; }
     }
 
     public class XmlTab
@@ -128,26 +138,34 @@ namespace EzTweak
         [XmlAttribute]
         public string name { get; set; }
 
-        [XmlElement("section")]
-        public List<XmlSection> sections { get; set; } = new List<XmlSection> { };
+        [XmlIgnore]
+        public SectionType[] sectionTypes;
+
+        [XmlChoiceIdentifier("sectionTypes")]
+        [XmlElement("IRQPRIORITY")]
+        [XmlElement("APPXDELETE")]
+        [XmlElement("DEVICES")]
+        [XmlElement("SCHEDULED_TASKS")]
+        [XmlElement("SECTION")]
+        public XmlSection[] sections { get; set; }
     }
 
-    [XmlRoot("EzTweak")]
+    [XmlRoot("EZTWEAK")]
     public class XmlDoc
     {
-        [XmlElement("tab")]
-        public List<XmlTab> tabs { get; set; } = new List<XmlTab> { };
+        [XmlElement("TAB")]
+        public XmlTab[] tabs { get; set; }
     }
 
     public class Tab
     {
         public string name;
-        public List<Section> sections = new List<Section>();
+        public Section[] sections;
 
         public Tab(XmlTab xml)
         {
             name = xml.name;
-            sections = xml.sections.Select(x => new Section(x)).ToList();
+            sections = xml.sections?.Zip(xml.sectionTypes, (x, st) => new Section(x,st)).ToArray() ?? new Section[] { };
         }
     }
 
@@ -155,14 +173,13 @@ namespace EzTweak
     {
         public string name;
         public SectionType type { get; set; }
-        public List<Tk> tweaks = new List<Tk>();
+        public Tk[] tweaks;
 
-        public Section(XmlSection xml)
+        public Section(XmlSection xml, SectionType stype)
         {
             name = xml.name;
-            type = xml.type;
-
-            tweaks = xml.tweaks.Select(t => t.parse()).ToList();
+            type = stype;
+            tweaks = xml.tweaks?.Zip(xml.tweakTypes, (t, at) => t.parse(at)).ToArray() ?? new Tk[] { };
         }
     }
 
@@ -175,30 +192,6 @@ namespace EzTweak
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(XmlDoc));
                 return (XmlDoc)serializer.Deserialize(reader);
-            }
-        }
-
-        static Tweak[] CreateAction(XmlTweak a)
-        {
-            switch (a.type)
-            {
-                case ActionType.DWORD:
-                    return a.paths.Select(path => Tweak.REGISTRY_DWORD(path, a.off, a.on)).Select(t => { t.name = a.name; t.description = a.description; return t; }).ToArray();
-                case ActionType.REG_SZ:
-                    return a.paths.Select(path => Tweak.REGISTRY_REG_SZ(path, a.off, a.on)).Select(t => { t.name = a.name; t.description = a.description; return t; }).ToArray();
-                case ActionType.BINARY:
-                    return a.paths.Select(path => Tweak.REGISTRY_BINARY(path, a.off, a.on)).Select(t => { t.name = a.name; t.description = a.description; return t; }).ToArray();
-                case ActionType.SERVICE:
-                    return a.services.Select(service => Tweak.SERVICE(service, a.off, a.on)).Select(t => { t.name = a.name; t.description = a.description; return t; }).ToArray();
-                case ActionType.CMD:
-                    return new[] { Tweak.CMD(a.off, a.on, a.lookup, a.lookup_regex, a.on_regex) }.Select(t => { t.name = a.name; t.description = a.description; return t; }).ToArray();
-                case ActionType.POWERSHELL:
-                    return new[] { Tweak.POWERSHELL(a.off, a.on, a.lookup, a.lookup_regex, a.on_regex) }.Select(t => { t.name = a.name; t.description = a.description; return t; }).ToArray(); ;
-                case ActionType.BCDEDIT:
-                    return new[] { Tweak.BCDEDIT(a.property, a.off, a.on) }.Select(t => { t.name = a.name; t.description = a.description; return t; }).ToArray(); ;
-                case ActionType.CONTAINER:
-                    return null; 
-                default: return null;
             }
         }
 

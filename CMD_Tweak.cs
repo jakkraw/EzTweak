@@ -12,7 +12,7 @@ namespace EzTweak
         string current_regex;
         string is_on_regex;
 
-        public CMD_Tweak(string name, string description, string on, string off, string status_command, string current_regex, string is_on_regex) : base(name,description, ActionType.CMD)
+        public CMD_Tweak(string name, string description, string on, string off, string status_command, string current_regex, string is_on_regex) : base(name,description, TweakType.CMD)
         {
             this.on_command = on;
             this.off_command = off;

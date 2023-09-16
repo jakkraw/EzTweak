@@ -981,11 +981,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\EzTweak\\EzTweak.csproj",
+      "projectUniqueName": "C:\\KUBA\\EzTweak\\EzTweak.csproj",
       "projectName": "EzTweak",
-      "projectPath": "F:\\EzTweak\\EzTweak.csproj",
+      "projectPath": "C:\\KUBA\\EzTweak\\EzTweak.csproj",
       "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-      "outputPath": "F:\\EzTweak\\obj\\",
+      "outputPath": "C:\\KUBA\\EzTweak\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "configFilePaths": [

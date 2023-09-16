@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "9symA3DjVdm/RgRSle5GcYzRts+Eyz0ePkosYNLp3w+aMeLYeoA69u3pk4eaIHKw6N5rTileeWNRw1q/TJAeDw==",
+  "dgSpecHash": "BzZtQ6DubEb3ZByNtI5+iESaSwxDRTcDElPiu8DH8+teILV5oJ1d+JXJBAK1J6YJsoDiS+wjoHPtX8VC6XmE/g==",
   "success": true,
-  "projectFilePath": "F:\\EzTweak\\EzTweak.csproj",
+  "projectFilePath": "C:\\KUBA\\EzTweak\\EzTweak.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\PC\\.nuget\\packages\\hardware.info\\11.1.1.1\\hardware.info.11.1.1.1.nupkg.sha512",
     "C:\\Users\\PC\\.nuget\\packages\\microsoft.powershell.5.referenceassemblies\\1.1.0\\microsoft.powershell.5.referenceassemblies.1.1.0.nupkg.sha512",

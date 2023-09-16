@@ -4,7 +4,7 @@
     {
         string service;
 
-        public ServiceTweak(string name, string description, string service, string on_value, string off_value) : base(name, description, ActionType.SERVICE, registry_path(service), on_value, off_value)
+        public ServiceTweak(string name, string description, string service, string on_value, string off_value) : base(name, description, TweakType.SERVICE, registry_path(service), on_value, off_value)
         {
             this.service = service;
         }

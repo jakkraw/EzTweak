@@ -9,7 +9,7 @@ namespace EzTweak
         string value_on;
         string value_off;
 
-        public BCDEDIT_Tweak(string name, string description, string property, string on_value, string off_value) : base(name,description,ActionType.BCDEDIT)
+        public BCDEDIT_Tweak(string name, string description, string property, string on_value, string off_value) : base(name,description,TweakType.BCDEDIT)
         {
             this.property = property;
             this.value_on = on_value;

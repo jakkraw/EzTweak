@@ -10,7 +10,7 @@ namespace EzTweak
         string on_value;
         string off_value;
 
-        public RegistryTweak(string name, string description, ActionType type, string path, string on_value, string off_value) : base(name, description, type)
+        public RegistryTweak(string name, string description, TweakType type, string path, string on_value, string off_value) : base(name, description, type)
         {
             this.path = path;
             this.on_value = sanitize(on_value);
@@ -21,12 +21,12 @@ namespace EzTweak
         {
             switch (type)
             {
-                case ActionType.DWORD:
-                case ActionType.SERVICE:
+                case TweakType.DWORD:
+                case TweakType.SERVICE:
                     return Registry.From_DWORD(Registry.To_DWORD(value));
-                case ActionType.REG_SZ:
+                case TweakType.REG_SZ:
                     return Registry.From_REG_SZ(Registry.To_REG_SZ(value));
-                case ActionType.BINARY:
+                case TweakType.BINARY:
                     return Registry.From_BINARY(Registry.To_BINARY(value));
                 default: throw new NotImplementedException();
             }
