@@ -127,5 +127,81 @@ namespace EzTweak
         public string ClassGuid { get { return values.ContainsKey("ClassGuid") ? values["ClassGuid"] : null; } }
 
         public string FullInfo { get { return string.Join(Environment.NewLine, values.Select((p) => $"{p.Key}: {p.Value}")); } }
+
+
+        public static Tk DisableDeviceTweak(Device device)
+        {
+            var name = "Disable Driver";
+            var description = $"Disable {device.Name}{Environment.NewLine}{Environment.NewLine}{device.FullInfo}";
+            var status_command = $"pnputil /enum-devices /instanceid \"{device.PnpDeviceID}\" | findstr /c:\"Status:\"";
+            var status_regex = "Status:.*";
+            var is_on_regex = "Status:.*Disabled";
+            var on_command = $"pnputil /disable-device \"{device.PnpDeviceID}\"";
+            var off_command = $"pnputil /enable-device \"{device.PnpDeviceID}\"";
+            return new CMD_Tweak(name, description, on_command, off_command, status_command, status_regex, is_on_regex);
+        }
+
+        public static Tk DeviceIdleRPIN(Device device)
+        {
+            var name = "Disable AllowIdleIrpInD3";
+            var description = "Disable power saving option";
+            var path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\AllowIdleIrpInD3";
+            var type = TweakType.DWORD;
+            var off_value = "1";
+            var on_value = "0";
+            var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
+            return Registry.Get(path) == null ? null : tk;
+        }
+
+        public static Tk EnhancedPowerManagementEnabled(Device device)
+        {
+            var name = "Disable Enhanced Power Management";
+            var description = "Disable Enhanced Power Management";
+            var path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\EnhancedPowerManagementEnabled";
+            var type = TweakType.DWORD;
+            var off_value = "1";
+            var on_value = "0";
+            var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
+            return Registry.Get(path) == null ? null : tk;
+        }
+
+        public static Tk MsiSupported(Device device)
+        {
+            var name = "Enable MSI";
+            var description = "Enable MSI";
+            var base_path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties";
+            var path = $@"{base_path}\MSISupported";
+            var type = TweakType.DWORD;
+            var off_value = "0";
+            var on_value = "1";
+            var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
+            return Registry.Get(base_path) == null ? null : tk;
+        }
+
+        public static Tk DevicePriority(Device device)
+        {
+            var name = "Device Priority High";
+            var description = "Device Priority High";
+            var base_path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
+            var path = $@"{base_path}\Affinity Policy\DevicePriority";
+            var type = TweakType.DWORD;
+            var off_value = Registry.REG_DELETE;
+            var on_value = "3";
+            var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
+            return Registry.Get(base_path) == null ? null : tk;
+        }
+
+        public static Tk AssignmentSetOverride(Device device)
+        {
+            var name = "Set Affinity";
+            var description = "Set Affinity";
+            var base_path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
+            var path = $@"{base_path}\Affinity Policy\AssignmentSetOverride";
+            var type = TweakType.DWORD;
+            var off_value = Registry.REG_DELETE;
+            var on_value = "3F";
+            var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
+            return Registry.Get(base_path) == null ? null : tk;
+        }
     }
 }

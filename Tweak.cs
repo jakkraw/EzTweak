@@ -1,360 +1,207 @@
-﻿using Microsoft.Win32;
+﻿using Hardware.Info;
+using Microsoft.Win32;
 using Microsoft.Win32.TaskScheduler;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Management.Automation;
 using System.Text.RegularExpressions;
 
 namespace EzTweak
 {
-    public abstract class Tk
+    public class Tk
     {
         public string name;
         public string description;
-        public TweakType type;
-
-        protected Tk(string name, string description, TweakType type)
-        {
-            this.name = name;
-            this.description = description;
-            this.type = type;
-        }
-
-        public string get_name()
-        {
-            return name;
-        }
-        public string get_description()
-        {
-            return description;
-        }
-
-        public abstract void turn_on();
-        public abstract void turn_off();
-        public abstract void activate_value(string value);
-        public abstract List<string> valid_values();
-
-        public abstract string current_value();
-        public abstract string status();
-        public abstract bool is_on();
+        public System.Action turn_on;
+        public System.Action turn_off;
+        public Action<string> activate_value;
+        public Func<List<string>> valid_values;
+        public Func<string> current_value;
+        public Func<string> status;
+        public Func<bool> is_on;
     }
 
     public class Container_Tweak : Tk
     {
         public Tk[] tweaks;
 
-        public Container_Tweak(string name, string description, Tk[] tweaks) : base(name, description, TweakType.TWEAKS)
+        public Container_Tweak(string name, string description, Tk[] tweaks)
         {
+            this.name = name;
+            this.description = description;
             this.tweaks = tweaks;
-        }
-
-        public override void turn_on()
-        {
-            Array.ForEach(tweaks, t => t.turn_on());   
-        }
-        public override void turn_off()
-        {
-            Array.ForEach(tweaks, t => t.turn_off());
-        }
-        public override void activate_value(string value)
-        {
-            Array.ForEach(tweaks, t => t.activate_value(value));
-        }
-        public override List<string> valid_values()
-        {
-            return null;
-        }
-
-        public override string current_value()
-        {
-            return is_on() ? "ON" : "OFF";
-        }
-        public override string status()
-        {
-            return $"Status: {current_value()}";
-        }
-
-        public override bool is_on()
-        {
-            return tweaks.All(t => t.is_on());
+            this.turn_on = () => Array.ForEach(tweaks, t => t.turn_on());
+            this.turn_off = () => Array.ForEach(tweaks, t => t.turn_off());
+            this.activate_value = (value) => Array.ForEach(tweaks, t => t.activate_value(value));
+            this.valid_values = null;
+            this.current_value = () => is_on() ? "ON" : "OFF";
+            this.status = () => $"Status: {current_value()}";
+            this.is_on = () => tweaks.All(t => t.is_on());
         }
     }
 
-    public class Tweak
+    public class CMD_Tweak : Tk
     {
-        public string name;
-        public string description;
-        public System.Action off_func;
-        public System.Action on_func;
-        public Action<string> set_func;
-        public Regex on_regex;
-        public string lookup_func;
-        public string lookup_prefix;
-        public Func<bool> is_on;
-        public Func<string> lookup;
-        public string on_description;
-        public string off_description;
-        public Dictionary<string, string> available_values;
-        public string value;
-        public List<Tweak> tweaks = new List<Tweak> { };
-
-
-        public Tweak()
+        public CMD_Tweak(string name, string description, string on, string off, string status_command, string current_regex, string is_on_regex)
         {
-        }
-
-        public static Tweak DeviceDisable(Device device)
-        {
-            var name = "Disable Driver";
-            var description = $"Disable {device.Name}{Environment.NewLine}{Environment.NewLine}{device.FullInfo}";
-            var status_command = $"pnputil /enum-devices /instanceid \"{device.PnpDeviceID}\" | findstr /c:\"Status:\"";
-            var status_regex = "Status:.*";
-            var is_on_regex = "Status:.*Disabled";
-            var on_command = $"pnputil /disable-device \"{device.PnpDeviceID}\"";
-            var off_command = $"pnputil /enable-device \"{device.PnpDeviceID}\"";
-
-            var tk = new CMD_Tweak(name, description, on_command, off_command, status_command, status_regex, is_on_regex);
-            Tweak tweak = new Tweak { };
-            tweak.name = name;
-            tweak.description = description;
-            tweak.tweaks.Add(Tweak.CMD(off_command, on_command, status_command, status_regex, is_on_regex));
-            return tweak;
-        }
-
-        public static Tweak DeviceIdleRPIN(Device device)
-        {
-            var name = "Disable AllowIdleIrpInD3";
-            var description = "Disable power saving option";
-            var path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\AllowIdleIrpInD3";
-            var type = TweakType.DWORD;
-            var off_value = "1";
-            var on_value = "0";
-            var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
-            Tweak tweak = new Tweak { };
-            tweak.name = name;
-            tweak.description = description;
-            tweak.tweaks.Add(Tweak.REGISTRY_DWORD(path, off_value, on_value));
-
-            return Registry.Get(path) == null ? null : tweak;
-        }
-
-        public static Tweak EnhancedPowerManagementEnabled(Device device)
-        {
-            var name = "Disable Enhanced Power Management";
-            var description = "Disable Enhanced Power Management";
-            var path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\EnhancedPowerManagementEnabled";
-            var type = TweakType.DWORD;
-            var off_value = "1";
-            var on_value = "0";
-            var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
-            Tweak tweak = new Tweak { };
-            tweak.name = name;
-            tweak.description = description;
-            tweak.tweaks.Add(Tweak.REGISTRY_DWORD(path, off_value, on_value));
-
-            return Registry.Get(path) == null ? null : tweak;
-        }
-
-        public static Tweak MsiSupported(Device device)
-        {
-            var name = "Enable MSI";
-            var description = "Enable MSI";
-            var base_path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties";
-            var path = $@"{base_path}\MSISupported";
-            var type = TweakType.DWORD;
-            var off_value = "0";
-            var on_value = "1";
-
-            var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
-            Tweak tweak = new Tweak { };
-            tweak.name = name;
-            tweak.description = description;
-            tweak.tweaks.Add(Tweak.REGISTRY_DWORD(path, off_value, on_value));
-
-            return Registry.Get(base_path) == null ? null : tweak;
-        }
-
-        public static Tweak DevicePriority(Device device)
-        {
-            var name = "Device Priority High";
-            var description = "Device Priority High";
-            var base_path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
-            var path = $@"{base_path}\Affinity Policy\DevicePriority";
-            var type = TweakType.DWORD;
-            var off_value = Registry.REG_DELETE;
-            var on_value = "3";
-
-            var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
-            Tweak tweak = new Tweak { };
-            tweak.name = name;
-            tweak.description = description;
-            tweak.tweaks.Add(Tweak.REGISTRY_DWORD(path, off_value, on_value));
-
-            return Registry.Get(base_path) == null ? null : tweak;
-        }
-
-        public static Tweak AssignmentSetOverride(Device device)
-        {
-            var name = "Set Affinity";
-            var description = "Set Affinity";
-            var base_path = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
-            var path = $@"{base_path}\Affinity Policy\AssignmentSetOverride";
-            var type = TweakType.DWORD;
-            var off_value = Registry.REG_DELETE;
-            var on_value = "3F";
-
-            var tk = new RegistryTweak(name, description, type, path, on_value, off_value);
-            Tweak tweak = new Tweak { };
-            tweak.name = name;
-            tweak.description = description;
-            tweak.tweaks.Add(Tweak.REGISTRY_DWORD(path, off_value, on_value));
-
-            return Registry.Get(base_path) == null ? null : tweak;
-        }
-
-        private static Tweak REGISTRY(string path, string off, string on, RegistryValueKind type)
-        {
-            Tweak action = new Tweak();
-            action.name = path;
-            action.lookup = () => { return Registry.From(path, type); };
-            action.is_on = () => action.lookup() == on;
-
-            if (off != null)
+            this.name = name;
+            this.description = description;
+            this.turn_on = () => Cmd.Start(on);
+            this.turn_off = () => Cmd.Start(off);
+            this.activate_value = null;
+            this.valid_values = null;
+            this.current_value = () =>
             {
-                action.off_description = $"\"{path}\"=\"{off}\"";
-                action.off_func = () => { Registry.Set(path, off, type); };
+                var output = Cmd.Start(status_command, true);
+                var match = Regex.Match(output, current_regex, RegexOptions.Multiline);
+                return match.Groups[1].Value;
+            };
+            this.status = () => $"[{current_value()}] CMD: {status_command}";
+            this.is_on = () =>
+        {
+            if (is_on_regex == null) { return false; }
+            var output = Cmd.Start(status_command, true);
+            var match = Regex.Match(output, is_on_regex, RegexOptions.Multiline);
+            return match.Success;
+        };
+        }
+    }
+
+    public class BCDEDIT_Tweak : Tk
+    {
+        public BCDEDIT_Tweak(string name, string description, string property, string on_value, string off_value)
+        {
+            this.name = name;
+            this.description = description;
+            this.turn_on = () => activate_value(on_value);
+            this.turn_off = () => activate_value(off_value);
+            this.activate_value = (string value) =>
+        {
+            if (value == Registry.REG_DELETE)
+            {
+                Bcdedit.Delete(property);
+            }
+            else
+            {
+                Bcdedit.Set(property, value);
+            }
+        };
+            this.current_value = () => Bcdedit.Query(property);
+            this.status = () => $"BCDEDIT: {current_value()}";
+            this.is_on = () => Bcdedit.Match(property, on_value);
+        }
+    }
+
+    public class Powershell_Tweak : Tk
+    {
+        public Powershell_Tweak(string name, string description, string on_command, string off_command, string status_command, string current_regex, string is_on_regex)
+        {
+            this.name = name;
+            this.description = description;
+            this.turn_on = () => Start(on_command);
+            this.turn_off = () => Start(off_command);
+            this.current_value = () =>
+        {
+                var output = Start(status_command, true);
+                var match = Regex.Match(output, current_regex, RegexOptions.Multiline);
+                return match.Groups[1].Value;
+            };
+            this.status = () => $"[{current_value()}] Powershell: {status_command}";
+            this.is_on = () =>
+        {
+                var output = Start(status_command, true);
+                var match = Regex.Match(output, is_on_regex, RegexOptions.Multiline);
+                return match.Success;
+            };
+        }
+
+        private static string Start(string command, bool quiet = false)
+        {
+            var script = $"{command} | Out-String";
+            PowerShell ps = PowerShell.Create();
+
+            if (!quiet)
+            {
+                Log.WriteLine(command);
             }
 
-            if (on != null)
-            {
-                action.on_description = $"\"{path}\"=\"{on}\"";
-                action.on_func = () => { Registry.Set(path, on, type); };
-
-            }
-            return action;
+            Collection<PSObject> results = ps.AddScript(script).Invoke();
+            var output = string.Join(Environment.NewLine, results.Select(o => o.ToString()).ToList());
+            return output;
         }
+  
+    }
 
-        public static Tweak REGISTRY_DWORD(string path, string off, string on)
+    public class RegistryTweak : Tk
+    {
+        public RegistryTweak(string name, string description, TweakType type, string path, string on_value, string off_value)
         {
-            return REGISTRY(path, Registry.From_DWORD(Registry.To_DWORD(off)), Registry.From_DWORD(Registry.To_DWORD(on)), RegistryValueKind.DWord);
+            this.name = name;
+            this.description = description;
+            this.turn_on = () => activate_value(sanitize(on_value,type));
+            this.turn_off = () => activate_value(sanitize(off_value, type));
+            this.activate_value = (string value) =>
+            {
+                Registry.Set(path, sanitize(value, type), (RegistryValueKind)type);
+            };
+            this.current_value = () =>
+            sanitize(Registry.From(path, (RegistryValueKind)type), type);
+            this.status = () => $"\"{path}\"={current_value()}";
+            this.is_on = () =>
+            current_value() == on_value;
         }
 
-        public static Tweak REGISTRY_REG_SZ(string path, string off, string on)
+        protected static string sanitize(string value, TweakType type)
         {
-            return REGISTRY(path, Registry.From_REG_SZ(Registry.To_REG_SZ(off)), Registry.From_REG_SZ(Registry.To_REG_SZ(on)), RegistryValueKind.String);
+            switch (type)
+            {
+                case TweakType.DWORD:
+                case TweakType.SERVICE:
+                    return Registry.From_DWORD(Registry.To_DWORD(value));
+                case TweakType.REG_SZ:
+                    return Registry.From_REG_SZ(Registry.To_REG_SZ(value));
+                case TweakType.BINARY:
+                    return Registry.From_BINARY(Registry.To_BINARY(value));
+                default: throw new NotImplementedException();
+            }
         }
+    }
 
-        public static Tweak REGISTRY_BINARY(string path, string off, string on)
+    public class ServiceTweak : RegistryTweak
+    {
+        public ServiceTweak(string name, string description, string service, string on_value, string off_value) : base(name, description, TweakType.SERVICE, ServiceTweak.registry_path(service), on_value, off_value)
         {
-            return REGISTRY(path, Registry.From_BINARY(Registry.To_BINARY(off)), Registry.From_BINARY(Registry.To_BINARY(on)), RegistryValueKind.Binary);
-        }
-
-        public static Tweak SERVICE(string service, string off, string on)
+            this.status += () =>
         {
-            return REGISTRY_DWORD($@"HKLM\SYSTEM\CurrentControlSet\Services\{service}\Start", off, on);
+            var value = current_value();
+            return $"{service} is {alias(value)}";
+        };
         }
 
-        public static Tweak CMD(string off_cmd, string on_cmd, string lookup_cmd, string lookup_regex, string on_regex)
+        private static string registry_path(string service)
         {
-            Tweak action = new Tweak();
-            action.lookup_func = lookup_cmd;
-            action.name = lookup_cmd;
-            if (off_cmd != null)
-            {
-                action.off_func = () => Cmd.Start(off_cmd);
-                action.off_description = $"[CMD] {off_cmd}";
-            }
-
-            if (lookup_cmd != null && lookup_regex != null)
-            {
-                action.lookup = () => Regex.Match(Cmd.Start(lookup_cmd, true), lookup_regex, RegexOptions.Multiline).Groups[1].Value;
-
-                if (lookup_regex != null && on_regex != null)
-                {
-                    action.is_on = () => Regex.Match(Cmd.Start(lookup_cmd, true), on_regex, RegexOptions.Multiline).Success;
-                }
-            }
-
-            if (on_cmd != null)
-            {
-                action.on_func = () => Cmd.Start(on_cmd);
-                action.on_description = $"[CMD] {on_cmd}";
-            }
-
-            return action;
+            return $@"HKLM\SYSTEM\CurrentControlSet\Services\{service}\Start";
         }
 
-        public static Tweak POWERSHELL(string off_cmd, string on_cmd, string lookup_cmd, string lookup_regex, string on_regex)
+        private static string alias(string value)
         {
-            Tweak action = new Tweak();
-            action.lookup_func = lookup_cmd;
-            action.name = lookup_cmd;
-            if (off_cmd != null)
+            if (sanitize("4", TweakType.DWORD) == value)
             {
-                action.off_func = () => Powershell.Start(off_cmd);
-                action.off_description = $"[Powershell] {off_cmd}";
+                return "(Disabled)";
             }
 
-            if (lookup_cmd != null)
+            if (sanitize("3", TweakType.DWORD) == value)
             {
-                action.lookup = () => Regex.Match(Powershell.Start(lookup_cmd, true), lookup_regex, RegexOptions.Multiline).Groups[1].Value;
-
-                if (lookup_regex != null && on_regex != null)
-                {
-                    action.is_on = () => Regex.Match(Powershell.Start(lookup_cmd, true), on_regex, RegexOptions.Multiline).Success;
-                }
+                return "(Manual)";
             }
 
-            if (on_cmd != null)
+            if (sanitize("2", TweakType.DWORD) == value)
             {
-                action.on_func = () => Powershell.Start(on_cmd);
-                action.on_description = $"[Powershell] {on_cmd}";
+                return "(Automatic)";
             }
-
-            return action;
+            return "";
         }
-
-        public static Tweak BCDEDIT(string property, string value_off, string value_on)
-        {
-            Tweak action = new Tweak();
-
-            var off_delete = value_off == Registry.REG_DELETE;
-            var on_delete = value_on == Registry.REG_DELETE;
-
-            action.lookup = () => Bcdedit.Query(property);
-            action.name = property;
-
-            if (value_off != null)
-            {
-                if (off_delete)
-                {
-                    action.off_func = () => Bcdedit.Delete(property);
-                    action.off_description = $"bcdedit.exe /deletevalue {property}";
-                }
-                else
-                {
-                    action.off_func = () => Bcdedit.Set(property, value_off);
-                    action.off_description = $"bcdedit.exe /set {property} {value_off}";
-                }
-            }
-
-            if (value_on != null)
-            {
-                action.is_on = () => Bcdedit.Match(property, value_on);
-                if (on_delete)
-                {
-                    action.on_func = () => Bcdedit.Delete(property);
-                    action.on_description = $"bcdedit.exe /deletevalue {property}";
-                }
-                else
-                {
-                    action.on_func = () => Bcdedit.Set(property, value_on);
-                    action.on_description = $"bcdedit.exe /set {property} {value_on}";
-                }
-            }
-
-            return action;
-        }
-
     }
 }

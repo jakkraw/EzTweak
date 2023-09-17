@@ -104,17 +104,12 @@
       <DependentUpon>App.cs</DependentUpon>
     </Compile>
     <Compile Include="APPX.cs" />
-    <Compile Include="BCDEDIT_Tweak.cs" />
-    <Compile Include="CMD_Tweak.cs" />
     <Compile Include="Devices.cs" />
     <Compile Include="EzTweak.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Parser.cs" />
-    <Compile Include="Powershell_Tweak.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Registry.cs" />
-    <Compile Include="RegistryTweak.cs" />
-    <Compile Include="ServiceTweak.cs" />
     <Compile Include="Toggle.cs">
       <SubType>Component</SubType>
     </Compile>

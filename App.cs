@@ -115,14 +115,18 @@ namespace EzTweak
             var panel = CreateFlyoutPanel();
             foreach (var app in devices_dict)
             {
-                var tweak = new Tweak();
-                tweak.name = $"Remove {app}";
-                var action = Tweak.POWERSHELL(null, $"Get-AppxPackage *{app}* | Remove-AppxPackage", null, null, null);
-                tweak.tweaks.Add(action);
-                var ta = new Tweak();
-                tweak.tweaks.Add(ta);
+                var tweak = new Powershell_Tweak (
+                    name: $"Remove {app}",
+                    description: null,
+                    on_command: $"Get-AppxPackage *{app}* | Remove-AppxPackage",
+                    off_command: null,
+                    status_command: null,
+                    current_regex: null,
+                    is_on_regex: null
+                );
+
                 Control c = null;
-                ta.on_func = () => c.Hide();
+                tweak.turn_on += () => c.Hide();
                 c = TweakControl(tweak);
                 panel.Controls.Add(c);
             }
@@ -137,15 +141,13 @@ namespace EzTweak
 
             foreach (var task in devices_dict.OrderByDescending(t => t.LastRunTime))
             {
-                var tweak = new Tweak();
+                var tweak = new Tk();
                 tweak.name = $"Disable {task.Name}";
                 tweak.description = $"Name: {task.Name}{Environment.NewLine}Path: {task.Path}{Environment.NewLine}Definition: {task.Definition}{Environment.NewLine}Task Service: {task.TaskService}{Environment.NewLine}Folder: {task.Folder}{Environment.NewLine}Last Run Time: {task.LastRunTime}{Environment.NewLine}State: {task.State}";
-                var ta = new Tweak();
-                ta.on_func = () => { task.Stop(); task.Enabled = false; };
-                ta.off_func = () => { task.Enabled = true; };
-                ta.lookup = () => task.Enabled ? "Enabled" : "Disabled";
-                ta.is_on = () => !task.Enabled;
-                tweak.tweaks.Add(ta);
+                tweak.turn_on = () => { task.Stop(); task.Enabled = false; };
+                tweak.turn_off = () => { task.Enabled = true; };
+                tweak.status = () => task.Enabled ? "Enabled" : "Disabled";
+                tweak.is_on = () => !task.Enabled;
                 panel.Controls.Add(TweakControl(tweak));
             }
 
@@ -182,30 +184,30 @@ namespace EzTweak
                 {
                     var p3 = CreateFlyoutPanel();
                     p3.Controls.Add(Divider(device.Name, device.FullInfo));
-                    p3.Controls.Add(TweakControl(Tweak.DeviceDisable(device)));
+                    p3.Controls.Add(TweakControl(Device.DisableDeviceTweak(device)));
 
-                    var deviceIdleRPIN = Tweak.DeviceIdleRPIN(device);
+                    var deviceIdleRPIN = Device.DeviceIdleRPIN(device);
                     if (deviceIdleRPIN != null)
                     {
                         p3.Controls.Add(TweakControl(deviceIdleRPIN));
                         controls_dict[idle_r_pin].Add(p3);
                     }
 
-                    var enhancedPowerManagementEnabled = Tweak.EnhancedPowerManagementEnabled(device);
+                    var enhancedPowerManagementEnabled = Device.EnhancedPowerManagementEnabled(device);
                     if (enhancedPowerManagementEnabled != null)
                     {
                         p3.Controls.Add(TweakControl(enhancedPowerManagementEnabled));
                         controls_dict[power_label].Add(p3);
                     }
 
-                    var MSISupported = Tweak.MsiSupported(device);
+                    var MSISupported = Device.MsiSupported(device);
                     if (MSISupported != null)
                     {
                         p3.Controls.Add(TweakControl(MSISupported));
                         //controls_dict[msi_label].Add(panel);
                     }
 
-                    var devicePriority = Tweak.DevicePriority(device);
+                    var devicePriority = Device.DevicePriority(device);
                     if (devicePriority != null)
                     {
                         p3.Controls.Add(DevicePriorityControl(device));
