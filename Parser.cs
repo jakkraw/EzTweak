@@ -5,10 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace EzTweak
-{
-    public enum TweakType
-    {
+namespace EzTweak {
+    public enum TweakType {
         [XmlEnum("DWORD")]
         DWORD = RegistryValueKind.DWord,
         [XmlEnum("REG_SZ")]
@@ -27,8 +25,7 @@ namespace EzTweak
         TWEAKS
     }
 
-    public enum SectionType
-    {
+    public enum SectionType {
         [XmlEnum("SECTION")]
         SECTION,
         [XmlEnum("IRQPRIORITY")]
@@ -41,8 +38,7 @@ namespace EzTweak
         SCHEDULED_TASKS
     }
 
-    public class XmlTweak
-    {
+    public class XmlTweak {
         [XmlAttribute]
         public string name { get; set; } = "";
 
@@ -77,24 +73,19 @@ namespace EzTweak
         [XmlIgnore]
         public TweakType[] tweakTypes { get; set; }
 
-        public Tweak parse(TweakType type)
-        {
-            switch (type)
-            {
-                case TweakType.TWEAKS:
-                    {
+        public Tweak parse(TweakType type) {
+            switch (type) {
+                case TweakType.TWEAKS: {
                         var tks = tweaks?.Zip(tweakTypes, (t, at) => t.parse(at)).ToArray() ?? new Tweak[] { };
                         return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
                     }
-                case TweakType.SERVICE:
-                    {
+                case TweakType.SERVICE: {
                         var tks = services?.Select(service => new ServiceTweak(name, description, service, on, off)).ToArray<Tweak>() ?? new Tweak[] { };
                         return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
                     }
                 case TweakType.DWORD:
                 case TweakType.REG_SZ:
-                case TweakType.BINARY:
-                    {
+                case TweakType.BINARY: {
                         var tks = paths?.Select(path => new RegistryTweak(name, description, type, path, on, off)).ToArray() ?? new Tweak[] { };
                         return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
                     }
@@ -109,8 +100,7 @@ namespace EzTweak
         }
     }
 
-    public class XmlSection
-    {
+    public class XmlSection {
         [XmlAttribute]
         public string name { get; set; }
 
@@ -129,8 +119,7 @@ namespace EzTweak
         public TweakType[] tweakTypes { get; set; }
     }
 
-    public class XmlTab
-    {
+    public class XmlTab {
         [XmlAttribute]
         public string name { get; set; }
 
@@ -147,52 +136,43 @@ namespace EzTweak
     }
 
     [XmlRoot("EZTWEAK")]
-    public class XmlDoc
-    {
+    public class XmlDoc {
         [XmlElement("TAB")]
         public XmlTab[] tabs { get; set; }
     }
 
-    public class Tab
-    {
+    public class Tab {
         public string name;
         public Section[] sections;
 
-        public Tab(XmlTab xml)
-        {
+        public Tab(XmlTab xml) {
             name = xml.name;
             sections = xml.sections?.Zip(xml.sectionTypes, (x, st) => new Section(x, st)).ToArray() ?? new Section[] { };
         }
     }
 
-    public class Section
-    {
+    public class Section {
         public string name;
         public SectionType type { get; set; }
         public Tweak[] tweaks;
 
-        public Section(XmlSection xml, SectionType stype)
-        {
+        public Section(XmlSection xml, SectionType stype) {
             name = xml.name;
             type = stype;
             tweaks = xml.tweaks?.Zip(xml.tweakTypes, (t, at) => t.parse(at)).ToArray() ?? new Tweak[] { };
         }
     }
 
-    public class Parser
-    {
-
-        public static XmlDoc loadXML(string filename)
-        {
-            using (StreamReader reader = new StreamReader(filename))
-            {
+    public class Parser {
+        public static string xml_file = "tweaks.xml";
+        public static XmlDoc loadXML(string filename) {
+            using (StreamReader reader = new StreamReader(filename)) {
                 XmlSerializer serializer = new XmlSerializer(typeof(XmlDoc));
                 return (XmlDoc)serializer.Deserialize(reader);
             }
         }
 
-        public static List<Tab> LoadTabs(XmlDoc xmlDocument)
-        {
+        public static List<Tab> LoadTabs(XmlDoc xmlDocument) {
             return xmlDocument.tabs.Select(xml => new Tab(xml)).ToList();
         }
     }

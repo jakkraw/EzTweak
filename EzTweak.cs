@@ -2,19 +2,15 @@
 using System.Security.Principal;
 using System.Windows.Forms;
 
-namespace EzTweak
-{
-    internal static class EzTweak
-    {
+namespace EzTweak {
+    internal static class EzTweak {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
-        {
+        static void Main() {
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length == 1 && !IsTrustedInstaller())
-            {
+            if (args.Length == 1 && !IsTrustedInstaller()) {
                 TrustedInstaller.StartAsChild(args);
                 return;
             }
@@ -26,8 +22,7 @@ namespace EzTweak
         }
 
 
-        public static bool IsTrustedInstaller()
-        {
+        public static bool IsTrustedInstaller() {
             var identity = WindowsIdentity.GetCurrent();
             var principal = new WindowsPrincipal(identity);
             var ti_sid = "S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464";

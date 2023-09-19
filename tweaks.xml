@@ -1362,50 +1362,12 @@
 			<CMD name="Activate Windows 11">
 				<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
 			</CMD>
-			<CMD name="Delete Game Bar">
-				<on> del /F /A "C:\Windows\System32\GameBarPresenceWriter.exe" </on>
-			</CMD>
+			
 			<CMD name="Activate Windows 10">
 				<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
 			</CMD>
-			<CMD name="Open Event Log">
-				<on>eventvwr</on>
-			</CMD>
-			<CMD name="Open Internet Options">
-				<on>inetcpl.cpl</on>
-			</CMD>
 			<CMD name="Kill Antivirus">
 				<on>"F:\INSTALLERS\PSTools\pskill64.exe" -t MsMpEng.exe</on>
-			</CMD>
-			<CMD name="Open System Configuration">
-				<on>msconfig</on>
-			</CMD>
-			<CMD name="Open Group Policy">
-				<on>gpedit.msc</on>
-			</CMD>
-			<CMD name="Open CMD">
-				<on>start cmd.exe</on>
-			</CMD>
-			<CMD name="Open Startup Programs Tab">
-				<on>taskmgr /0 /startup</on>
-			</CMD>
-			<CMD name="Open Appearance and performance of Windows">
-				<on>%windir%\system32\SystemPropertiesPerformance.exe</on>
-			</CMD>
-			<CMD name="Open Regedit">
-				<on>regedit</on>
-			</CMD>
-			<CMD name="Open Optional Windows Features">
-				<on>optionalfeatures</on>
-				<description>Disable all features</description>
-			</CMD>
-			<CMD name="Open Add and Remove Programs">
-				<on>appwiz.cpl</on>
-				<description>Disable all features</description>
-			</CMD>
-			<CMD name="Task Scheduler">
-				<on>taskschd.msc</on>
-				<description>Disable all features</description>
 			</CMD>
 			<CMD name="Install timer resolution service">
 				<on>_SetTimerResolutionService.exe -install &amp; sc config STR start=auto &amp; net start STR</on>
@@ -1416,9 +1378,6 @@
 			</CMD>
 			<CMD name="Create restore point">
 				<on>wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "EzTweak restore point", 100, 7</on>
-			</CMD>
-			<CMD name="Open restore points">
-				<on>rstrui.exe</on>
 			</CMD>
 			<TWEAKS name="Allow scripts in CMD set-executionpolicy remotesigned">
 				<REG_SZ>
@@ -1447,6 +1406,9 @@
 				<on>0</on>
 				<off>1</off>
 			</DWORD>
+			<CMD name="Delete Game Bar">
+				<on> del /F /A "C:\Windows\System32\GameBarPresenceWriter.exe" </on>
+			</CMD>
 			<DWORD name="Disable Windows Error Reporting">
 				<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Disabled</path>
 				<on>1</on>
