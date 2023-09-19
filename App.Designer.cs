@@ -40,6 +40,8 @@ namespace EzTweak
             {
                 AutoSize = true,
                 MaximumSize = new Size(width, 0),
+                Padding = new Padding(0),
+                Margin = new Padding(0)
             };
         }
 
@@ -49,6 +51,8 @@ namespace EzTweak
             {
                 AutoSize = true,
                 MaximumSize = new Size(width, 0),
+                Padding = new Padding(0),
+                Margin = new Padding(0)
             };
         }
         private static Panel CreatePanel()
@@ -56,6 +60,8 @@ namespace EzTweak
             return new Panel
             {
                 Size = new Size(width, height),
+                Padding = new Padding(0),
+                Margin = new Padding(0)
             };
         }
 
@@ -366,8 +372,9 @@ namespace EzTweak
             this.Controls.Add(this.left_tabs);
             this.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "App";
-            this.ShowIcon = false;
+            this.ShowIcon = true;
             this.Text = "EzTweak";
+            this.Icon = Properties.Resources.icon;
             this.Load += new System.EventHandler(this.App_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

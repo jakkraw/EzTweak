@@ -77,6 +77,10 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Win32.TaskScheduler">
       <HintPath>TaskScheduler\Microsoft.Win32.TaskScheduler.dll</HintPath>
@@ -153,7 +157,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\loading.bmp" />
+    <Content Include="icon.ico" />
+    <Content Include="Resources\icon.ico" />
     <Content Include="tweaks.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

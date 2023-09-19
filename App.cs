@@ -161,6 +161,7 @@ namespace EzTweak
             var devices = Device_Tweak.Device.All().GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
             var panel = CreateFlyoutPanel();
             var p1 = CreateFlyoutPanel();
+            p1.BorderStyle = BorderStyle.Fixed3D;
             panel.Controls.Add(comboBox);
             panel.Controls.Add(p1);
 
