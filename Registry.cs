@@ -8,13 +8,12 @@ namespace EzTweak
 {
     public static class Registry
     {
-        public static string REG_DELETE = "🗑";
+        public static string DELETE_TAG = "🗑";
         public static readonly string LocalMachineShort = @"HKLM";
         public static readonly string LocalMachine = @"HKEY_LOCAL_MACHINE";
 
         public static readonly string CurrentUserShort = @"HKCU";
         public static readonly string CurrentUser = @"HKEY_CURRENT_USER";
-
 
         private static RegistryKey GetSubKey(string path, bool write = false, bool create = true)
         {
@@ -85,7 +84,7 @@ namespace EzTweak
                 else
                 {
                     key.DeleteValue(key_name, false);
-                    Log.WriteLine($"{path} {Registry.REG_DELETE}");
+                    Log.WriteLine($"{path} {Registry.DELETE_TAG}");
                 }
             }
         }
@@ -93,9 +92,9 @@ namespace EzTweak
         public static object Get(string path)
         {
             string key_name = Path.GetFileName(path);
-            using (RegistryKey key = GetSubKey(path))
+            using (RegistryKey key = GetSubKey(path, false, false))
             {
-                return key.GetValue(key_name);
+                return key?.GetValue(key_name);
             }
         }
 
@@ -115,23 +114,23 @@ namespace EzTweak
 
         public static string From_REG_SZ(string value)
         {
-            return value ?? Registry.REG_DELETE;
+            return value ?? Registry.DELETE_TAG;
         }
 
         public static string From_BINARY(byte[] value)
         {
             var v = value?.Select(a => a.ToString("X").PadLeft(2, '0'));
-            return v != null ? string.Join(",", v) : Registry.REG_DELETE;
+            return v != null ? string.Join(",", v) : Registry.DELETE_TAG;
         }
 
         public static string From_DWORD(UInt32? v)
         {
-            return v != null && v.HasValue ? $"0x{v.Value:X}" : Registry.REG_DELETE;
+            return v != null && v.HasValue ? $"0x{v.Value:X}" : Registry.DELETE_TAG;
         }
 
         public static UInt32? To_DWORD(string v)
         {
-            if (v == null || v == Registry.REG_DELETE)
+            if (v == null || v == Registry.DELETE_TAG)
             {
                 return null;
             }
@@ -141,7 +140,7 @@ namespace EzTweak
 
         public static string To_REG_SZ(string v)
         {
-            if (v == null || v == Registry.REG_DELETE)
+            if (v == null || v == Registry.DELETE_TAG)
             {
                 return null;
             }
@@ -151,7 +150,7 @@ namespace EzTweak
 
         public static byte[] To_BINARY(string v)
         {
-            if (v == null || v == Registry.REG_DELETE || v == "")
+            if (v == null || v == Registry.DELETE_TAG || v == "")
             {
                 return null;
             }
@@ -198,48 +197,13 @@ namespace EzTweak
             }
         }
 
-
-        //    public static void Set(string path, string value, RegistryValueKind type = RegistryValueKind.DWord)
-        //    {
-        //        string key_name = Path.GetFileName(path);
-        //        using (RegistryKey key = GetSubKey(path, true))
-        //        {
-
-        //            if (type == RegistryValueKind.Binary)
-        //            {
-        //                var data = value.Split(',').Select(x => Convert.ToByte(x, 16))
-        //.ToArray();
-        //                key.SetValue(key_name, data, type);
-        //            }
-        //            else if (type == RegistryValueKind.DWord)
-        //            {
-        //                UInt32 n;
-        //                if (value.StartsWith("0x"))
-        //                {
-        //                    n = UInt32.Parse(value.Substring(2), NumberStyles.HexNumber);
-        //                }
-        //                else
-        //                {
-        //                    n = UInt32.Parse(value);
-        //                }
-        //                key.SetValue(key_name, n, type);
-        //            }
-        //            else
-        //            {
-        //                key.SetValue(key_name, value, type);
-        //            }
-
-        //            Log.WriteLine($"{Thread.CurrentThread.ManagedThreadId} {path}=\"{value}\"");
-        //        }
-        //    }
-
         public static void Delete(string path)
         {
             string key_name = Path.GetFileName(path);
-            using (RegistryKey key = GetSubKey(path, true))
+            using (RegistryKey key = GetSubKey(path, true, false))
             {
                 key.DeleteValue(key_name, false);
-                Log.WriteLine($"{path} {Registry.REG_DELETE}");
+                Log.WriteLine($"{path} {Registry.DELETE_TAG}");
             }
         }
     }

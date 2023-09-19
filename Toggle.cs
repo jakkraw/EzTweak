@@ -104,7 +104,7 @@ namespace EzTweak
         }
         public Toggle()
         {
-            this.MinimumSize = new Size(45, 22);
+            
         }
         private GraphicsPath GetFigurePath()
         {

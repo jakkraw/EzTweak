@@ -103,8 +103,6 @@
     <Compile Include="App.Designer.cs">
       <DependentUpon>App.cs</DependentUpon>
     </Compile>
-    <Compile Include="APPX.cs" />
-    <Compile Include="Devices.cs" />
     <Compile Include="EzTweak.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Parser.cs" />
@@ -113,10 +111,6 @@
     <Compile Include="Toggle.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bcdedit.cs" />
-    <Compile Include="Powershell.cs" />
-    <Compile Include="Cmd.cs" />
-    <Compile Include="TokenManipulator.cs" />
     <Compile Include="TrustedInstaller.cs" />
     <Compile Include="Tweak.cs" />
     <EmbeddedResource Include="App.resx">

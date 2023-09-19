@@ -1,10 +1,8 @@
-﻿using Microsoft.PowerShell.Cmdletization.Xml;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace EzTweak
@@ -35,14 +33,12 @@ namespace EzTweak
         SECTION,
         [XmlEnum("IRQPRIORITY")]
         IRQPRIORITY,
-        [XmlEnum("APPXDELETE")]
-        APPXDELETE,
+        [XmlEnum("APPX")]
+        APPX,
         [XmlEnum("DEVICES")]
         DEVICES,
         [XmlEnum("SCHEDULED_TASKS")]
-        SCHEDULED_TASKS,
-        [XmlEnum("APPX")]
-        APPX
+        SCHEDULED_TASKS
     }
 
     public class XmlTweak
@@ -81,25 +77,25 @@ namespace EzTweak
         [XmlIgnore]
         public TweakType[] tweakTypes { get; set; }
 
-        public Tk parse(TweakType type)
+        public Tweak parse(TweakType type)
         {
             switch (type)
             {
                 case TweakType.TWEAKS:
                     {
-                        var tks = tweaks?.Zip(tweakTypes, (t, at) => t.parse(at)).ToArray() ?? new Tk[] { };
+                        var tks = tweaks?.Zip(tweakTypes, (t, at) => t.parse(at)).ToArray() ?? new Tweak[] { };
                         return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
                     }
                 case TweakType.SERVICE:
                     {
-                    var tks = services?.Select(service => new ServiceTweak(name, description, service, on, off)).ToArray<Tk>() ?? new Tk[] { };
-                    return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
+                        var tks = services?.Select(service => new ServiceTweak(name, description, service, on, off)).ToArray<Tweak>() ?? new Tweak[] { };
+                        return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
                     }
                 case TweakType.DWORD:
                 case TweakType.REG_SZ:
                 case TweakType.BINARY:
                     {
-                        var tks = paths?.Select(path => new RegistryTweak(name, description, type, path, on, off)).ToArray() ?? new Tk[] { };
+                        var tks = paths?.Select(path => new RegistryTweak(name, description, type, path, on, off)).ToArray() ?? new Tweak[] { };
                         return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
                     }
                 case TweakType.BCDEDIT:
@@ -109,7 +105,7 @@ namespace EzTweak
                 case TweakType.CMD:
                     return new CMD_Tweak(name, description, on, off, lookup, lookup_regex, on_regex);
                 default: throw new Exception($"Unknown TweakType {type}");
-            }       
+            }
         }
     }
 
@@ -143,7 +139,7 @@ namespace EzTweak
 
         [XmlChoiceIdentifier("sectionTypes")]
         [XmlElement("IRQPRIORITY")]
-        [XmlElement("APPXDELETE")]
+        [XmlElement("APPX")]
         [XmlElement("DEVICES")]
         [XmlElement("SCHEDULED_TASKS")]
         [XmlElement("SECTION")]
@@ -165,7 +161,7 @@ namespace EzTweak
         public Tab(XmlTab xml)
         {
             name = xml.name;
-            sections = xml.sections?.Zip(xml.sectionTypes, (x, st) => new Section(x,st)).ToArray() ?? new Section[] { };
+            sections = xml.sections?.Zip(xml.sectionTypes, (x, st) => new Section(x, st)).ToArray() ?? new Section[] { };
         }
     }
 
@@ -173,13 +169,13 @@ namespace EzTweak
     {
         public string name;
         public SectionType type { get; set; }
-        public Tk[] tweaks;
+        public Tweak[] tweaks;
 
         public Section(XmlSection xml, SectionType stype)
         {
             name = xml.name;
             type = stype;
-            tweaks = xml.tweaks?.Zip(xml.tweakTypes, (t, at) => t.parse(at)).ToArray() ?? new Tk[] { };
+            tweaks = xml.tweaks?.Zip(xml.tweakTypes, (t, at) => t.parse(at)).ToArray() ?? new Tweak[] { };
         }
     }
 

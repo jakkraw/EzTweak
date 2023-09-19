@@ -55,76 +55,55 @@ namespace EzTweak
                 }));
             }).Start();
 
-
             tab_control.Controls.Add(panel);
             return tab_control;
         }
 
         private FlowLayoutPanel CreateSection(Section section)
         {
+            var panel = CreateFlyoutPanel();
+            panel.Controls.Add(Divider(section.name, ""));
             switch (section.type)
             {
                 case SectionType.SECTION:
-                    return CreateTweaksSection(section);
+                    {
+                        var p1 = CreateFlyoutPanel();
+                        p1.Controls.AddRange(section.tweaks.Select(t => TweakControl(t)).ToArray());
+                        panel.Controls.Add(p1);
+                    }
+                    break;
                 case SectionType.IRQPRIORITY:
-                    return CreateIRQPRIORITYSection(section);
+                    panel.Controls.Add(CreateIRQPRIORITYSection());
+                    break;
                 case SectionType.DEVICES:
-                    return CreateDevicesSection(section);
+                    panel.Controls.Add(CreateDevicesSection());
+                    break;
                 case SectionType.APPX:
-                    return CreateAPPXSection(section);
+                    panel.Controls.Add(CreateAPPXSection());
+                    break;
                 case SectionType.SCHEDULED_TASKS:
-                    return CreateScheduledTasksSection(section);
-                default: return null;
-            }
-        }
-
-        private FlowLayoutPanel CreateTweaksSection(Section section)
-        {
-            var panel = CreateFlyoutPanel();
-
-            panel.Controls.Add(Divider(section.name, ""));
-            foreach (var tweak in section.tweaks)
-            {
-                if(tweak != null) { panel.Controls.Add(TweakControl(tweak)); }
+                    panel.Controls.Add(CreateScheduledTasksSection());
+                    break;
+                default: break;
             }
 
             return panel;
         }
 
-        private FlowLayoutPanel CreateIRQPRIORITYSection(Section section)
+        private FlowLayoutPanel CreateIRQPRIORITYSection()
         {
-            var devices_dict = IRQ.ReadDevices().ToList().OrderBy(set => set.Value.FirstOrDefault()).ToList();
             var panel = CreateFlyoutPanel();
-
-            foreach (var pair in devices_dict)
-            {
-                panel.Controls.Add(Divider(pair.Key, ""));
-                foreach (var irq in pair.Value)
-                {
-                    panel.Controls.Add(IRQPrioritySelectControl(irq));
-                }
-            }
+            panel.Controls.AddRange(IRQ_Tweak.ALL().Select(t => TweakControl(t)).ToArray());
             return panel;
         }
 
 
 
-        private FlowLayoutPanel CreateAPPXSection(Section section)
+        private FlowLayoutPanel CreateAPPXSection()
         {
-            var devices_dict = APPX.ALL().OrderBy(set => set);
             var panel = CreateFlyoutPanel();
-            foreach (var app in devices_dict)
+            foreach (var tweak in APPX_Tweak.ALL())
             {
-                var tweak = new Powershell_Tweak (
-                    name: $"Remove {app}",
-                    description: null,
-                    on_command: $"Get-AppxPackage *{app}* | Remove-AppxPackage",
-                    off_command: null,
-                    status_command: null,
-                    current_regex: null,
-                    is_on_regex: null
-                );
-
                 Control c = null;
                 tweak.turn_on += () => c.Hide();
                 c = TweakControl(tweak);
@@ -134,15 +113,15 @@ namespace EzTweak
             return panel;
         }
 
-        private FlowLayoutPanel CreateScheduledTasksSection(Section section)
+        private FlowLayoutPanel CreateScheduledTasksSection()
         {
             var devices_dict = new TaskService().AllTasks;
             var panel = CreateFlyoutPanel();
 
             foreach (var task in devices_dict.OrderByDescending(t => t.LastRunTime))
             {
-                var tweak = new Tk();
-                tweak.name = $"Disable {task.Name}";
+                var tweak = new Tweak();
+                tweak.name = $"{task.Name}";
                 tweak.description = $"Name: {task.Name}{Environment.NewLine}Path: {task.Path}{Environment.NewLine}Definition: {task.Definition}{Environment.NewLine}Task Service: {task.TaskService}{Environment.NewLine}Folder: {task.Folder}{Environment.NewLine}Last Run Time: {task.LastRunTime}{Environment.NewLine}State: {task.State}";
                 tweak.turn_on = () => { task.Stop(); task.Enabled = false; };
                 tweak.turn_off = () => { task.Enabled = true; };
@@ -155,7 +134,7 @@ namespace EzTweak
         }
 
 
-        private FlowLayoutPanel CreateDevicesSection(Section section)
+        private FlowLayoutPanel CreateDevicesSection()
         {
             var comboBox = new ComboBox();
             comboBox.FormattingEnabled = true;
@@ -167,76 +146,107 @@ namespace EzTweak
             comboBox.Size = new Size(200, 22);
 
             Dictionary<string, List<Control>> controls_dict = new Dictionary<string, List<Control>> { };
-            var power_label = "# Power Management";
-            var idle_r_pin = "# IDLE R PIN";
-            controls_dict.Add(power_label, new List<Control> { });
-            controls_dict.Add(idle_r_pin, new List<Control> { });
-            var devices = Device.All().GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
+            Action<string, Control> Add = (key, control) =>
+            {
+                if (controls_dict.ContainsKey(key))
+                {
+                    controls_dict[key].Add(control);
+                }
+                else
+                {
+                    controls_dict.Add(key, new List<Control> { control });
+                }
+            };
 
+            var devices = Device_Tweak.Device.All().GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
             var panel = CreateFlyoutPanel();
-
+            var p1 = CreateFlyoutPanel();
             panel.Controls.Add(comboBox);
+            panel.Controls.Add(p1);
 
             foreach (var pair in devices)
             {
-                var p2 = CreateFlyoutPanel();
                 foreach (var device in pair.Value)
                 {
                     var p3 = CreateFlyoutPanel();
                     p3.Controls.Add(Divider(device.Name, device.FullInfo));
-                    p3.Controls.Add(TweakControl(Device.DisableDeviceTweak(device)));
+                    p3.Controls.Add(TweakControl(Device_Tweak.DisableDeviceTweak(device)));
 
-                    var deviceIdleRPIN = Device.DeviceIdleRPIN(device);
+                    var deviceIdleRPIN = Device_Tweak.DeviceIdleRPIN(device);
                     if (deviceIdleRPIN != null)
                     {
                         p3.Controls.Add(TweakControl(deviceIdleRPIN));
-                        controls_dict[idle_r_pin].Add(p3);
+                        Add("# IDLE R PIN", p3);
+                    }
+                    else
+                    {
+                        Add("! # IDLE R PIN", p3);
                     }
 
-                    var enhancedPowerManagementEnabled = Device.EnhancedPowerManagementEnabled(device);
+                    var enhancedPowerManagementEnabled = Device_Tweak.EnhancedPowerManagementEnabled(device);
                     if (enhancedPowerManagementEnabled != null)
                     {
                         p3.Controls.Add(TweakControl(enhancedPowerManagementEnabled));
-                        controls_dict[power_label].Add(p3);
+                        Add("# Power Management", p3);
+                    }
+                    else
+                    {
+                        Add("! # Power Management", p3);
                     }
 
-                    var MSISupported = Device.MsiSupported(device);
+                    var MSISupported = Device_Tweak.MsiSupported(device);
                     if (MSISupported != null)
                     {
                         p3.Controls.Add(TweakControl(MSISupported));
-                        //controls_dict[msi_label].Add(panel);
+                        Add("# MSISupported", p3);
+                    }
+                    else
+                    {
+                        Add("! # MSISupported", p3);
                     }
 
-                    var devicePriority = Device.DevicePriority(device);
+                    var devicePriority = Device_Tweak.DevicePriority(device);
                     if (devicePriority != null)
                     {
-                        p3.Controls.Add(DevicePriorityControl(device));
+                        p3.Controls.Add(TweakControl(devicePriority));
+                        Add("# DevicePriority", p3);
+                    }
+                    else
+                    {
+                        Add("! # DevicePriority", p3);
                     }
 
-                    var linesLimit = LinesLimitControl(device);
+                    var linesLimit = Device_Tweak.LinesLimitControl(device);
                     if (linesLimit != null)
                     {
-                        p3.Controls.Add(linesLimit);
+                        p3.Controls.Add(TweakControl(linesLimit));
+                        Add("# LinesLimitControl", p3);
+                    }
+                    else
+                    {
+                        Add("! # LinesLimitControl", p3);
                     }
 
-                    var AssignmentSetOverride = AffinityOverrideControl(device);
+                    var AssignmentSetOverride = Device_Tweak.AssignmentSetOverride(device);
                     if (AssignmentSetOverride != null)
                     {
-                        p3.Controls.Add(AssignmentSetOverride);
+                        p3.Controls.Add(TweakControl(AssignmentSetOverride));
+                        Add("# AssignmentSetOverride_label", p3);
                     }
-                    p3.Hide();
-                    p2.Controls.Add(p3);
+                    else
+                    {
+                        Add("! # AssignmentSetOverride_label", p3);
+                    }
 
+                    Add(pair.Key, p3);
                 }
-                panel.Controls.Add(p2);
-                controls_dict.Add(pair.Key, p2.Controls.Cast<Control>().ToList());
             }
 
             comboBox.Items.AddRange(controls_dict.Keys.ToArray());
             comboBox.SelectionChangeCommitted += (s, ee) =>
             {
-                controls_dict.Values.ToList().ForEach(x => x.ForEach(p => p.Hide()));
-                controls_dict[comboBox.SelectedItem.ToString()].ForEach(x => x.Show());
+                p1.Controls.Clear();
+                p1.Controls.AddRange(controls_dict[comboBox.SelectedItem.ToString()].ToArray());
             };
 
             return panel;

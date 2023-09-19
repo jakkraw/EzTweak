@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hardware.Info;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -7,9 +8,12 @@ using System.Reflection.Emit;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
-namespace EzTweak {
-    partial class App {
+namespace EzTweak
+{
+    partial class App
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -21,8 +25,10 @@ namespace EzTweak {
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         /// 
 
-        protected override void Dispose(bool disposing) {
-            if (disposing && (components != null)) {
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -33,20 +39,37 @@ namespace EzTweak {
             return new FlowLayoutPanel
             {
                 AutoSize = true,
-                MaximumSize = new Size(365, 0),
+                MaximumSize = new Size(width, 0),
             };
         }
 
-        public static Size button_size = new Size(26, 23);
-        public static Point button_location = new Point(0, 3);
+        private static FlowLayoutPanel CreateFlyoutOptionPanel()
+        {
+            return new FlowLayoutPanel
+            {
+                AutoSize = true,
+                MaximumSize = new Size(width, 0),
+            };
+        }
+        private static Panel CreatePanel()
+        {
+            return new Panel
+            {
+                Size = new Size(width, height),
+            };
+        }
+
+        public static int height = 25;
+        public static int width = 380;
+        public static Size button_size = new Size((int)(0.08 * width), height);
         public static TextBox info_box = null;
-        public static Control Button(string text, Action on_click, Point location, Size size, bool active = false)
+        public static Control Button(string text, Action on_click, Size size, bool active = false)
         {
             var btn = new Button
             {
                 BackColor = active ? Color.MediumSlateBlue : SystemColors.GrayText,
-                Location = location,
                 Margin = new Padding(0),
+                Padding = new Padding(0),
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Arial", 6.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0))),
                 Size = size,
@@ -55,16 +78,14 @@ namespace EzTweak {
                 UseVisualStyleBackColor = false
             };
 
-            btn.FlatAppearance.BorderSize = 0;
-            btn.Click += new EventHandler(delegate (object o, EventArgs a) {
-                on_click();
-            });
+            btn.Click += (x, y) => on_click();
             return btn;
         }
 
         public static Control Divider(string name, string description = "")
         {
-            Action update_info = () => {
+            Action update_info = () =>
+            {
                 var desc = $"⚡ {name} ⚡{Environment.NewLine}{Environment.NewLine}";
                 if (description != null && description != "")
                 {
@@ -75,50 +96,46 @@ namespace EzTweak {
             };
 
             var label = Label(name == null ? "UNKNOWN" : $"{name.ToUpper()}", update_info);
-            label.AutoSize = false;
-            label.Location = new Point(2, 7);
-            label.Size = new Size(340, 28);
-            label.LinkColor = Color.Black;
+            label.MinimumSize = new Size(width, (int)(0.9 * height));
             label.Font = new Font("Arial", 10F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
-
-            var panel = new Panel();
-            panel.Size = new Size(340, 28);
-            panel.Controls.Add(label);
-            return panel;
+            return label;
         }
 
         public static LinkLabel Label(string text, Action on_click, int offset = 0)
         {
             var label = new LinkLabel();
-            label.AutoSize = true;
-            label.Location = new Point(60 + offset, 7);
-            label.LinkColor = Color.Black;
-            label.Text = text;
             label.Font = new Font("Arial", 8.5F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
-            label.LinkClicked += new LinkLabelLinkClickedEventHandler(delegate (object o, LinkLabelLinkClickedEventArgs a) {
-                on_click();
-            });
+            label.Text = text;
+            label.Margin = new Padding(0, 6, 0, 0);
+            label.LinkColor = Color.Black;
+            //label.Location = new Point(60 + offset, 7);
+            label.AutoSize = true;
+            label.MaximumSize = new Size((int)(0.75 * width), height);
+            label.LinkClicked += (x, y) => on_click();
             return label;
         }
 
         public static Toggle Toggle(string name, Action off_click, Action on_click, Func<bool> is_on)
         {
             var toggle = new Toggle();
+            toggle.MinimumSize = new Size((int)(0.14 * width), (int)(0.9 * height));
             toggle.AutoSize = true;
+            //toggle.Size = new Size(45, height);
             if (is_on != null)
             {
                 toggle.Checked = is_on();
             }
-            toggle.Location = new Point(4, 3);
-            toggle.MinimumSize = new Size(45, 22);
+            //toggle.Location = new Point(4, 3);
+            //toggle.MinimumSize = new Size(45, 22);
             toggle.OffBackColor = Color.Gray;
             toggle.OffToggleColor = Color.Gainsboro;
             toggle.OnBackColor = Color.MediumSlateBlue;
             toggle.OnToggleColor = Color.WhiteSmoke;
-            toggle.Size = new Size(45, 22);
+            //toggle.Size = new Size(45, height);
             toggle.UseVisualStyleBackColor = true;
 
-            toggle.CheckedChanged += new System.EventHandler(delegate (Object o, EventArgs a) {
+            toggle.CheckedChanged += new System.EventHandler(delegate (Object o, EventArgs a)
+            {
                 var active = is_on();
                 if (toggle.Checked == active)
                 {
@@ -146,203 +163,149 @@ namespace EzTweak {
             return toggle;
         }
 
-        public static Control TweakControl(string name, Action off_func, Action on_func, Func<bool> is_on_func, Func<string> get_description)
+
+        public static Control TweakControl(Tweak tweak)
         {
-            Action update_info = () => {
-                info_box.Text = get_description();
-            };
-            var toggle = Toggle(name, off_func + update_info, on_func + update_info, is_on_func);
-
-            Action update_toggle = () => {
-                if (is_on_func != null) { toggle.Checked = is_on_func(); }
-            };
-
-            var panel = new Panel();
-            panel.Size = new Size(300, 28);
-            panel.Controls.Add(Label(name, update_info + update_toggle));
-            if (is_on_func != null && off_func != null)
+           
+            if (tweak is Container_Tweak container_tweak)
             {
-                panel.Controls.Add(toggle);
-            }
-            else
-            {
-                if (off_func != null)
+                var panel = CreateFlyoutPanel();
+                foreach (var item in container_tweak.tweaks)
                 {
-                    panel.Controls.Add(Button("off", off_func + update_info, button_location, button_size));
+                    panel.Controls.Add(TweakControl(item));
+                    
                 }
-                var pos = button_location;
-                pos.Offset(button_size.Width, 0);
-                panel.Controls.Add(Button("on", on_func + update_info, pos, button_size, true));
+                panel.Visible = false;
+                panel.BorderStyle = BorderStyle.Fixed3D;
+                tweak.on_click = () => { panel.Visible = !panel.Visible; };
+                var panel2 = CreateFlyoutPanel();
+                var c = TweakControl2(tweak);
+                panel2.Controls.Add(c);
+                panel2.Controls.Add(panel);
+                return panel2;
             }
 
-            return panel;
+            return TweakControl2(tweak);
         }
 
-        public static Control TweakControl(Tk tweak)
+        public static Control TweakControl2(Tweak tweak)
         {
-            Func<string> desc = () =>
+            if (Array.TrueForAll(new Object[] { tweak.name, tweak.description, tweak.turn_on, tweak.turn_off, tweak.is_on }, o => o != null))
             {
-                return $"{tweak.description}{Environment.NewLine}{tweak.status()}";
-            };
-            return TweakControl(tweak.name, tweak.turn_off, tweak.turn_on, tweak.is_on, desc);
-        }
+                Action update_info = () =>
+                {
+                    info_box.Text = tweak.description;
+                };
+                var panel = CreatePanel();
+                var toggle = Toggle(tweak.name, tweak.turn_off + update_info, tweak.turn_on + update_info, tweak.is_on);
 
+                Action update_toggle = () =>
+                {
+                    toggle.Checked = tweak.is_on();
+                };
 
-        public static Control IRQPrioritySelectControl(ulong IRQ)
-        {
-            var name = $"Set IRQ {IRQ} priority";
-            var reg = $@"HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl\IRQ{IRQ}Priority";
-            var values = new Dictionary<string, string> {
-                { Registry.REG_DELETE, Registry.REG_DELETE },
-            { "0x0", "0 (highest)" }, { "0x1", "1" }, { "0x2", "2" }, { "0x3", "3" }, { "0x4", "4" }, { "0x5", "5" },
-            { "0x6", "6" }, { "0x7", "7" }, { "0x8", "8" }, { "0x9", "9" }, { "0x10", "10" }, { "0x11", "11" },
-            { "0x12", "12" }, { "0x13", "13" }, { "0x14", "14" }, { "0x15", "15 (lowest)" }
-            };
+                var p1 = CreateFlyoutPanel();
+                var label = Label(tweak.name, tweak.on_click + update_info + update_toggle );
+                p1.Controls.Add(toggle);
+                p1.Controls.Add(label);
+                panel.Controls.Add(p1);
+                return panel;
+            }
 
-            Func<string> lookup_func = () => Registry.From_DWORD(Registry.Get_DWORD(reg));
+            if (Array.TrueForAll(new Object[] { tweak.name, tweak.description, tweak.turn_on, tweak.turn_off }, o => o != null))
+            {
+                Action update_info = () => { info_box.Text = tweak.description; };
+                var panel = CreatePanel();
 
-            Action<string> set_func = (value) => {
-                Registry.Set_DWORD(reg, Registry.To_DWORD(value));
-            };
+                var on_button = Button("on", tweak.turn_on + update_info, button_size, true);
+                var off_button = Button("off", tweak.turn_off + update_info, button_size, true);
+                var label = Label(tweak.name, tweak.on_click + update_info);
 
-            Func<string> description_func = () => {
-                var desc = $"⚡ {name} ⚡{Environment.NewLine}{Environment.NewLine}";
-                desc += $"⌕ Current: {Environment.NewLine}{reg}{lookup_func()}{Environment.NewLine}";
-                return desc;
-            };
-            return MultiValueControl(name, values, lookup_func, set_func, description_func);
-        }
+                var p1 = CreateFlyoutPanel();
+                p1.Controls.Add(off_button);
+                p1.Controls.Add(on_button);
+                p1.Controls.Add(label);
+                panel.Controls.Add(p1);
+                return panel;
+            }
 
-        public static Control DevicePriorityControl(Device device)
-        {
-            var reg = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters";
-            var reg_val = $@"{reg}\Interrupt Management";
-            var DevicePriority = $@"{reg_val}\Affinity Policy\DevicePriority";
-            var name = "Device Priority";
-            var values = new Dictionary<string, string> {
-                { Registry.REG_DELETE, Registry.REG_DELETE },
-            { "0x0", "Undefined" }, { "0x1", "Low" }, { "0x2", "Medium" }, { "0x3", "High" }
-            };
+            if (Array.TrueForAll(new Object[] { tweak.name, tweak.description, tweak.turn_on }, o => o != null))
+            {
+                Action update_info = () =>
+                {
+                    info_box.Text = tweak.description;
+                };
+                var panel = CreatePanel();
 
-            Func<string> lookup_func = () => Registry.From_DWORD(Registry.Get_DWORD(DevicePriority));
+                var p1 = CreateFlyoutPanel();
+                var button = Button("Run", tweak.turn_on + update_info, new Size((int)(0.16 * width), height), true);
+                var label = Label(tweak.name, tweak.on_click + update_info);
+                p1.Controls.Add(button);
+                p1.Controls.Add(label);
+                panel.Controls.Add(p1);
+                return panel;
+            }
 
-            Action<string> set_func = (value) => {
-                Registry.Set_DWORD(DevicePriority, Registry.To_DWORD(value));
-            };
+            if (Array.TrueForAll(new Object[] { tweak.name, tweak.description, tweak.activate_value, tweak.valid_values, tweak.current_value }, o => o != null))
+            {
+                var comboBox = new ComboBox();
+                comboBox.FormattingEnabled = true;
+                comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+                comboBox.Items.AddRange(tweak.valid_values().Values.ToArray());
+                comboBox.AutoSize = true;
+                comboBox.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
+                comboBox.Location = new Point(4, 3);
+                comboBox.MinimumSize = new Size(45, 22);
+                comboBox.Size = new Size(80, 22);
+                Action setSelection = () => { var x = tweak.current_value(); comboBox.SelectedIndex = comboBox.FindStringExact(tweak.valid_values()[x]); };
+                Action update_info = () => { info_box.Text = tweak.description; setSelection(); };
 
-            Func<string> description_func = () => {
-                var desc = $"⚡ {name} ⚡{Environment.NewLine}{Environment.NewLine}";
-                desc += $"⌕ Current: {Environment.NewLine}{DevicePriority}{lookup_func()}{Environment.NewLine}";
-                return desc;
-            };
+                comboBox.SelectionChangeCommitted += (s, e) =>
+                {
+                    tweak.activate_value(tweak.valid_values().Where(o => o.Value == comboBox.SelectedItem.ToString()).First().Key);
+                    update_info();
+                };
 
-            return MultiValueControl(name, values, lookup_func, set_func, description_func);
-        }
+                setSelection();
+                var label = Label(tweak.name, tweak.on_click + update_info, 40);
+                var panel = CreateFlyoutPanel();
+                var p1 = CreateFlyoutPanel();
+                p1.Controls.Add(comboBox);
+                p1.Controls.Add(label);
+                panel.Controls.Add(p1);
+                return panel;
+            }
 
-        public static Control MultiValueControl(string text, Dictionary<string, string> values, Func<string> lookup_func, Action<string> set_func, Func<string> description_func)
-        {
-            var comboBox = new ComboBox();
-            comboBox.FormattingEnabled = true;
-            comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBox.Items.AddRange(values.Values.ToArray());
-            comboBox.AutoSize = true;
-            comboBox.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
-            comboBox.Location = new Point(4, 3);
-            comboBox.MinimumSize = new Size(45, 22);
-            comboBox.Size = new Size(80, 22);
-            Action setSelection = () => { var x = lookup_func(); comboBox.SelectedIndex = comboBox.FindStringExact(values[x]); };
-            Action update_info = () => { info_box.Text = description_func(); setSelection(); };
+            if (Array.TrueForAll(new Object[] { tweak.name, tweak.description, tweak.activate_value, tweak.current_value }, o => o != null))
+            {
+                var comboBox = new TextBox();
+                comboBox.AutoSize = true;
+                comboBox.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
+                comboBox.Location = new Point(4, 3);
+                comboBox.MinimumSize = new Size(45, 22);
+                comboBox.Size = new Size(80, 22);
 
-            comboBox.SelectionChangeCommitted += (s, e) => {
-                set_func(values.Where(o => o.Value == comboBox.SelectedItem.ToString()).First().Key);
-                update_info();
-            };
+                Action setSelection = () => { comboBox.Text = tweak.current_value() ?? ""; };
+                Action update_info = () => { info_box.Text = tweak.description; setSelection(); };
+                setSelection();
+                Action set = () =>
+                {
+                    tweak.activate_value(comboBox.Text);
+                    update_info();
+                };
 
-            setSelection();
-            var label = Label(text, update_info, 40);
-            var panel = new Panel();
-            panel.Controls.Add(comboBox);
-            panel.Controls.Add(label);
-            panel.Size = new Size(300, 28);
-            return panel;
-        }
+                var set_button = Button("set", set, button_size, true);
+                var label = Label(tweak.name, tweak.on_click + update_info, 40);
+                var panel = CreateFlyoutPanel();
+                var p1 = CreateFlyoutPanel();
+                p1.Controls.Add(set_button);
+                p1.Controls.Add(comboBox);
+                p1.Controls.Add(label);
+                panel.Controls.Add(p1);
+                return panel;
+            }
 
-        public static Control LinesLimitControl(Device device)
-        {
-            var reg = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters";
-            var reg_val = $@"{reg}\Interrupt Management";
-            var linesLimit = $@"{reg_val}\MessageSignaledInterruptProperties\MessageNumberLimit";
-            var name = "Message Number Limit";
-            Func<string> lookup_func = () => Registry.From_DWORD(Registry.Get_DWORD(linesLimit));
-
-            if (!Registry.Exists(linesLimit)) { return null; }
-
-            Action<string> set_func = (value) => {
-                Registry.Set_DWORD(linesLimit, Registry.To_DWORD(value));
-            };
-
-
-            Func<string> description_func = () => {
-                var desc = $"⚡ {name} ⚡{Environment.NewLine}{Environment.NewLine}";
-                desc += $"⌕ Current: {Environment.NewLine}{linesLimit}{lookup_func()}{Environment.NewLine}";
-                return desc;
-            };
-
-            return AnyValueControl(name, lookup_func, set_func, description_func);
-        }
-        public static Control AffinityOverrideControl(Device device)
-        {
-            var reg = $@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters";
-            var reg_val = $@"{reg}\Interrupt Management";
-            var assignmentSetOverride = $@"{reg_val}\Affinity Policy\AssignmentSetOverride";
-            var DevicePolicy = $@"{reg_val}\Affinity Policy\DevicePolicy";
-            var name = "Affinity Override";
-
-            if (!Registry.Exists(reg_val)) { return null; }
-            Func<string> lookup_func = () => Registry.From_BINARY(Registry.Get_BINARY(assignmentSetOverride));
-
-            if (!Registry.Exists(assignmentSetOverride)) { return null; }
-
-            Action<string> set_func = (value) => {
-                Registry.Set_BINARY(assignmentSetOverride, Registry.To_BINARY(value));
-                Registry.Set_DWORD(DevicePolicy, 4);
-            };
-
-            Func<string> description_func = () => {
-                var desc = $"⚡ {name} ⚡{Environment.NewLine}{Environment.NewLine}";
-                var current = lookup_func();
-                desc += $"⌕ Current: {Environment.NewLine}{Registry.From_BINARY(Registry.Get_BINARY(assignmentSetOverride))}{Environment.NewLine}";
-                desc += $"{Environment.NewLine}{DevicePolicy}=\"{Registry.From_DWORD(Registry.Get_DWORD(DevicePolicy))}\"{Environment.NewLine}";
-                return desc;
-            };
-
-            return AnyValueControl(name, lookup_func, set_func, description_func);
-        }
-
-        public static Control AnyValueControl(string text, Func<string> lookup_func, Action<string> set_func, Func<string> description_func)
-        {
-            var comboBox = new TextBox();
-            comboBox.AutoSize = true;
-            comboBox.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
-            comboBox.Location = new Point(4, 3);
-            comboBox.MinimumSize = new Size(45, 22);
-            comboBox.Size = new Size(80, 22);
-
-            Action setSelection = () => { comboBox.Text = lookup_func() ?? ""; };
-            Action update_info = () => { info_box.Text = description_func(); setSelection(); };
-            setSelection();
-            comboBox.TextChanged += (s, e) => {
-                set_func(comboBox.Text);
-                update_info();
-            };
-
-
-            var label = Label(text, update_info, 40);
-            var panel = new Panel();
-            panel.Controls.Add(comboBox);
-            panel.Controls.Add(label);
-            panel.Size = new Size(300, 28);
-            return panel;
+            return null;
         }
 
         #region Windows Form Designer generated code
@@ -351,7 +314,8 @@ namespace EzTweak {
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.left_tabs = new System.Windows.Forms.TabControl();
             this.description_textbox = new System.Windows.Forms.TextBox();
             this.open_logs_label = new System.Windows.Forms.LinkLabel();

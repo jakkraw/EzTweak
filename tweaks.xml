@@ -1683,15 +1683,15 @@
 		</SECTION>
 	</TAB>
 	<TAB name="IRQ" >
-		<IRQPRIORITY name="IRQ"></IRQPRIORITY>
+		<IRQPRIORITY name="Set Device IRQ Priority"></IRQPRIORITY>
 	</TAB>
 	<TAB name="Devices" >
 		<DEVICES name="Devices"></DEVICES>
 	</TAB>
-	<TAB name="Appx" >
-		<APPX name="Appx"></APPX>
+	<TAB name="APPX" >
+		<APPX name="Remove APPX"></APPX>
 	</TAB>
 	<TAB name="Tasks" >
-		<SCHEDULED_TASKS name="Task Scheduler (Ordered by Last Run Time)"></SCHEDULED_TASKS>
+		<SCHEDULED_TASKS name="Disable Tasks"></SCHEDULED_TASKS>
 	</TAB>
 </EZTWEAK>
