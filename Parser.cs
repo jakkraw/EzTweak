@@ -76,28 +76,75 @@ namespace EzTweak {
         public Tweak parse(TweakType type) {
             switch (type) {
                 case TweakType.TWEAKS: {
-                        var tks = tweaks?.Zip(tweakTypes, (t, at) => t.parse(at)).ToArray() ?? new Tweak[] { };
-                        return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
+                        var tks = tweaks?.Zip(tweakTypes, (tweak, tweak_type) => tweak.parse(tweak_type)).ToArray() ?? new Tweak[] { };
+                        return new Container_Tweak(name, description, tks);
                     }
                 case TweakType.SERVICE: {
-                        var tks = services?.Select(service => new ServiceTweak(name, description, service, on, off)).ToArray<Tweak>() ?? new Tweak[] { };
-                        return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
+                        var tks = services?.Select(service => new ServiceTweak(service, on, off)).ToArray<Tweak>() ?? new Tweak[] { };
+                        return new Container_Tweak(name, description, tks);
                     }
                 case TweakType.DWORD:
                 case TweakType.REG_SZ:
                 case TweakType.BINARY: {
-                        var tks = paths?.Select(path => new RegistryTweak(name, description, type, path, on, off)).ToArray() ?? new Tweak[] { };
-                        return tks.Length > 1 ? new Container_Tweak(name, description, tks) : tks.First();
+                        var tks = paths?.Select(path => new RegistryTweak(type, path, on, off)).ToArray() ?? new Tweak[] { };
+                        return new Container_Tweak(name, description, tks);
                     }
                 case TweakType.BCDEDIT:
-                    return new BCDEDIT_Tweak(name, description, property, on, off);
+                    {
+                        var tks = new Tweak[] { new BCDEDIT_Tweak(property, on, off) };
+                        return new Container_Tweak(name, description, tks);
+                    }
                 case TweakType.POWERSHELL:
-                    return new Powershell_Tweak(name, description, on, off, lookup, lookup_regex, on_regex);
+                    {
+                        var tks = new Tweak[] { new Powershell_Tweak(on, off, lookup, lookup_regex, on_regex) };
+                        return new Container_Tweak(name, description, tks);
+                    }
                 case TweakType.CMD:
-                    return new CMD_Tweak(name, description, on, off, lookup, lookup_regex, on_regex);
+                    {
+                        var tks = new Tweak[] { new CMD_Tweak(on, off, lookup, lookup_regex, on_regex) };
+                        return new Container_Tweak(name, description, tks);
+                    }
                 default: throw new Exception($"Unknown TweakType {type}");
             }
         }
+
+
+        public Tweak[] parse2(TweakType type)
+        {
+            switch (type)
+            {
+                case TweakType.TWEAKS:
+                    {
+                        var a = tweaks?.Zip(tweakTypes, (tweak, tweak_type) => tweak.parse2(tweak_type)).ToArray() ?? new Tweak[][] { };
+                        var b = a.SelectMany(x => x).ToArray();
+                        return b;
+                    }
+                case TweakType.SERVICE:
+                    {
+                        return services?.Select(service => new ServiceTweak(service, on, off)).ToArray<Tweak>() ?? new Tweak[] { };
+                    }
+                case TweakType.DWORD:
+                case TweakType.REG_SZ:
+                case TweakType.BINARY:
+                    {
+                        return paths?.Select(path => new RegistryTweak(type, path, on, off)).ToArray() ?? new Tweak[] { };
+                    }
+                case TweakType.BCDEDIT:
+                    {
+                        return new Tweak[] { new BCDEDIT_Tweak(property, on, off) };
+                    }
+                case TweakType.POWERSHELL:
+                    {
+                        return new Tweak[] { new Powershell_Tweak(on, off, lookup, lookup_regex, on_regex) };
+                    }
+                case TweakType.CMD:
+                    {
+                        return new Tweak[] { new CMD_Tweak(on, off, lookup, lookup_regex, on_regex) };
+                    }
+                default: throw new Exception($"Unknown TweakType {type}");
+            }
+        }
+
     }
 
     public class XmlSection {
@@ -159,7 +206,7 @@ namespace EzTweak {
         public Section(XmlSection xml, SectionType stype) {
             name = xml.name;
             type = stype;
-            tweaks = xml.tweaks?.Zip(xml.tweakTypes, (t, at) => t.parse(at)).ToArray() ?? new Tweak[] { };
+            tweaks = xml.tweaks?.Zip(xml.tweakTypes, (t, at) => new Container_Tweak(t.name, t.description, t.parse2(at))).ToArray() ?? new Tweak[] { };
         }
     }
 

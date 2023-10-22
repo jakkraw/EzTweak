@@ -38,41 +38,20 @@ namespace EzTweak {
                 AutoSize = true,
                 MaximumSize = new Size(width, 0),
                 Padding = new Padding(0),
-                Margin = new Padding(0)
+                Margin = new Padding(3)
             };
         }
 
         private static FlowLayoutPanel CreateExpandFlyoutPanel() {
             return new FlowLayoutPanel {
                 AutoSize = true,
-                MaximumSize = new Size(width, 0),
-                MinimumSize = new Size(width, 0),
-                Size = new Size(width, 0),
-                Padding = new Padding(0),
-                Margin = new Padding(0),
+                //MaximumSize = new Size(width, 0),
+                //MinimumSize = new Size(width, 0),
+                //Size = new Size(width, 0),
+                Padding = new Padding(3),
+                Margin = new Padding(3),
+                Dock = DockStyle.Fill,
                 BorderStyle = BorderStyle.Fixed3D
-            };
-        }
-
-        private static Panel CreatePanel() {
-            return new Panel {
-                Size = new Size(width, height),
-                //AutoSize = true,
-                MaximumSize = new Size(width, height),
-                Padding = new Padding(0),
-                Margin = new Padding(0)
-            };
-        }
-
-        private static ComboBox CreateComboBox() {
-            return new ComboBox {
-                FormattingEnabled = true,
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                AutoSize = true,
-                Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0))),
-                MaximumSize = new Size(100, 22),
-                Padding = new Padding(0),
-                Margin = new Padding(0)
             };
         }
 
@@ -89,23 +68,6 @@ namespace EzTweak {
             };
         }
 
-        public static Control Button(string text, Action on_click, Size size, bool active = false) {
-            var btn = new Button {
-                BackColor = active ? Color.CornflowerBlue : SystemColors.GrayText,
-                Margin = new Padding(0),
-                Padding = new Padding(0),
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Arial", 6.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0))),
-                Size = size,
-                ForeColor = Color.Gainsboro,
-                Text = text,
-                UseVisualStyleBackColor = false
-            };
-
-            btn.Click += (x, y) => on_click();
-            return btn;
-        }
-
         private static LinkLabel CreateBigLabel(string name, Action on_click) {
             var label = Label(name == null ? "UNKNOWN" : $"{name.ToUpper()}", on_click);
             label.MinimumSize = new Size(width, (int)(0.9 * height));
@@ -117,8 +79,8 @@ namespace EzTweak {
             var label = new LinkLabel();
             label.Font = new Font("Arial", 8.5F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
             label.Text = text;
-            label.Margin = new Padding(0, 6, 0, 0);
-            label.Padding = new Padding(0, 0, 0, 0);
+            label.Margin = new Padding(0, 0, 0, 0);
+            label.Padding = new Padding(3, 3, 3, 3);
             label.LinkColor = Color.Black;
             label.AutoSize = true;
             label.MaximumSize = new Size((int)(0.75 * width), height);
@@ -127,56 +89,27 @@ namespace EzTweak {
             return label;
         }
 
-        private static TextBox CreateTextBox() {
-            var comboBox = new TextBox();
-            comboBox.AutoSize = true;
-            comboBox.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
-            comboBox.MinimumSize = new Size(100, 22);
-            return comboBox;
-        }
-
-        public static Toggle Toggle(string name, Action off_click, Action on_click, Func<bool> is_on) {
-            var toggle = new Toggle();
-            toggle.MinimumSize = new Size((int)(0.14 * width), (int)(0.9 * height));
-            toggle.AutoSize = true;
-            if (is_on != null) {
-                toggle.Checked = is_on();
-            }
-            toggle.OffBackColor = Color.Gray;
-            toggle.OffToggleColor = Color.Gainsboro;
-            toggle.OnBackColor = Color.CornflowerBlue;
-            toggle.OnToggleColor = Color.WhiteSmoke;
-            toggle.UseVisualStyleBackColor = true;
-
-            toggle.CheckedChanged += new System.EventHandler(delegate (Object o, EventArgs a) {
-                var active = is_on();
-                if (toggle.Checked == active) {
-                    return;
-                }
-
-                if (active) {
-                    toggle.Checked = false;
-                    Log.WriteLine($"Turning \"{name}\" OFF...");
-                    off_click();
-                    Log.WriteLine($"\"{name}\" Turned OFF");
-                } else {
-                    toggle.Checked = true;
-                    Log.WriteLine($"Turning \"{name}\" ON...");
-                    on_click();
-                    Log.WriteLine($"\"{name}\" Turned ON");
-                }
-
-                toggle.Checked = is_on();
-            });
-
-            return toggle;
+        public static Label TextLabel(string text, int offset = 0)
+        {
+            var label = new Label();
+            label.Font = new Font("Arial", 8.5F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
+            label.Text = text;
+            //label.Margin = new Padding(0, 6, 0, 0);
+            label.Padding = new Padding(3, 3, 3, 3);
+            label.AutoSize = true;
+            //label.MaximumSize = new Size((int)(0.75 * width), height);
+            label.SizeChanged += delegate (object sender, EventArgs e)
+            {
+                label.Left = (label.Parent.ClientSize.Width - label.Size.Width) / 2;
+            };
+            return label;
         }
 
         public static Control Divider(string name, string description = "") {
             var expand_panel = CreateExpandFlyoutPanel();
             expand_panel.SuspendLayout();
-            expand_panel.Controls.Add(Label(name, null));
-            expand_panel.Controls.Add(Label(description, null));
+            expand_panel.Controls.Add(TextLabel(name));
+            expand_panel.Controls.Add(TextLabel(description));
             expand_panel.ResumeLayout();
 
             var tweak_panel = CreateFlyoutPanel();
@@ -192,140 +125,6 @@ namespace EzTweak {
             return tweak_panel;
         }
 
-        public static Control TweakControl(Tweak tweak) {
-            var expand_panel = CreateExpandFlyoutPanel();
-            expand_panel.SuspendLayout();
-            expand_panel.BorderStyle = BorderStyle.Fixed3D;
-            expand_panel.Controls.Add(Label(tweak.name, null));
-            expand_panel.Controls.Add(Label(tweak.description, null));
-
-            if (tweak is Container_Tweak container_tweak) {
-                expand_panel.Controls.AddRange(container_tweak.tweaks.Select(TweakControl).ToArray());
-            }
-            expand_panel.ResumeLayout();
-
-            var tweak_panel = CreateFlyoutPanel();
-            tweak_panel.SuspendLayout();
-
-            tweak.on_click = () => {
-                if (tweak_panel.Contains(expand_panel)) {
-                    tweak_panel.Controls.Remove(expand_panel);
-                } else {
-                    tweak_panel.Controls.Add(expand_panel);
-                }
-            };
-            var tweak_control = TweakControl2(tweak);
-            tweak_panel.Controls.Add(tweak_control);
-            tweak_panel.ResumeLayout(false);
-            return tweak_panel;
-        }
-
-        public static Control TweakControl2(Tweak tweak) {
-            if (Array.TrueForAll(new Object[] { tweak.name, tweak.description, tweak.turn_on, tweak.turn_off, tweak.is_on }, o => o != null)) {
-                var panel = CreatePanel();
-                panel.SuspendLayout();
-                var toggle = Toggle(tweak.name, tweak.turn_off, tweak.turn_on, tweak.is_on);
-                Action update_toggle = () => {
-                    toggle.Checked = tweak.is_on();
-                };
-                var p1 = CreateFlyoutPanel();
-                p1.SuspendLayout();
-                var label = Label(tweak.name, tweak.on_click + update_toggle);
-                p1.Controls.Add(toggle);
-                p1.Controls.Add(label);
-                p1.ResumeLayout();
-                panel.Controls.Add(p1);
-
-                panel.ResumeLayout();
-                return panel;
-            }
-
-            if (Array.TrueForAll(new Object[] { tweak.name, tweak.description, tweak.turn_on, tweak.turn_off }, o => o != null)) {
-                var panel = CreatePanel();
-                panel.SuspendLayout();
-                var on_button = Button("on", tweak.turn_on, button_size, true);
-                var off_button = Button("off", tweak.turn_off, button_size, true);
-                var label = Label(tweak.name, tweak.on_click);
-                var p1 = CreateFlyoutPanel();
-                p1.SuspendLayout();
-                p1.Controls.Add(off_button);
-                p1.Controls.Add(on_button);
-                p1.Controls.Add(label);
-                panel.Controls.Add(p1);
-                p1.ResumeLayout();
-                panel.ResumeLayout();
-                return panel;
-            }
-
-            if (Array.TrueForAll(new Object[] { tweak.name, tweak.description, tweak.turn_on }, o => o != null)) {
-                var panel = CreatePanel();
-                panel.SuspendLayout();
-                var p1 = CreateFlyoutPanel();
-                p1.SuspendLayout();
-                var button = Button("Run", tweak.turn_on, new Size((int)(0.16 * width), height), true);
-                var label = Label(tweak.name, tweak.on_click);
-                p1.Controls.Add(button);
-                p1.Controls.Add(label);
-                panel.Controls.Add(p1);
-                p1.ResumeLayout();
-                panel.ResumeLayout();
-                return panel;
-            }
-
-            if (Array.TrueForAll(new Object[] { tweak.name, tweak.description, tweak.activate_value, tweak.valid_values, tweak.current_value }, o => o != null)) {
-                var comboBox = CreateComboBox();
-                comboBox.Items.AddRange(tweak.valid_values().Values.ToArray());
-                Action setSelection = () => { var x = tweak.current_value(); comboBox.SelectedIndex = comboBox.FindStringExact(tweak.valid_values()[x]); };
-                Action update_info = () => { setSelection(); };
-
-                comboBox.SelectionChangeCommitted += (s, e) => {
-                    tweak.activate_value(tweak.valid_values().Where(o => o.Value == comboBox.SelectedItem.ToString()).First().Key);
-                    update_info();
-                };
-
-                setSelection();
-                var label = Label(tweak.name, tweak.on_click + update_info, 40);
-                var panel = CreateFlyoutPanel();
-                panel.SuspendLayout();
-                var p1 = CreateFlyoutPanel();
-                p1.SuspendLayout();
-                p1.Controls.Add(comboBox);
-                p1.Controls.Add(label);
-                panel.Controls.Add(p1);
-                p1.ResumeLayout();
-                panel.ResumeLayout();
-                return panel;
-            }
-
-            if (Array.TrueForAll(new Object[] { tweak.name, tweak.description, tweak.activate_value, tweak.current_value }, o => o != null)) {
-                TextBox textBox = CreateTextBox();
-
-                Action setSelection = () => { textBox.Text = tweak.current_value() ?? ""; };
-                Action update_info = () => { setSelection(); };
-                setSelection();
-                Action set = () => {
-                    tweak.activate_value(textBox.Text);
-                    update_info();
-                };
-
-                var set_button = Button("set", set, button_size, true);
-                var label = Label(tweak.name, tweak.on_click + update_info, 40);
-                var panel = CreateFlyoutPanel();
-                panel.SuspendLayout();
-                var p1 = CreateFlyoutPanel();
-                p1.SuspendLayout();
-                p1.Controls.Add(textBox);
-                p1.Controls.Add(set_button);
-                p1.Controls.Add(label);
-                panel.Controls.Add(p1);
-                p1.ResumeLayout();
-                panel.ResumeLayout();
-                return panel;
-            }
-
-            throw new Exception("Unable to create controls for tweak");
-        }
-
         private TabPage CreateTab(Tab tab) {
             var tab_control = new TabPage {
                 AutoScroll = true,
@@ -336,13 +135,16 @@ namespace EzTweak {
             };
 
             var panel = CreateFlyoutPanel();
-            panel.SuspendLayout();
             var loading_text = Divider("Loading...", "");
             panel.Controls.Add(loading_text);
 
+
             new Thread(() => {
                 Thread.CurrentThread.IsBackground = true;
+                tab_control.SuspendLayout();
+                panel.SuspendLayout();
                 var controls = tab.sections.Select(CreateSection).ToArray();
+                Array.ForEach(controls, c => c.SuspendLayout());
 
                 while (!panel.IsHandleCreated)
                     Thread.Sleep(1000);
@@ -350,11 +152,14 @@ namespace EzTweak {
                 panel.Invoke((MethodInvoker)(() => {
                         panel.Controls.Clear();
                         panel.Controls.AddRange(controls);
-                    }));
-                }).Start();
+                        Array.ForEach(controls, c => c.ResumeLayout());
+                        panel.ResumeLayout();
+                        tab_control.ResumeLayout();
+                }));
+
+            }).Start();
 
             tab_control.Controls.Add(panel);
-            panel.ResumeLayout();
             return tab_control;
         }
 
@@ -364,63 +169,42 @@ namespace EzTweak {
             panel.Controls.Add(Divider(section.name, ""));
             switch (section.type) {
                 case SectionType.SECTION: {
-                        var p1 = CreateFlyoutPanel();
-                        p1.Controls.AddRange(section.tweaks.Select(t => TweakControl(t)).ToArray());
-                        panel.Controls.Add(p1);
+                        var tweaks = section.tweaks.Select(t => new TweakControl(t, null)).ToArray();
+                        var controls = tweaks.Select(t => t.panel).ToArray();
+                        panel.Controls.AddRange(controls);
                     }
                     break;
                 case SectionType.IRQPRIORITY:
-                    panel.Controls.Add(CreateIRQPRIORITYSection());
+                    {
+                        var container_tweaks = WindowsResources.All_IRQ;
+                        var tweak_controls = container_tweaks.Select(t => new TweakControl(t, null)).ToArray();
+                        var controls = tweak_controls.Select(t => t.panel).ToArray();
+                        panel.Controls.AddRange(controls);
+                    }
                     break;
                 case SectionType.DEVICES:
-                    panel.Controls.Add(CreateDevicesSection());
+                    {
+                        panel.Controls.Add(CreateDevicesSection());
+                    }
                     break;
                 case SectionType.APPX:
-                    panel.Controls.Add(CreateAPPXSection());
+                    {
+                        var container_tweaks = WindowsResources.All_APPX;
+                        var tweak_controls = container_tweaks.Select(t => new TweakControl(t, null)).ToArray();
+                        Array.ForEach(tweak_controls, tc => tc.run_button.Click += (a, b) => tc.Hide());
+                        var controls = tweak_controls.Select(t => t.panel).ToArray();
+                        panel.Controls.AddRange(controls);
+                    }
                     break;
                 case SectionType.SCHEDULED_TASKS:
-                    panel.Controls.Add(CreateScheduledTasksSection());
+                    {
+                        var tasks = WindowsResources.All_TASKS;
+                        var tweak_controls = tasks.Select(tweak => new TweakControl(tweak, null)).ToArray();
+                        var controls = tweak_controls.Select(t => t.panel).ToArray();
+                        panel.Controls.AddRange(controls);
+                    }
                     break;
                 default: break;
-            }
-            panel.ResumeLayout();
-            return panel;
-        }
-
-        private FlowLayoutPanel CreateIRQPRIORITYSection() {
-            var panel = CreateFlyoutPanel();
-            panel.SuspendLayout();
-            panel.Controls.AddRange(IRQ_Tweak.ALL().Select(t => TweakControl(t)).ToArray());
-            panel.ResumeLayout(true);
-            return panel;
-        }
-
-        private FlowLayoutPanel CreateAPPXSection() {
-            var panel = CreateFlyoutPanel();
-            panel.SuspendLayout();
-            foreach (var tweak in APPX_Tweak.ALL()) {
-                Control c = null;
-                tweak.turn_on += () => c.Hide();
-                c = TweakControl(tweak);
-                panel.Controls.Add(c);
-            }
-            panel.ResumeLayout();
-            return panel;
-        }
-
-        private FlowLayoutPanel CreateScheduledTasksSection() {
-            var devices_dict = new TaskService().AllTasks;
-            var panel = CreateFlyoutPanel();
-            panel.SuspendLayout();
-            foreach (var task in devices_dict.OrderByDescending(t => t.LastRunTime)) {
-                var tweak = new Tweak();
-                tweak.name = $"{task.Name}";
-                tweak.description = $"Name: {task.Name}{Environment.NewLine}Path: {task.Path}{Environment.NewLine}Definition: {task.Definition}{Environment.NewLine}Task Service: {task.TaskService}{Environment.NewLine}Folder: {task.Folder}{Environment.NewLine}Last Run Time: {task.LastRunTime}{Environment.NewLine}State: {task.State}";
-                tweak.turn_on = () => { task.Stop(); task.Enabled = false; };
-                tweak.turn_off = () => { task.Enabled = true; };
-                tweak.status = () => task.Enabled ? "Enabled" : "Disabled";
-                tweak.is_on = () => !task.Enabled;
-                panel.Controls.Add(TweakControl(tweak));
             }
             panel.ResumeLayout();
             return panel;
@@ -436,7 +220,7 @@ namespace EzTweak {
                 }
             };
 
-            var devices = Device_Tweak.Device.All().GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
+            var devices = WindowsResources.All_DEVICES.GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
             var panel = CreateFlyoutPanel();
             panel.SuspendLayout();
             var p1 = CreateExpandFlyoutPanel();
@@ -447,11 +231,11 @@ namespace EzTweak {
                     var p3 = CreateFlyoutPanel();
                     p3.SuspendLayout();
                     p3.Controls.Add(Divider(device.Name, device.FullInfo));
-                    p3.Controls.Add(TweakControl(Device_Tweak.DisableDeviceTweak(device)));
+                    p3.Controls.Add(new TweakControl(Device_Tweak.DisableDeviceTweak(device), null).panel);
 
                     var deviceIdleRPIN = Device_Tweak.DeviceIdleRPIN(device);
                     if (deviceIdleRPIN != null) {
-                        p3.Controls.Add(TweakControl(deviceIdleRPIN));
+                        p3.Controls.Add(new TweakControl(deviceIdleRPIN, null).panel);
                         Add("# IDLE R PIN", p3);
                     } else {
                         Add("! # IDLE R PIN", p3);
@@ -459,7 +243,7 @@ namespace EzTweak {
 
                     var enhancedPowerManagementEnabled = Device_Tweak.EnhancedPowerManagementEnabled(device);
                     if (enhancedPowerManagementEnabled != null) {
-                        p3.Controls.Add(TweakControl(enhancedPowerManagementEnabled));
+                        p3.Controls.Add(new TweakControl(enhancedPowerManagementEnabled, null).panel);
                         Add("# Power Management", p3);
                     } else {
                         Add("! # Power Management", p3);
@@ -467,7 +251,7 @@ namespace EzTweak {
 
                     var MSISupported = Device_Tweak.MsiSupported(device);
                     if (MSISupported != null) {
-                        p3.Controls.Add(TweakControl(MSISupported));
+                        p3.Controls.Add(new TweakControl(MSISupported, null).panel);
                         Add("# MSISupported", p3);
                     } else {
                         Add("! # MSISupported", p3);
@@ -475,7 +259,7 @@ namespace EzTweak {
 
                     var devicePriority = Device_Tweak.DevicePriority(device);
                     if (devicePriority != null) {
-                        p3.Controls.Add(TweakControl(devicePriority));
+                        p3.Controls.Add(new TweakControl(devicePriority, null).panel);
                         Add("# DevicePriority", p3);
                     } else {
                         Add("! # DevicePriority", p3);
@@ -483,7 +267,7 @@ namespace EzTweak {
 
                     var linesLimit = Device_Tweak.LinesLimitControl(device);
                     if (linesLimit != null) {
-                        p3.Controls.Add(TweakControl(linesLimit));
+                        p3.Controls.Add(new TweakControl(linesLimit, null).panel);
                         Add("# LinesLimitControl", p3);
                     } else {
                         Add("! # LinesLimitControl", p3);
@@ -491,7 +275,7 @@ namespace EzTweak {
 
                     var AssignmentSetOverride = Device_Tweak.AssignmentSetOverride(device);
                     if (AssignmentSetOverride != null) {
-                        p3.Controls.Add(TweakControl(AssignmentSetOverride));
+                        p3.Controls.Add(new TweakControl(AssignmentSetOverride, null).panel);
                         Add("# AssignmentSetOverride_label", p3);
                     } else {
                         Add("! # AssignmentSetOverride_label", p3);
@@ -546,6 +330,7 @@ namespace EzTweak {
             // menu
             // 
             this.menu.BackColor = System.Drawing.SystemColors.MenuBar;
+            this.menu.ImageScalingSize = new System.Drawing.Size(28, 28);
             this.menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menu_open});
             this.menu.Location = new System.Drawing.Point(0, 0);
@@ -561,6 +346,7 @@ namespace EzTweak {
             // 
             // status
             // 
+            this.status.ImageScalingSize = new System.Drawing.Size(28, 28);
             this.status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.status_loading});
             this.status.Location = new System.Drawing.Point(0, 496);
@@ -576,9 +362,60 @@ namespace EzTweak {
             // 
             // App
             // 
+
+            Func<KeyValuePair<string, string[]>, ToolStripMenuItem> to_tool_menu = (pair) => {
+                var control = new ToolStripMenuItem
+                {
+                    Size = new Size(180, 22),
+                    Text = pair.Key,
+                };
+                control.Click += (a, b) => CMD_Tweak.Open(pair.Value);
+                return control;
+            };
+
+            menu_open.DropDownItems.AddRange(new Dictionary<string, string[]> {
+                { "Logs", new [] { Log.log_file } },
+                { "Tweaks Schema", new [] { $"notepad", Parser.xml_file } }
+            }.Select(to_tool_menu).ToArray());
+
+            menu_open.DropDownItems.Add(new ToolStripSeparator() { Size = new Size(177, 6) });
+
+            menu_open.DropDownItems.AddRange(new Dictionary<string, string[]> {
+                { "Registry Editor", new[] { "regedit" } },
+                { "Startup Programs", new[]  { "taskmgr", "/0", "/startup" } },
+                { "Windows Features", new[] { "optionalfeatures" } },
+                { "Add/Remove Programs", new[] { "appwiz.cpl" } },
+                { "Task Scheduler", new[] { "taskschd.msc" } },
+                { "Group Policy", new[] { "gpedit.msc" } },
+                { "System Configuration", new[] { "msconfig" } },
+                { "Restore Points", new[] { "rstrui.exe" } },
+                { "Internet Options", new[] { "inetcpl.cpl" } },
+                { "Event Log", new[] { "eventvwr" } },
+                { "Sounds", new[] { "control", "mmsys.cpl", "sounds" } },
+                { "Network Connections", new[] { "ncpa.cpl" } },
+                { "Windows Updates", new[] { "ms-settings:windowsupdate" } },
+                { "Settings", new[] { "ms-settings:" } },
+                { "Device Manager", new[] { "devmgmt.msc" } },
+                { "Devices and Printers", new[] { "control printers" } },
+                { "Appearance and performance", new[] { "SystemPropertiesPerformance.exe" } },
+                { "Cmd", new[] { "cmd" } },
+                { "PowerShell", new[] { "powershell" } },
+            }.Select(to_tool_menu).ToArray());
+
+            var tweaks_xml = Parser.xml_file;
+            var xmlDocument = Parser.loadXML(tweaks_xml);
+            var tabs = Parser.LoadTabs(xmlDocument);
+            foreach (var tab in tabs)
+            {
+                var tab_control = CreateTab(tab);
+                this.tabs.Controls.Add(tab_control);
+            }
+
+            //
+
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(426, 518);
             this.Controls.Add(this.status);

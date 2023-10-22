@@ -116,6 +116,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="TrustedInstaller.cs" />
+    <Compile Include="TweakControl.cs" />
     <Compile Include="Tweak.cs" />
     <EmbeddedResource Include="App.resx">
       <DependentUpon>App.cs</DependentUpon>

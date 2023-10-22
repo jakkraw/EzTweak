@@ -100,16 +100,16 @@ namespace EzTweak {
             return v != null ? string.Join(",", v) : Registry.DELETE_TAG;
         }
 
-        public static string From_DWORD(UInt32? v) {
+        public static string From_DWORD(Int32? v) {
             return v != null && v.HasValue ? $"0x{v.Value:X}" : Registry.DELETE_TAG;
         }
 
-        public static UInt32? To_DWORD(string v) {
+        public static Int32? To_DWORD(string v) {
             if (v == null || v == Registry.DELETE_TAG) {
                 return null;
             }
 
-            return v.StartsWith("0x") ? UInt32.Parse(v.Substring(2), NumberStyles.HexNumber) : UInt32.Parse(v);
+            return v.StartsWith("0x") ? Int32.Parse(v.Substring(2), NumberStyles.HexNumber) : Int32.Parse(v);
         }
 
         public static string To_REG_SZ(string v) {
@@ -127,13 +127,13 @@ namespace EzTweak {
             return v.Split(',').Select(x => Convert.ToByte(x, 16)).ToArray();
         }
 
-        public static UInt32? Get_DWORD(string path) {
+        public static Int32? Get_DWORD(string path) {
             var v = Get(path);
             if (v == null) return null;
-            return (UInt32?)Convert.ToInt32(v.ToString());
+            return (Int32?)Convert.ToInt64(v.ToString());
         }
 
-        public static void Set_DWORD(string path, UInt32? value) {
+        public static void Set_DWORD(string path, Int32? value) {
             Set(path, value, RegistryValueKind.DWord);
         }
 

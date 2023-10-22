@@ -472,21 +472,21 @@
 					<on>No</on>
 					<off>🗑</off>
 				</BCDEDIT>
-				<BCDEDIT>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\FVE\DisableExternalDMAUnderLock</path>
 					<on>0</on>
 					<off>🗑</off>
-				</BCDEDIT>
-				<BCDEDIT>
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard\EnableVirtualizationBasedSecurity</path>
 					<on>0</on>
 					<off>🗑</off>
-				</BCDEDIT>
-				<BCDEDIT>
+				</DWORD>
+				<DWORD>
 					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard\HVCIMATRequired</path>
 					<on>0</on>
 					<off>🗑</off>
-				</BCDEDIT>
+				</DWORD>
 				<description>Disable DMA memory protection and cores isolation ("virtualization-based protection").</description>
 			</TWEAKS>
 			<TWEAKS name="Disable kernel Memory Mitigations">
