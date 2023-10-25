@@ -294,6 +294,5 @@ namespace EzTweak {
         private StatusStrip status;
         private ToolStripStatusLabel status_loading;
         private MenuStrip menu;
-        private ToolStripMenuItem menu_open;
     }
 }
