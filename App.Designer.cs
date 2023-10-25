@@ -55,25 +55,9 @@ namespace EzTweak {
             };
         }
 
-         private static ComboBox CreateFullComboBox() {
-            return new ComboBox {
-                FormattingEnabled = true,
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                AutoSize = true,
-                Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0))),
-                MaximumSize = new Size(100, 22),
-                MinimumSize = new Size(width, 0),
-                Padding = new Padding(0),
-                Margin = new Padding(0)
-            };
-        }
+        
 
-        private static LinkLabel CreateBigLabel(string name, Action on_click) {
-            var label = Label(name == null ? "UNKNOWN" : $"{name.ToUpper()}", on_click);
-            label.MinimumSize = new Size(width, (int)(0.9 * height));
-            label.Font = new Font("Arial", 10F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
-            return label;
-        }
+      
 
         public static LinkLabel Label(string text, Action on_click, int offset = 0) {
             var label = new LinkLabel();
@@ -105,25 +89,7 @@ namespace EzTweak {
             return label;
         }
 
-        public static Control Divider(string name, string description = "") {
-            var expand_panel = CreateExpandFlyoutPanel();
-            expand_panel.SuspendLayout();
-            expand_panel.Controls.Add(TextLabel(name));
-            expand_panel.Controls.Add(TextLabel(description));
-            expand_panel.ResumeLayout();
 
-            var tweak_panel = CreateFlyoutPanel();
-            Action on_click = () => { 
-                if (tweak_panel.Contains(expand_panel)) {
-                    tweak_panel.Controls.Remove(expand_panel);
-                } else {
-                    tweak_panel.Controls.Add(expand_panel);
-                } 
-            };
-
-            tweak_panel.Controls.Add(CreateBigLabel(name, on_click));
-            return tweak_panel;
-        }
 
         private TabPage CreateTab(Tab tab) {
             var tab_control = new TabPage {
@@ -133,32 +99,16 @@ namespace EzTweak {
                 Size = new Size(380, 300),
                 Text = tab.name
             };
-
-            var panel = CreateFlyoutPanel();
-            var loading_text = Divider("Loading...", "");
-            panel.Controls.Add(loading_text);
-
-
+            
             new Thread(() => {
                 Thread.CurrentThread.IsBackground = true;
-                tab_control.SuspendLayout();
-                panel.SuspendLayout();
                 var controls = tab.sections.Select(CreateSection).ToArray();
-                Array.ForEach(controls, c => c.SuspendLayout());
-
-                while (!panel.IsHandleCreated)
-                    Thread.Sleep(1000);
-
-                panel.Invoke((MethodInvoker)(() => {
-                        panel.Controls.Clear();
-                        panel.Controls.AddRange(controls);
-                        Array.ForEach(controls, c => c.ResumeLayout());
-                        panel.ResumeLayout();
-                        tab_control.ResumeLayout();
+                this.Invoke((MethodInvoker)(() => {
+                    
+                    tab_control.Controls.AddRange(controls);
                 }));
             }).Start();
 
-            tab_control.Controls.Add(panel);
             return tab_control;
         }
 
@@ -167,7 +117,7 @@ namespace EzTweak {
         private FlowLayoutPanel CreateSection(Section section) {
             var panel = CreateFlyoutPanel();
             panel.SuspendLayout();
-            panel.Controls.Add(Divider(section.name, ""));
+            panel.Controls.Add(TweakControl.Divider(section.name, ""));
             switch (section.type) {
                 case SectionType.SECTION: {
                         var tweaks = section.tweaks.Select(t => new TweakControl(t, null)).ToArray();
@@ -185,7 +135,7 @@ namespace EzTweak {
                     break;
                 case SectionType.DEVICES:
                     {
-                        panel.Controls.Add(CreateDevicesSection());
+                        panel.Controls.Add(TweakControl.CreateDevicesSection());
                     }
                     break;
                 case SectionType.APPX:
@@ -211,92 +161,7 @@ namespace EzTweak {
             return panel;
         }
 
-        private FlowLayoutPanel CreateDevicesSection() {
-            Dictionary<string, List<Control>> controls_dict = new Dictionary<string, List<Control>> { };
-            Action<string, Control> Add = (key, control) => {
-                if (controls_dict.ContainsKey(key)) {
-                    controls_dict[key].Add(control);
-                } else {
-                    controls_dict.Add(key, new List<Control> { control });
-                }
-            };
-
-            var devices = WindowsResources.All_DEVICES.GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
-            var panel = CreateFlyoutPanel();
-            panel.SuspendLayout();
-            var p1 = CreateExpandFlyoutPanel();
-            p1.SuspendLayout();
-
-            foreach (var pair in devices) {
-                foreach (var device in pair.Value) {
-                    var p3 = CreateFlyoutPanel();
-                    p3.SuspendLayout();
-                    p3.Controls.Add(Divider(device.Name, device.FullInfo));
-                    p3.Controls.Add(new TweakControl(Device_Tweak.DisableDeviceTweak(device), null).panel);
-
-                    var deviceIdleRPIN = Device_Tweak.DeviceIdleRPIN(device);
-                    if (deviceIdleRPIN != null) {
-                        p3.Controls.Add(new TweakControl(deviceIdleRPIN, null).panel);
-                        Add("# IDLE R PIN", p3);
-                    } else {
-                        Add("! # IDLE R PIN", p3);
-                    }
-
-                    var enhancedPowerManagementEnabled = Device_Tweak.EnhancedPowerManagementEnabled(device);
-                    if (enhancedPowerManagementEnabled != null) {
-                        p3.Controls.Add(new TweakControl(enhancedPowerManagementEnabled, null).panel);
-                        Add("# Power Management", p3);
-                    } else {
-                        Add("! # Power Management", p3);
-                    }
-
-                    var MSISupported = Device_Tweak.MsiSupported(device);
-                    if (MSISupported != null) {
-                        p3.Controls.Add(new TweakControl(MSISupported, null).panel);
-                        Add("# MSISupported", p3);
-                    } else {
-                        Add("! # MSISupported", p3);
-                    }
-
-                    var devicePriority = Device_Tweak.DevicePriority(device);
-                    if (devicePriority != null) {
-                        p3.Controls.Add(new TweakControl(devicePriority, null).panel);
-                        Add("# DevicePriority", p3);
-                    } else {
-                        Add("! # DevicePriority", p3);
-                    }
-
-                    var linesLimit = Device_Tweak.LinesLimitControl(device);
-                    if (linesLimit != null) {
-                        p3.Controls.Add(new TweakControl(linesLimit, null).panel);
-                        Add("# LinesLimitControl", p3);
-                    } else {
-                        Add("! # LinesLimitControl", p3);
-                    }
-
-                    var AssignmentSetOverride = Device_Tweak.AssignmentSetOverride(device);
-                    if (AssignmentSetOverride != null) {
-                        p3.Controls.Add(new TweakControl(AssignmentSetOverride, null).panel);
-                        Add("# AssignmentSetOverride_label", p3);
-                    } else {
-                        Add("! # AssignmentSetOverride_label", p3);
-                    }
-                    p3.ResumeLayout();
-                    Add(pair.Key, p3);
-                }
-            }
-            var comboBox = CreateFullComboBox();
-            comboBox.Items.AddRange(controls_dict.Keys.ToArray());
-            comboBox.SelectionChangeCommitted += (s, ee) => {
-                p1.Controls.Clear();
-                p1.Controls.AddRange(controls_dict[comboBox.SelectedItem.ToString()].ToArray());
-            };
-            panel.Controls.Add(comboBox);
-            panel.Controls.Add(p1);
-            p1.ResumeLayout(false);
-            panel.ResumeLayout();
-            return panel;
-        }
+        
 
         private ToolStripItem[] CreateMenuItem(Item item)
         {

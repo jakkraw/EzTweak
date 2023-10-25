@@ -150,23 +150,6 @@ namespace EzTweak {
                 MessageBox.Show($"Error: {e.Message}", $"Failed to open {string.Join(" ", cmd)}", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        public static void Open(string cmd)
-        {
-            var parts = Regex.Matches(cmd, @"[\""].+?[\""]|[^ ]+")
-                .Cast<Match>()
-                .Select(m => m.Value)
-                .ToList();
-
-            try
-            {
-                Process.Start(cmd);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"Error: {e.Message}", $"Failed to open {string.Join(" ", cmd)}", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
     }
 
     public class BCDEDIT_Tweak : Tweak {
