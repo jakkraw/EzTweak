@@ -66,8 +66,8 @@ namespace EzTweak
             }
             else if (tweak.turn_on != null && tweak.turn_off != null)
             {
-                on_button = Button("on", onOnClick, button_size, true);
-                off_button = Button("off", onOffClick, button_size, true);
+                on_button = Button("✔", onOnClick, button_size, true);
+                off_button = Button("🗙", onOffClick, button_size, true);
                 action_panel.Controls.Add(off_button);
                 action_panel.Controls.Add(on_button);
             }
@@ -76,19 +76,19 @@ namespace EzTweak
                 run_button = Button("Run", onRunClick, new Size((int)(0.16 * width), height), true);
                 action_panel.Controls.Add(run_button);
             }
-            else if (tweak.activate_value != null && tweak.valid_values != null && tweak.current_value != null)
+            else if (tweak.activate_value != null && tweak.valid_values != null)
             {
                 comboBox = CreateComboBox();
-                if (tweak.valid_values != null) comboBox.Items.AddRange(tweak.valid_values().Values.ToArray());
+                if (tweak.valid_values != null) comboBox.Items.AddRange(tweak.valid_values().Keys.ToArray());
                 comboBox.SelectionChangeCommitted += (s, e) => onSelectChange();
                 action_panel.Controls.Add(comboBox);
             }
             else if (tweak.activate_value != null && tweak.current_value != null)
             {
                 textBox = CreateTextBox();
-                set_button = Button("set", onValueSet, button_size, true);
-                action_panel.Controls.Add(textBox);
+                set_button = Button("✔", onValueSet, button_size, true);
                 action_panel.Controls.Add(set_button);
+                action_panel.Controls.Add(textBox);
             }
 
             label = Label(tweak.name, onLabelClick, 40);
@@ -141,7 +141,7 @@ namespace EzTweak
             {
                 var value = tweak.current_value();
                 var valid_values = tweak.valid_values();
-                comboBox.SelectedIndex = comboBox.FindStringExact(valid_values[value]);
+                comboBox.SelectedIndex = comboBox.FindStringExact(valid_values.FirstOrDefault(x => x.Value == value).Key);
             }
         }
 
@@ -188,7 +188,7 @@ namespace EzTweak
 
         string readSelection()
         {
-            return tweak.valid_values().Where(o => o.Value == comboBox.SelectedItem.ToString()).First().Key;
+            return tweak.valid_values().Where(o => o.Key == comboBox.SelectedItem.ToString()).First().Value;
         }
 
         string readText()
@@ -209,42 +209,42 @@ namespace EzTweak
         void onValueSet()
         {
             var value = readText();
-            Log.WriteLine($"Setting \"{tweak.name}\" to '{value}'...");
+            Status.start(tweak.name, value);
             setText(value);
-            Log.WriteLine($"\"{tweak.name}\" set to '{value}'");
+            Status.done(tweak.name, value);
             UpdateAll();
         }
 
         void onRunClick()
         {
-            Log.WriteLine($"Running \"{tweak.name}\"...");
+            Status.start(tweak.name, "...");
             tweak.turn_on();
-            Log.WriteLine($"\"{tweak.name}\" Completed");
+            Status.done(tweak.name, "DONE");
             UpdateAll();
         }
 
         void onOnClick()
         {
-            Log.WriteLine($"Turning \"{tweak.name}\" ON...");
+            Status.start(tweak.name, "ON");
             tweak.turn_on();
-            Log.WriteLine($"\"{tweak.name}\" Turned ON");
+            Status.done(tweak.name, "ON");
             UpdateAll();
         }
 
         void onSelectChange()
         {
             var selection = readSelection();
-            Log.WriteLine($"Setting \"{tweak.name}\" to '{selection}'...");
+            Status.start(tweak.name, selection);
             setSelection(selection);
-            Log.WriteLine($"\"{tweak.name}\" set to '{selection}'");
+            Status.done(tweak.name, selection);
             UpdateAll();
         }
 
         void onOffClick()
         {
-            Log.WriteLine($"Turning \"{tweak.name}\" OFF...");
+            Status.start(tweak.name, "OFF");
             tweak.turn_off();
-            Log.WriteLine($"\"{tweak.name}\" Turned OFF");
+            Status.done(tweak.name, "OFF");
             UpdateAll();
         }
 
@@ -270,7 +270,7 @@ namespace EzTweak
 
         public static int height = 25;
         public static int width = 390;
-        public static Size button_size = new Size((int)(0.08 * width), height);
+        public static Size button_size = new Size(24, 24);
 
         private static FlowLayoutPanel CreateFlyoutPanel()
         {
@@ -328,10 +328,14 @@ namespace EzTweak
 
         private static TextBox CreateTextBox()
         {
-            var comboBox = new TextBox();
-            comboBox.AutoSize = true;
-            comboBox.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
-            comboBox.MinimumSize = new Size(100, 22);
+            var comboBox = new TextBox
+            {
+                AutoSize = true,
+                Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0))),
+                MinimumSize = new Size(60, 24),
+                Padding = new Padding(0),
+                Margin = new Padding(0)
+            };
             return comboBox;
         }
 
@@ -341,9 +345,9 @@ namespace EzTweak
             {
                 BackColor = active ? Color.CornflowerBlue : SystemColors.GrayText,
                 Margin = new Padding(0),
-                Padding = new Padding(3),
+                Padding = new Padding(0),
                 FlatStyle = FlatStyle.Flat,
-                Font = new Font("Arial", 6.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0))),
+                Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0))),
                 Size = size,
                 ForeColor = Color.Gainsboro,
                 Text = text,

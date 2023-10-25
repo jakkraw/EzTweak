@@ -156,12 +156,13 @@ namespace EzTweak {
                         panel.ResumeLayout();
                         tab_control.ResumeLayout();
                 }));
-
             }).Start();
 
             tab_control.Controls.Add(panel);
             return tab_control;
         }
+
+       
 
         private FlowLayoutPanel CreateSection(Section section) {
             var panel = CreateFlyoutPanel();
@@ -297,6 +298,33 @@ namespace EzTweak {
             return panel;
         }
 
+        private ToolStripItem[] CreateMenuItem(Item item)
+        {
+            if (item.separator)
+            {
+                return new[] { new ToolStripSeparator() { Size = new Size(177, 6) } };
+            }
+
+            var control = new ToolStripMenuItem
+            {
+                Size = new Size(180, 22),
+                Text = item.name,
+            };
+
+            if(item.command_line != null)
+            {
+                control.Click += (a, b) => CMD_Tweak.Open(item.command_line);
+            }
+
+            var children = item.items?.SelectMany(i=> CreateMenuItem(i)).ToArray();
+            if(children != null)
+            {
+                control.DropDownItems.AddRange(children);
+            }
+            
+            return new[] { control };
+        }
+
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -306,7 +334,6 @@ namespace EzTweak {
         private void InitializeComponent() {
             this.tabs = new System.Windows.Forms.TabControl();
             this.menu = new System.Windows.Forms.MenuStrip();
-            this.menu_open = new System.Windows.Forms.ToolStripMenuItem();
             this.status = new System.Windows.Forms.StatusStrip();
             this.status_loading = new System.Windows.Forms.ToolStripStatusLabel();
             this.menu.SuspendLayout();
@@ -331,18 +358,11 @@ namespace EzTweak {
             // 
             this.menu.BackColor = System.Drawing.SystemColors.MenuBar;
             this.menu.ImageScalingSize = new System.Drawing.Size(28, 28);
-            this.menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menu_open});
             this.menu.Location = new System.Drawing.Point(0, 0);
             this.menu.Name = "menu";
             this.menu.Size = new System.Drawing.Size(426, 24);
             this.menu.TabIndex = 11;
-            // 
-            // menu_open
-            // 
-            this.menu_open.Name = "menu_open";
-            this.menu_open.Size = new System.Drawing.Size(48, 20);
-            this.menu_open.Text = "Open";
+
             // 
             // status
             // 
@@ -358,55 +378,25 @@ namespace EzTweak {
             // 
             this.status_loading.Name = "status_loading";
             this.status_loading.Size = new System.Drawing.Size(59, 17);
-            this.status_loading.Text = "Loading...";
+            this.status_loading.Text = "";
             // 
             // App
             // 
 
-            Func<KeyValuePair<string, string[]>, ToolStripMenuItem> to_tool_menu = (pair) => {
-                var control = new ToolStripMenuItem
-                {
-                    Size = new Size(180, 22),
-                    Text = pair.Key,
-                };
-                control.Click += (a, b) => CMD_Tweak.Open(pair.Value);
-                return control;
-            };
-
-            menu_open.DropDownItems.AddRange(new Dictionary<string, string[]> {
-                { "Logs", new [] { Log.log_file } },
-                { "Tweaks Schema", new [] { $"notepad", Parser.xml_file } }
-            }.Select(to_tool_menu).ToArray());
-
-            menu_open.DropDownItems.Add(new ToolStripSeparator() { Size = new Size(177, 6) });
-
-            menu_open.DropDownItems.AddRange(new Dictionary<string, string[]> {
-                { "Registry Editor", new[] { "regedit" } },
-                { "Startup Programs", new[]  { "taskmgr", "/0", "/startup" } },
-                { "Windows Features", new[] { "optionalfeatures" } },
-                { "Add/Remove Programs", new[] { "appwiz.cpl" } },
-                { "Task Scheduler", new[] { "taskschd.msc" } },
-                { "Group Policy", new[] { "gpedit.msc" } },
-                { "System Configuration", new[] { "msconfig" } },
-                { "Restore Points", new[] { "rstrui.exe" } },
-                { "Internet Options", new[] { "inetcpl.cpl" } },
-                { "Event Log", new[] { "eventvwr" } },
-                { "Sounds", new[] { "control", "mmsys.cpl", "sounds" } },
-                { "Network Connections", new[] { "ncpa.cpl" } },
-                { "Windows Updates", new[] { "ms-settings:windowsupdate" } },
-                { "Settings", new[] { "ms-settings:" } },
-                { "Device Manager", new[] { "devmgmt.msc" } },
-                { "Devices and Printers", new[] { "control printers" } },
-                { "Appearance and performance", new[] { "SystemPropertiesPerformance.exe" } },
-                { "Cmd", new[] { "cmd" } },
-                { "PowerShell", new[] { "powershell" } },
-            }.Select(to_tool_menu).ToArray());
-
             var tweaks_xml = Parser.xml_file;
             var xmlDocument = Parser.loadXML(tweaks_xml);
-            var tabs = Parser.LoadTabs(xmlDocument);
+            var tabs = Parser.LoadTweakTabs(xmlDocument);
+            var items = Parser.LoadMenuItems(xmlDocument);
+
+            foreach (var item in items)
+            {
+                var context_items = CreateMenuItem(item);
+                this.menu.Items.AddRange(context_items);
+            }
+
             foreach (var tab in tabs)
             {
+                
                 var tab_control = CreateTab(tab);
                 this.tabs.Controls.Add(tab_control);
             }
@@ -432,7 +422,6 @@ namespace EzTweak {
             this.status.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion

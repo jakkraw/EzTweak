@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace EzTweak {
@@ -38,12 +39,49 @@ namespace EzTweak {
         SCHEDULED_TASKS
     }
 
+    public class XmlValue
+    {
+        [XmlAttribute]
+        public string name { get; set; }
+        [XmlText]
+        public string value { get; set; }
+    }
+
+    public class XmlItem
+    {
+        [XmlAttribute]
+        public bool separator { get; set; }
+
+        [XmlAttribute]
+        public string name { get; set; }
+
+        [XmlText]
+        public string value { get; set; }
+
+        [XmlElement("ARG")]
+        public string[] command_line { get; set; }
+
+        [XmlElement("ITEM")]
+        public XmlItem[] items { get; set; }
+    }
+
+    public class XmlMenu
+    {
+        [XmlElement("ITEM")]
+        public XmlItem[] items { get; set; }
+    }
+
     public class XmlTweak {
         [XmlAttribute]
         public string name { get; set; } = "";
 
         public string on { get; set; }
         public string off { get; set; }
+
+        public string cmd { get; set; }
+
+        [XmlElement("value")]
+        public XmlValue[] values { get; set; }
 
         public string lookup_regex { get; set; }
         public string on_regex { get; set; }
@@ -73,40 +111,6 @@ namespace EzTweak {
         [XmlIgnore]
         public TweakType[] tweakTypes { get; set; }
 
-        public Tweak parse(TweakType type) {
-            switch (type) {
-                case TweakType.TWEAKS: {
-                        var tks = tweaks?.Zip(tweakTypes, (tweak, tweak_type) => tweak.parse(tweak_type)).ToArray() ?? new Tweak[] { };
-                        return new Container_Tweak(name, description, tks);
-                    }
-                case TweakType.SERVICE: {
-                        var tks = services?.Select(service => new ServiceTweak(service, on, off)).ToArray<Tweak>() ?? new Tweak[] { };
-                        return new Container_Tweak(name, description, tks);
-                    }
-                case TweakType.DWORD:
-                case TweakType.REG_SZ:
-                case TweakType.BINARY: {
-                        var tks = paths?.Select(path => new RegistryTweak(type, path, on, off)).ToArray() ?? new Tweak[] { };
-                        return new Container_Tweak(name, description, tks);
-                    }
-                case TweakType.BCDEDIT:
-                    {
-                        var tks = new Tweak[] { new BCDEDIT_Tweak(property, on, off) };
-                        return new Container_Tweak(name, description, tks);
-                    }
-                case TweakType.POWERSHELL:
-                    {
-                        var tks = new Tweak[] { new Powershell_Tweak(on, off, lookup, lookup_regex, on_regex) };
-                        return new Container_Tweak(name, description, tks);
-                    }
-                case TweakType.CMD:
-                    {
-                        var tks = new Tweak[] { new CMD_Tweak(on, off, lookup, lookup_regex, on_regex) };
-                        return new Container_Tweak(name, description, tks);
-                    }
-                default: throw new Exception($"Unknown TweakType {type}");
-            }
-        }
 
 
         public Tweak[] parse2(TweakType type)
@@ -139,7 +143,7 @@ namespace EzTweak {
                     }
                 case TweakType.CMD:
                     {
-                        return new Tweak[] { new CMD_Tweak(on, off, lookup, lookup_regex, on_regex) };
+                        return new Tweak[] { new CMD_Tweak(on, off, cmd, values?.ToDictionary(x => x.name, x => x.value), lookup, lookup_regex, on_regex) };
                     }
                 default: throw new Exception($"Unknown TweakType {type}");
             }
@@ -186,6 +190,9 @@ namespace EzTweak {
     public class XmlDoc {
         [XmlElement("TAB")]
         public XmlTab[] tabs { get; set; }
+
+        [XmlElement("MENU")]
+        public XmlMenu menu { get; set; }
     }
 
     public class Tab {
@@ -195,6 +202,24 @@ namespace EzTweak {
         public Tab(XmlTab xml) {
             name = xml.name;
             sections = xml.sections?.Zip(xml.sectionTypes, (x, st) => new Section(x, st)).ToArray() ?? new Section[] { };
+        }
+    }
+
+    public class Item
+    {
+        public string name;
+        public string[] command_line;
+        public string value;
+        public bool separator;
+        public Item[] items;
+
+        public Item(XmlItem xml)
+        {
+            separator = xml.separator;
+            name = xml.name;
+            value = xml.value?.Trim();
+            command_line = xml.command_line;
+            items = xml.items?.Select(item => new Item(item)).ToArray();  
         }
     }
 
@@ -219,8 +244,13 @@ namespace EzTweak {
             }
         }
 
-        public static List<Tab> LoadTabs(XmlDoc xmlDocument) {
-            return xmlDocument.tabs.Select(xml => new Tab(xml)).ToList();
+        public static Tab[] LoadTweakTabs(XmlDoc xmlDocument) {
+            return xmlDocument.tabs.Select(xml => new Tab(xml)).ToArray();
+        }
+
+        public static Item[] LoadMenuItems(XmlDoc xmlDocument)
+        {
+            return xmlDocument.menu.items.Select(xml => new Item(xml)).ToArray();
         }
     }
 

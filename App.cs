@@ -7,8 +7,12 @@ using System.Windows.Forms;
 namespace EzTweak {
     public partial class App : Form {
         public App() {
+
             Log.WriteLine("EzTweak Started");
             InitializeComponent();
+            Status.pipe += (msg) => {
+                status_loading.Text = msg;
+            };
         }
         protected override void OnFormClosing(FormClosingEventArgs e) {
             base.OnFormClosing(e);

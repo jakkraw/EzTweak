@@ -1359,10 +1359,19 @@
 			<CMD name="Set Rocket League Threads Priority">
 				<on> start cmd.exe /c .\ThreadPriority.exe </on>
 			</CMD>
-			<CMD name="Activate Windows 11">
-				<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
+			<CMD name="Activate">
+				<cmd> slmgr /ipk [[value]] &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </cmd>
+				<value name="Windows 11">W269N-WFGWX-YVC9B-4J6C9-T83GX</value>
+				<value name="Windows 10">W269N-WFGWX-YVC9B-4J6C9-T83GX</value>
 			</CMD>
-			
+			<BCDEDIT name="Windows Boot Name">
+				<property>description</property>
+			</BCDEDIT>
+			<CMD name="Set Windows Drive Name">
+				<cmd>label C: [[value]]</cmd>
+				<lookup>vol C:</lookup>
+				<lookup_regex>Volume in drive .* is (.*)$</lookup_regex>
+			</CMD>
 			<CMD name="Activate Windows 10">
 				<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
 			</CMD>
@@ -1656,4 +1665,79 @@
 	<TAB name="Tasks" >
 		<SCHEDULED_TASKS name="Disable Tasks"></SCHEDULED_TASKS>
 	</TAB>
+	<MENU>
+		<ITEM name="Open">
+			<ITEM name="Logs">
+				<ARG>eztweak.log</ARG>
+			</ITEM>
+			<ITEM name="Tweaks Schema">
+				<ARG>notepad </ARG>
+				<ARG>tweaks.xml</ARG>
+			</ITEM>
+			<ITEM separator="true">
+			</ITEM>
+			<ITEM name="Registry Editor">
+				<ARG>regedit</ARG>
+			</ITEM>
+			<ITEM name="Startup Programs">
+				<ARG>taskmgr</ARG>
+				<ARG>/0</ARG>
+				<ARG>startup</ARG>
+			</ITEM>
+			<ITEM name="Windows Features">
+				<ARG>optionalfeatures</ARG>
+			</ITEM>
+			<ITEM name="Add/Remove Programs">
+				<ARG>appwiz.cpl</ARG>		
+			</ITEM>
+			<ITEM name="Task Scheduler">
+				<ARG>taskschd.msc</ARG>
+			</ITEM>				
+			<ITEM name="Group Policy">
+				<ARG>gpedit.msc</ARG>
+			</ITEM>
+			<ITEM name="System Configuration">
+				<ARG>msconfig</ARG>
+			</ITEM>
+			<ITEM name="Restore Points">
+				<ARG>rstrui.exe</ARG>
+			</ITEM>
+			<ITEM name="Internet Options">
+				<ARG>inetcpl.cpl</ARG>
+			</ITEM>
+			<ITEM name="Event Log">
+				<ARG>eventvwr</ARG>
+			</ITEM>
+			<ITEM name="Sounds">
+				<ARG>control</ARG>
+				<ARG>mmsys.cpl</ARG>
+				<ARG>sounds</ARG>
+			</ITEM>
+			<ITEM name="Network Connections">
+				<ARG>ncpa.cpl</ARG>
+			</ITEM>
+			<ITEM name="Windows Updates">
+				<ARG>ms-settings:windowsupdate</ARG>
+			</ITEM>
+			<ITEM name="Settings">
+				<ARG>ms-settings:</ARG>
+			</ITEM>
+			<ITEM name="Device Manager">
+				<ARG>devmgmt.msc</ARG>
+			</ITEM>
+			<ITEM name="Devices and Printers">
+				<ARG>control</ARG>
+				<ARG>printers</ARG>
+			</ITEM>
+			<ITEM name="Appearance and performance">
+				<ARG>SystemPropertiesPerformance.exe</ARG>
+			</ITEM>
+			<ITEM name="Cmd">
+				<ARG>cmd</ARG>
+			</ITEM>
+			<ITEM name="PowerShell">
+				<ARG>powershell</ARG>
+			</ITEM>
+		</ITEM>
+	</MENU>
 </EZTWEAK>
