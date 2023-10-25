@@ -264,7 +264,18 @@
 				<off>2</off>
 				<on>40</on>
 			</DWORD>
+			<CMD name="Disable Processor performance time check interval">
+				<on>
+					powercfg -setacvalueindex scheme_current 54533251-82be-4824-96c1-47b60b740d00 4d2b0152-7d5c-498b-88e2-34345392a2c5 5000 &amp;
+					powercfg -setactive scheme_current
+				</on>
+				<off>
+					powercfg -setacvalueindex scheme_current 54533251-82be-4824-96c1-47b60b740d00 4d2b0152-7d5c-498b-88e2-34345392a2c5 15 &amp;
+					powercfg -setactive scheme_current
+				</off>
+			</CMD>
 			<TWEAKS name="NDIS Affinity (2,3 core)">
+				
 				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Services\NDIS\Parameters\ProcessorAffinityMask</path>
 					<off>🗑</off>
