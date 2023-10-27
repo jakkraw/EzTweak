@@ -34,6 +34,8 @@ namespace EzTweak
         public TweakControl(Tweak tweak, TweakControl parent)
         {
             this.tweak = tweak;
+            
+
             this.parent = parent;
             if (tweak is Container_Tweak et)
             {
@@ -74,7 +76,7 @@ namespace EzTweak
             }
             else if (tweak.turn_on != null)
             {
-                run_button = Button("Run", onRunClick, new Size((int)(0.16 * width), height), true);
+                run_button = Button("✔", onRunClick, button_size, true);
                 action_panel.Controls.Add(run_button);
             }
             else if (tweak.activate_value != null && tweak.valid_values != null)
@@ -153,16 +155,18 @@ namespace EzTweak
 
         void createExpandPanel()
         {
-            name = TextLabel(tweak.name);
-            description = TextLabel(tweak.description);
-            if (tweak.current_value != null) current_value = TextLabel(tweak.current_value());
-
             expand_panel = CreateExpandFlyoutPanel();
             expand_panel.SuspendLayout();
             expand_panel.BorderStyle = BorderStyle.Fixed3D;
-            expand_panel.Controls.Add(name);
-            expand_panel.Controls.Add(description);
-            if (current_value != null) expand_panel.Controls.Add(current_value);
+            this.tweak.UpdateInfo();
+            foreach (var pair in tweak.info)
+            {
+                expand_panel.Controls.Add(BoldLabel(pair.Key));
+                foreach (var func in pair.Value)
+                {
+                    expand_panel.Controls.Add(TextLabel(func()));
+                }
+            }
             expand_panel.Controls.AddRange(children.Select(child => child.panel).ToArray());
             expand_panel.ResumeLayout();
         }
@@ -304,14 +308,18 @@ namespace EzTweak
             var label = new Label();
             label.Font = new Font("Arial", 8.5F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
             label.Text = text;
-            //label.Margin = new Padding(0, 6, 0, 0);
             label.Padding = new Padding(3, 3, 3, 3);
             label.AutoSize = true;
-            //label.MaximumSize = new Size((int)(0.75 * width), height);
-            label.SizeChanged += delegate (object sender, EventArgs e)
-            {
-                label.Left = (label.Parent.ClientSize.Width - label.Size.Width) / 2;
-            };
+            return label;
+        }
+
+        public static Label BoldLabel(string text, int offset = 0)
+        {
+            var label = new Label();
+            label.Font = new Font("Arial", 8.5F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
+            label.Text = text;
+            label.Padding = new Padding(3, 3, 3, 3);
+            label.AutoSize = true;
             return label;
         }
 
@@ -509,20 +517,12 @@ namespace EzTweak
                         p3.Controls.Add(new TweakControl(deviceIdleRPIN, null).panel);
                         Add("# IDLE R PIN", p3);
                     }
-                    else
-                    {
-                        Add("! # IDLE R PIN", p3);
-                    }
 
                     var enhancedPowerManagementEnabled = Device_Tweak.EnhancedPowerManagementEnabled(device);
                     if (enhancedPowerManagementEnabled != null)
                     {
                         p3.Controls.Add(new TweakControl(enhancedPowerManagementEnabled, null).panel);
                         Add("# Power Management", p3);
-                    }
-                    else
-                    {
-                        Add("! # Power Management", p3);
                     }
 
                     var MSISupported = Device_Tweak.MsiSupported(device);
@@ -531,20 +531,12 @@ namespace EzTweak
                         p3.Controls.Add(new TweakControl(MSISupported, null).panel);
                         Add("# MSISupported", p3);
                     }
-                    else
-                    {
-                        Add("! # MSISupported", p3);
-                    }
 
                     var devicePriority = Device_Tweak.DevicePriority(device);
                     if (devicePriority != null)
                     {
                         p3.Controls.Add(new TweakControl(devicePriority, null).panel);
                         Add("# DevicePriority", p3);
-                    }
-                    else
-                    {
-                        Add("! # DevicePriority", p3);
                     }
 
                     var linesLimit = Device_Tweak.LinesLimitControl(device);
@@ -553,10 +545,6 @@ namespace EzTweak
                         p3.Controls.Add(new TweakControl(linesLimit, null).panel);
                         Add("# LinesLimitControl", p3);
                     }
-                    else
-                    {
-                        Add("! # LinesLimitControl", p3);
-                    }
 
                     var AssignmentSetOverride = Device_Tweak.AssignmentSetOverride(device);
                     if (AssignmentSetOverride != null)
@@ -564,10 +552,7 @@ namespace EzTweak
                         p3.Controls.Add(new TweakControl(AssignmentSetOverride, null).panel);
                         Add("# AssignmentSetOverride_label", p3);
                     }
-                    else
-                    {
-                        Add("! # AssignmentSetOverride_label", p3);
-                    }
+
                     p3.ResumeLayout();
                     Add(pair.Key, p3);
                 }

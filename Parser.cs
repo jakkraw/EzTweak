@@ -18,6 +18,8 @@ namespace EzTweak {
         CMD = 100,
         [XmlEnum("POWERSHELL")]
         POWERSHELL,
+        [XmlEnum("POWERCFG")]
+        POWERCFG,
         [XmlEnum("BCDEDIT")]
         BCDEDIT,
         [XmlEnum("SERVICE")]
@@ -80,6 +82,11 @@ namespace EzTweak {
 
         public string cmd { get; set; }
 
+        [XmlAttribute]
+        public string sub_proc_guid { get; set; }
+        [XmlAttribute]
+        public string option_guid { get; set; }
+
         [XmlElement("value")]
         public XmlValue[] values { get; set; }
 
@@ -89,7 +96,7 @@ namespace EzTweak {
 
         public string property { get; set; }
 
-        public string description { get; set; } = "";
+        public string description { get; set; }
 
         [XmlElement("path")]
         public List<string> paths { get; set; } = new List<string> { };
@@ -104,6 +111,7 @@ namespace EzTweak {
         [XmlElement("CMD")]
         [XmlElement("POWERSHELL")]
         [XmlElement("BCDEDIT")]
+        [XmlElement("POWERCFG")]
         [XmlElement("SERVICE")]
         [XmlElement("TWEAKS")]
         public XmlTweak[] tweaks { get; set; }
@@ -137,6 +145,10 @@ namespace EzTweak {
                     {
                         return new Tweak[] { new BCDEDIT_Tweak(property, on, off) };
                     }
+                case TweakType.POWERCFG:
+                    {
+                        return new Tweak[] { new POWERCFG_Tweak(sub_proc_guid, option_guid, on, off) };
+                    }
                 case TweakType.POWERSHELL:
                     {
                         return new Tweak[] { new Powershell_Tweak(on, off, lookup, lookup_regex, on_regex) };
@@ -161,6 +173,7 @@ namespace EzTweak {
         [XmlElement("BINARY")]
         [XmlElement("CMD")]
         [XmlElement("POWERSHELL")]
+        [XmlElement("POWERCFG")]
         [XmlElement("BCDEDIT")]
         [XmlElement("SERVICE")]
         [XmlElement("TWEAKS")]

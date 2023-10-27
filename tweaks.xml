@@ -42,24 +42,59 @@
 					<off>1</off>
 					<on>0</on>
 				</DWORD>
-				<CMD>
-					<off>powercfg /h on &amp; powercfg -setactive scheme_current</off>
-					<on>powercfg /h off &amp; powercfg -setactive scheme_current</on>
-				</CMD>
 			</TWEAKS>
 			<CMD name="Ultimate Power Plan">
 				<off>powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e</off>
 				<on>powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 11111111-1111-1111-1111-111111111111 &amp; powercfg -setactive 11111111-1111-1111-1111-111111111111</on>
-			</CMD>
-			<CMD name="Disable idle states">
-				<off>powercfg -setacvalueindex scheme_current sub_processor 5d76a2ca-e8c0-402f-a133-2158492d58ad 0 &amp; powercfg -setactive scheme_current</off>
-				<on>powercfg -setacvalueindex scheme_current sub_processor 5d76a2ca-e8c0-402f-a133-2158492d58ad 1 &amp; powercfg -setactive scheme_current</on>
+				<lookup>powercfg /list</lookup>
+				<lookup_regex>Power Scheme GUID\: .*  \((.*)\) \*</lookup_regex>
+				<on_regex>Power Scheme GUID\: .*  \((Ultimate Performance)\) \*</on_regex>
 			</CMD>
 			<DWORD name="Disable power throttling">
 				<path>HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling\PowerThrottlingOff</path>
 				<off>0</off>
 				<on>1</on>
 			</DWORD>
+			<POWERCFG name="Disable PCI Link State Power Management" sub_proc_guid="501a4d13-42af-4429-9fd1-a8218c268e20" option_guid="ee12f906-d277-404b-b6da-e5fa1a576df5">
+				<on>0</on>
+				<off>1</off>
+			</POWERCFG>
+			<POWERCFG name="Disable Processor Throttle States" sub_proc_guid="54533251-82be-4824-96c1-47b60b740d00" option_guid="3b04d4fd-1cc7-4f23-ab1c-d1337819c4bb">
+				<on>0</on>
+				<off>2</off>
+			</POWERCFG>
+			<POWERCFG name="Disable Processor Idle States" sub_proc_guid="54533251-82be-4824-96c1-47b60b740d00" option_guid="5d76a2ca-e8c0-402f-a133-2158492d58ad">
+				<on>0</on>
+				<off>1</off>
+			</POWERCFG>
+			<POWERCFG name="Disable Deep Sleep" sub_proc_guid="2e601130-5351-4d9d-8e04-252966bad054" option_guid="d502f7ee-1dc7-4efd-a55d-f04b6f5c0545">
+				<on>0</on>
+				<off>1</off>
+			</POWERCFG>
+			<POWERCFG name="Disable Hard Disk Power Management" sub_proc_guid="0012ee47-9041-4b5d-9b77-535fba8b1442" option_guid="0b2d69d7-a2a1-449c-9680-f91c70521c60">
+				<on>0</on>
+				<off>1</off>
+			</POWERCFG>
+			<POWERCFG name="Disable Idle Device power down" sub_proc_guid="fea3413e-7e05-4911-9a71-700331f1c294" option_guid="4faab71a-92e5-4726-b531-224559672d19">
+				<on>0</on>
+				<off>1</off>
+			</POWERCFG>
+			<POWERCFG name="Disable Hybryd Sleep" sub_proc_guid="238c9fa8-0aad-41ed-83f4-97be242c8f20" option_guid="94ac6d29-73ce-41a6-809f-6363ba21b47e">
+				<on>0</on>
+				<off>1</off>
+			</POWERCFG>
+			<POWERCFG name="Increase Processor idle demote threshold" sub_proc_guid="54533251-82be-4824-96c1-47b60b740d00" option_guid="4b92d758-5a24-4851-a470-815d78aee119">
+				<on>100</on>
+				<off>40</off>
+			</POWERCFG>
+			<POWERCFG name="Increase Processor idle promote threshold" sub_proc_guid="54533251-82be-4824-96c1-47b60b740d00" option_guid="7b224883-b3cc-4d79-819f-8374152cbe7c">
+				<on>100</on>
+				<off>60</off>
+			</POWERCFG>
+			<POWERCFG name="Increase Processor performance core parking min cores" sub_proc_guid="54533251-82be-4824-96c1-47b60b740d00" option_guid="0cc5b647-c1df-4637-891a-dec35c318583">
+				<on>100</on>
+				<off>100</off>
+			</POWERCFG>
 		</SECTION>
 	</TAB>
 	<TAB name="Appearance">
@@ -112,16 +147,6 @@
 					<off>1</off>
 					<on>0</on>
 				</DWORD>
-			</TWEAKS>
-			<TWEAKS name="Black Wallpaper">
-				<REG_SZ>
-					<path>HKCU\Control Panel\Desktop\WallPaper</path>
-					<on> </on>
-				</REG_SZ>
-				<REG_SZ>
-					<path>HKCU\Control Panel\Colors\Background</path>
-					<on>0 0 0</on>
-				</REG_SZ>
 			</TWEAKS>
 			<DWORD name="Disable enable Peek">
 				<path>HKCU\Software\Microsoft\Windows\DWM\EnableAeroPeek</path>
@@ -264,19 +289,10 @@
 				<off>2</off>
 				<on>40</on>
 			</DWORD>
-			<CMD name="Disable Processor performance time check interval">
-				<on>
-					powercfg -setacvalueindex scheme_current 54533251-82be-4824-96c1-47b60b740d00 4d2b0152-7d5c-498b-88e2-34345392a2c5 5000 &amp;
-					powercfg -setactive scheme_current
-				</on>
-				<off>
-					powercfg -setacvalueindex scheme_current 54533251-82be-4824-96c1-47b60b740d00 4d2b0152-7d5c-498b-88e2-34345392a2c5 15 &amp;
-					powercfg -setactive scheme_current
-				</off>
-				<lookup> powercfg -attributes 54533251-82be-4824-96c1-47b60b740d00 4d2b0152-7d5c-498b-88e2-34345392a2c5 -ATTRIB_HIDE &amp; powercfg /q scheme_current 54533251-82be-4824-96c1-47b60b740d00</lookup>
-				<lookup_regex>Processor performance time check interval\n|.*?Current AC Power Setting Index\: (.*)</lookup_regex>
-				<on_regex>Processor performance time check interval\n|.*?Current AC Power Setting Index\: (0x00001388)</on_regex>
-			</CMD>
+			<POWERCFG name="Disable Processor performance time check interval" sub_proc_guid="54533251-82be-4824-96c1-47b60b740d00" option_guid="4d2b0152-7d5c-498b-88e2-34345392a2c5">
+				<on>5000</on>
+				<off>15</off>
+			</POWERCFG>
 			<TWEAKS name="NDIS Affinity (2,3 core)">
 				
 				<DWORD>
@@ -295,10 +311,15 @@
 					<on>2</on>
 				</DWORD>
 			</TWEAKS>
-			<DWORD name="Lock all Driver DPC to one core">
+			<DWORD name="Disable Threaded DPCs">
 				<path>HKLM\System\CurrentControlSet\Control\Session Manager\kernel\ThreadDpcEnable</path>
 				<off>🗑</off>
 				<on>0</on>
+			</DWORD>
+			<DWORD name="Sync Global Resolution Requests (windows 11)">
+				<path>HKLM\System\CurrentControlSet\Control\Session Manager\kernel\GlobalTimerResolutionRequests</path>
+				<off>0</off>
+				<on>1</on>
 			</DWORD>
 			<TWEAKS name="Enable X2Apic and enable Memory Mapping for PCI-E devices">
 				<BCDEDIT>
@@ -450,6 +471,10 @@
 			</DWORD>
 			<CMD name="Disable auditing of successful events">
 				<on>Auditpol /set /category:* /Success:disable</on>
+				<off>Auditpol /set /category:* /Success:enable</off>
+				<lookup>auditpol /get /category:* | findstr "Success" >nul 2>&amp;1 &amp;&amp; (echo Disabled) || (echo Enabled)</lookup>
+				<lookup_regex>(.*)</lookup_regex>
+				<on_regex>Enabled</on_regex>
 			</CMD>
 			<TWEAKS name="Disable Virtual Memory Pagefile Encryption">
 				<DWORD>
@@ -784,6 +809,11 @@
 			<SERVICE name="Windows Update">
 				<service>wuauserv</service>
 				<off>3</off>
+				<on>4</on>
+			</SERVICE>
+			<SERVICE name="Disable Nvidia Control Panel">
+				<service>NVDisplay.ContainerLocalSystem</service>
+				<off>2</off>
 				<on>4</on>
 			</SERVICE>
 			<SERVICE name="Update Orchestrator Service">
@@ -1178,6 +1208,18 @@
 					<on>16</on>
 				</DWORD>
 			</TWEAKS>
+			<POWERCFG name="Disable USB 3 Link Power Management" sub_proc_guid="2a737441-1930-4402-8d77-b2bebba308a3" option_guid="d4e98f31-5ffe-4ce1-be31-1b38b384c009">
+				<on>0</on>
+				<off>2</off>
+			</POWERCFG>
+			<POWERCFG name="Disable USB Selective Suspend setting" sub_proc_guid="2a737441-1930-4402-8d77-b2bebba308a3" option_guid="48e6b7a6-50f5-4782-a5d4-53bb8f07e226">
+				<on>0</on>
+				<off>1</off>
+			</POWERCFG>
+			<POWERCFG name="Zero selective suspend timeout" sub_proc_guid="2a737441-1930-4402-8d77-b2bebba308a3" option_guid="0853a681-27c8-4100-a2fd-82013e970683">
+				<on>0</on>
+				<off>50</off>
+			</POWERCFG>
 		</SECTION>
 	</TAB>
 	<TAB name="Sound">
@@ -1185,6 +1227,7 @@
 			<DWORD name="Sound communications do nothing">
 				<path>HKCU\Software\Microsoft\Multimedia\Audio\UserDuckingPreference</path>
 				<on>3</on>
+				<off>🗑</off>
 			</DWORD>
 			<DWORD name="Disable startup sound">
 				<path>HKLM\Software\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\BootAnimation\DisableStartupSound</path>
@@ -1194,6 +1237,7 @@
 			<REG_SZ name="Sound scheme none">
 				<path>HKCU\AppEvents\Schemes\@</path>
 				<on>.None</on>
+				<off>.Default</off>
 			</REG_SZ>
 		</SECTION>
 	</TAB>
@@ -1284,11 +1328,6 @@
 				<off>🗑</off>
 				<on>1</on>
 			</DWORD>
-			<SERVICE name="Disable Nvidia Control Panel">
-				<service>NVDisplay.ContainerLocalSystem</service>
-				<off>2</off>
-				<on>4</on>
-			</SERVICE>
 			<DWORD name="Force contiguous memory allocation in the NVIDIA driver">
 				<path>HKLM\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000\PreferSystemMemoryContiguous</path>
 				<off>🗑</off>
@@ -1368,16 +1407,8 @@
 			</TWEAKS>
 		</SECTION>
 	</TAB>
-	<TAB name="Tools">
-		<SECTION name="Tools">
-			<CMD name="Set Rocket League Threads Priority">
-				<on> start cmd.exe /c .\ThreadPriority.exe </on>
-			</CMD>
-			<CMD name="Activate">
-				<cmd> slmgr /ipk [[value]] &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </cmd>
-				<value name="Windows 11">W269N-WFGWX-YVC9B-4J6C9-T83GX</value>
-				<value name="Windows 10">W269N-WFGWX-YVC9B-4J6C9-T83GX</value>
-			</CMD>
+	<TAB name="Windows">
+		<SECTION name="Windows">
 			<BCDEDIT name="Windows Boot Name">
 				<property>description</property>
 			</BCDEDIT>
@@ -1385,22 +1416,6 @@
 				<cmd>label C: [[value]]</cmd>
 				<lookup>vol C:</lookup>
 				<lookup_regex>Volume in drive .* is (.*)$</lookup_regex>
-			</CMD>
-			<CMD name="Activate Windows 10">
-				<on> slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato </on>
-			</CMD>
-			<CMD name="Kill Antivirus">
-				<on>"F:\INSTALLERS\PSTools\pskill64.exe" -t MsMpEng.exe</on>
-			</CMD>
-			<CMD name="Install timer resolution service">
-				<on>_SetTimerResolutionService.exe -install &amp; sc config STR start=auto &amp; net start STR</on>
-				<description>Install C++ runtime  before ! https://aka.ms/vs/17/release/vc_redist.x64.exe</description>
-			</CMD>
-			<CMD name="Restart PC">
-				<on>shutdown -r</on>
-			</CMD>
-			<CMD name="Create restore point">
-				<on>wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "EzTweak restore point", 100, 7</on>
 			</CMD>
 			<TWEAKS name="Allow scripts in CMD set-executionpolicy remotesigned">
 				<REG_SZ>
@@ -1414,10 +1429,6 @@
 					<on>RemoteSigned</on>
 				</REG_SZ>
 			</TWEAKS>
-		</SECTION>
-	</TAB>
-	<TAB name="Windows">
-		<SECTION name="Windows">
 			<DWORD name="Disable Telemetry">
 				<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\AppCompat\AITEnable</path>
 				<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection\AllowTelemetry</path>
@@ -1680,16 +1691,7 @@
 		<SCHEDULED_TASKS name="Disable Tasks"></SCHEDULED_TASKS>
 	</TAB>
 	<MENU>
-		<ITEM name="Open">
-			<ITEM name="Logs">
-				<ARG>eztweak.log</ARG>
-			</ITEM>
-			<ITEM name="Tweaks Schema">
-				<ARG>notepad </ARG>
-				<ARG>tweaks.xml</ARG>
-			</ITEM>
-			<ITEM separator="true">
-			</ITEM>
+		<ITEM name="Windows">
 			<ITEM name="Registry Editor">
 				<ARG>regedit</ARG>
 			</ITEM>
@@ -1746,12 +1748,39 @@
 			<ITEM name="Appearance and performance">
 				<ARG>SystemPropertiesPerformance.exe</ARG>
 			</ITEM>
+		</ITEM>
+		<ITEM name="Tools">
+		<ITEM name="Activate Windows">
+			<ARG>cmd</ARG>
+			<ARG>/c</ARG>
+			<ARG>slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato</ARG>
+		</ITEM>
+		<ITEM name="Restart PC">
+			<ARG>cmd</ARG>
+			<ARG>/c</ARG>
+			<ARG>shutdown -r</ARG>
+		</ITEM>
+		<ITEM name="Create restore point">
+			<ARG>cmd</ARG>
+			<ARG>/c</ARG>
+			<ARG>wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "EzTweak restore point", 100, 7</ARG>
+		</ITEM>
+		<ITEM name="Install timer resolution service">
+			<ARG>cmd</ARG>
+			<ARG>/c</ARG>
+			<ARG>echo Remember to Install C++ runtime before! https://aka.ms/vs/17/release/vc_redist.x64.exe &amp; _SetTimerResolutionService.exe -install &amp; sc config STR start=auto &amp; net start STR</ARG>
+		</ITEM>
+		</ITEM>
+		<ITEM name="Console">
 			<ITEM name="Cmd">
 				<ARG>cmd</ARG>
 			</ITEM>
 			<ITEM name="PowerShell">
 				<ARG>powershell</ARG>
 			</ITEM>
+		</ITEM>
+		<ITEM name="Logs">
+				<ARG>eztweak.log</ARG>
 		</ITEM>
 	</MENU>
 </EZTWEAK>
