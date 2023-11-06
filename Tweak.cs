@@ -16,8 +16,10 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using static EzTweak.Device_Tweak;
 
-namespace EzTweak {
-    public class Tweak {
+namespace EzTweak
+{
+    public class Tweak
+    {
         public string name;
         public string description;
         public System.Action turn_on;
@@ -33,13 +35,18 @@ namespace EzTweak {
         public Func<string> status;
         public Func<string> status_command;
         public Func<bool> is_on;
+        public string on_value;
+        public string off_value;
         public Tweak[] tweaks;
 
         public Dictionary<string, Func<string>[]> info = new Dictionary<string, Func<string>[]> { };
         public void UpdateInfo()
         {
+            info.Clear();
             if (name != null) info.Add("Name", new Func<string>[] { () => name });
             if (description != null) info.Add("Description", new Func<string>[] { () => description });
+            if (on_value != null) info.Add("On Value", new Func<string>[] { () => on_value });
+            if (off_value != null) info.Add("Off Value", new Func<string>[] { () => off_value });
             if (is_on != null) info.Add("Is On", new Func<string>[] { () => is_on() ? "True" : "False" });
             if (current_value != null) info.Add("Current Value", new Func<string>[] { () => current_value() });
             if (valid_values != null) info.Add("Valid Values", new Func<string>[] { () => valid_values.ToString() });
@@ -51,37 +58,43 @@ namespace EzTweak {
             if (on_regex != null) info.Add("On Regex", new Func<string>[] { () => on_regex() });
             if (tweaks != null) info.Add("Sub Tweaks", new Func<string>[] { () => tweaks.Length.ToString() });
         }
-       
+
     }
 
-    public class Container_Tweak : Tweak {
-        
-        public Container_Tweak(string name, string description, Tweak[] tweaks) {
+    public class Container_Tweak : Tweak
+    {
+
+        public Container_Tweak(string name, string description, Tweak[] tweaks)
+        {
             this.name = name;
             this.description = description;
 
-            if(tweaks.Length == 1)
+            if (tweaks.Length == 1)
             {
                 dynamic first = tweaks[0] as Container_Tweak;
-                if(first != null && first.name == null && first.description == null)
+                if (first != null && first.name == null && first.description == null)
                 {
                     tweaks = first.tweaks;
                 }
             }
 
             this.tweaks = tweaks;
-            if (Array.TrueForAll(tweaks, t => t.turn_on != null)) {
+            if (Array.TrueForAll(tweaks, t => t.turn_on != null))
+            {
                 this.turn_on = () => Array.ForEach(tweaks, t => t.turn_on());
             }
-            if (Array.TrueForAll(tweaks, t => t.turn_off != null)) {
+            if (Array.TrueForAll(tweaks, t => t.turn_off != null))
+            {
                 this.turn_off = () => Array.ForEach(tweaks, t => t.turn_off());
             }
 
-            if (Array.TrueForAll(tweaks, t => t.activate_value != null)) {
+            if (Array.TrueForAll(tweaks, t => t.activate_value != null))
+            {
                 this.activate_value = (value) => Array.ForEach(tweaks, t => t.activate_value(value));
             }
 
-            if (Array.TrueForAll(tweaks, t => t.is_on != null)) {
+            if (Array.TrueForAll(tweaks, t => t.is_on != null))
+            {
                 this.is_on = () => tweaks.All(t => t.is_on());
             }
 
@@ -98,17 +111,23 @@ namespace EzTweak {
         }
     }
 
-    public class CMD_Tweak : Tweak {
-        public CMD_Tweak(string on, string off, string cmd, Dictionary<string,string> valid_values, string status_command, string current_regex, string is_on_regex) {
+    public class CMD_Tweak : Tweak
+    {
+        public CMD_Tweak(string on, string off, string cmd, Dictionary<string, string> valid_values, string status_command, string current_regex, string is_on_regex)
+        {
 
             this.name = $"[CMD] \"{((on != null) ? on : cmd)}\"";
-           
 
-            if (on != null) {
+            this.on_value = on;
+            this.off_value = off;
+
+            if (on != null)
+            {
                 this.turn_on = () => Start(on);
             }
 
-            if (off != null) {
+            if (off != null)
+            {
                 this.turn_off = () => Start(off);
             }
 
@@ -124,20 +143,25 @@ namespace EzTweak {
                 this.valid_values = () => valid_values;
             }
 
-            if (status_command != null) {
+            if (status_command != null)
+            {
                 this.status_command = () => status_command;
-                if (current_regex != null) {
+                if (current_regex != null)
+                {
                     this.current_regex = () => current_regex;
-                    this.current_value = () => {
+                    this.current_value = () =>
+                    {
                         var output = Start(status_command, true);
                         var match = Regex.Match(output, current_regex, RegexOptions.Multiline);
                         return match.Groups[1].Value;
                     };
                 }
 
-                if (is_on_regex != null) {
+                if (is_on_regex != null)
+                {
                     this.on_regex = () => is_on_regex;
-                    this.is_on = () => {
+                    this.is_on = () =>
+                    {
                         if (is_on_regex == null) { return false; }
                         var output = Start(status_command, true);
                         var match = Regex.Match(output, is_on_regex, RegexOptions.Multiline);
@@ -150,7 +174,8 @@ namespace EzTweak {
 
         }
 
-        public static string Start(string command, bool quiet = false) {
+        public static string Start(string command, bool quiet = false)
+        {
             Process cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
             cmd.StartInfo.Arguments = $"/C {command}";
@@ -161,39 +186,55 @@ namespace EzTweak {
             cmd.Start();
             cmd.WaitForExit();
             var output = cmd.StandardOutput.ReadToEnd();
-            if (!quiet) {
+            if (!quiet)
+            {
                 Log.WriteLine($"{command}");
                 Log.WriteLine($"{output}");
             }
             return output;
         }
 
-        public static void Open(string[] cmd) {
-            try {
+        public static void Open(string[] cmd)
+        {
+            try
+            {
                 Process.Start(cmd[0], string.Join(" ", cmd.Skip(1).ToArray()));
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 MessageBox.Show($"Error: {e.Message}", $"Failed to open {string.Join(" ", cmd)}", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+
         }
     }
 
-    public class BCDEDIT_Tweak : Tweak {
-        public BCDEDIT_Tweak(string property, string on_value, string off_value) {
-               this.name = $"[BCDEDIT] {property}";
-
-            if (on_value != null) {
+    public class BCDEDIT_Tweak : Tweak
+    {
+        public BCDEDIT_Tweak(string property, string on_value, string off_value)
+        {
+            this.name = $"[BCDEDIT] {property}";
+            this.on_value = on_value;
+            this.off_value = off_value;
+            if (on_value != null)
+            {
                 this.turn_on = () => this.activate_value(on_value);
                 this.is_on = () => Match(property, on_value);
             }
 
-            if (off_value != null) {
+            if (off_value != null)
+            {
                 this.turn_off = () => activate_value(off_value);
             }
 
-            this.activate_value = (string value) => {
-                if (value == Registry.DELETE_TAG) {
+            this.activate_value = (string value) =>
+            {
+                if (value == Registry.DELETE_TAG)
+                {
                     Delete(property);
-                } else {
+                }
+                else
+                {
                     Set(property, value);
                 }
             };
@@ -202,13 +243,16 @@ namespace EzTweak {
             this.status = () => $"BCDEDIT: {current_value()}";
         }
 
-        public static string Query(string property) {
+        public static string Query(string property)
+        {
             IList<string> output = CMD_Tweak.Start("bcdedit /enum {current}", true).Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
             var regex = new Regex($@"^{property}\s+([^\s\\].+)$", RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
-            foreach (string line in output) {
+            foreach (string line in output)
+            {
                 var match = regex.Match(line);
-                if (match.Success) {
+                if (match.Success)
+                {
                     return match.Groups[1].Value;
                 }
             }
@@ -216,9 +260,11 @@ namespace EzTweak {
             return null;
         }
 
-        public static bool Match(string property, string value) {
+        public static bool Match(string property, string value)
+        {
             var a = Query(property);
-            if (a == null) {
+            if (a == null)
+            {
                 return a == value || value == Registry.DELETE_TAG;
             }
             if (value == null) { return false; }
@@ -226,11 +272,13 @@ namespace EzTweak {
             return a.ToLower() == value.ToLower();
         }
 
-        public static void Set(string property, string value) {
+        public static void Set(string property, string value)
+        {
             CMD_Tweak.Start($"bcdedit /set \"{{current}}\" \"{property}\" \"{value}\"");
         }
 
-        public static void Delete(string property) {
+        public static void Delete(string property)
+        {
             CMD_Tweak.Start($"bcdedit /deletevalue {property}");
         }
     }
@@ -241,8 +289,11 @@ namespace EzTweak {
         {
             this.name = $"[POWERCFG] {option_guid}";
             this.description = $"[SUB_PROC_GUID] {sub_proc_guid} [OPTION_GUID] {option_guid}";
+            this.on_value = on_value;
+            this.off_value = off_value;
 
-            this.activate_value = (string value) => {
+            this.activate_value = (string value) =>
+            {
                 Set(sub_proc_guid, option_guid, value);
             };
 
@@ -259,7 +310,7 @@ namespace EzTweak {
             {
                 this.turn_off = () => activate_value(off_value);
             }
-     
+
         }
 
         public static string Query(string sub_proc_guid, string option_guid)
@@ -293,7 +344,7 @@ namespace EzTweak {
                 return a == value || value == Registry.DELETE_TAG;
             }
             if (value == null) { return false; }
-            
+
             return Sanitize(a).ToLower() == Sanitize(value).ToLower();
         }
 
@@ -304,19 +355,26 @@ namespace EzTweak {
 
     }
 
-    public class Powershell_Tweak : Tweak {
-        public Powershell_Tweak(string on_command, string off_command, string status_command, string current_regex, string is_on_regex) : this(on_command) {
-                this.name = $"[PS] '{on_command}'";
-
-            if (off_command != null) {
+    public class Powershell_Tweak : Tweak
+    {
+        public Powershell_Tweak(string on_command, string off_command, string status_command, string current_regex, string is_on_regex) : this(on_command)
+        {
+            this.name = $"[PS] '{on_command}'";
+            this.on_value = on_command;
+            this.off_value = off_command;
+            if (off_command != null)
+            {
                 this.turn_off = () => Start(off_command);
             }
 
-            if (status_command != null) {
+            if (status_command != null)
+            {
                 this.status_command = () => status_command;
-                if (current_regex != null) {
+                if (current_regex != null)
+                {
                     this.current_regex = () => current_regex;
-                    this.current_value = () => {
+                    this.current_value = () =>
+                    {
                         var output = Start(status_command, true);
                         var match = Regex.Match(output, current_regex, RegexOptions.Multiline);
                         return match.Groups[1].Value;
@@ -325,9 +383,11 @@ namespace EzTweak {
                     this.status = () => $"[{current_value()}] Powershell: {status_command}";
                 }
 
-                if (is_on_regex != null) {
+                if (is_on_regex != null)
+                {
                     this.on_regex = () => is_on_regex;
-                    this.is_on = () => {
+                    this.is_on = () =>
+                    {
                         var output = Start(status_command, true);
                         var match = Regex.Match(output, is_on_regex, RegexOptions.Multiline);
                         return match.Success;
@@ -337,17 +397,21 @@ namespace EzTweak {
 
         }
 
-        public Powershell_Tweak(string on_command) {
+        public Powershell_Tweak(string on_command)
+        {
             this.name = $"[PS] '{on_command}'";
+            this.on_value = on_command;
             this.cmd = () => on_command;
             this.turn_on = () => Start(on_command);
         }
 
-        public static string Start(string command, bool quiet = false) {
+        public static string Start(string command, bool quiet = false)
+        {
             var script = $"{command} | Out-String";
             PowerShell ps = PowerShell.Create();
 
-            if (!quiet) {
+            if (!quiet)
+            {
                 Log.WriteLine(command);
             }
 
@@ -357,27 +421,35 @@ namespace EzTweak {
         }
     }
 
-    public class RegistryTweak : Tweak {
-        public RegistryTweak(TweakType type, string path, string on_value, string off_value) : this(type, path) {
-                this.name = $"[REG] {Path.GetFileName(path)}='{on_value}'";
-                this.path = () => path;
-                this.description = $"[PATH] {path} \n[ON] {on_value} \n[OFF] {off_value}";
+    public class RegistryTweak : Tweak
+    {
 
-            if (on_value != null) {
+
+        public RegistryTweak(TweakType type, string path, string on_value, string off_value) : this(type, path)
+        {
+            this.name = $"[REG] {Path.GetFileName(path)}='{on_value}'";
+            this.path = () => path;
+            this.on_value = on_value;
+            this.off_value = off_value;
+
+            if (on_value != null)
+            {
                 this.turn_on = () => this.activate_value(sanitize(on_value, type));
                 this.is_on = () => sanitize(this.current_value(), type) == sanitize(on_value, type);
             }
 
-            if (off_value != null) {
+            if (off_value != null)
+            {
                 this.turn_off = () => activate_value(sanitize(off_value, type));
             }
         }
 
-        public RegistryTweak(TweakType type, string path) {
-                this.name = "Registry";
-                this.description = $"[PATH] {path} \n";
+        public RegistryTweak(TweakType type, string path)
+        {
+            this.name = "Registry";
             this.path = () => path;
-            this.activate_value = (string value) => {
+            this.activate_value = (string value) =>
+            {
                 Registry.Set(path, sanitize(value, type), (RegistryValueKind)type);
             };
             this.current_value = () =>
@@ -385,17 +457,20 @@ namespace EzTweak {
             this.status = () => $"\"{path}\"={current_value()}";
         }
 
-        public RegistryTweak(TweakType type, string path, Dictionary<string, string> values) : this(type, path) {
+        public RegistryTweak(TweakType type, string path, Dictionary<string, string> values) : this(type, path)
+        {
             var s_values = new Dictionary<string, string> { };
-            foreach(var v in values)
+            foreach (var v in values)
             {
                 s_values[v.Key] = sanitize(v.Value, type);
             }
             this.valid_values = () => s_values;
         }
 
-        protected static string sanitize(string value, TweakType type) {
-            switch (type) {
+        protected static string sanitize(string value, TweakType type)
+        {
+            switch (type)
+            {
                 case TweakType.DWORD:
                 case TweakType.SERVICE:
                     return Registry.From_DWORD(Registry.To_DWORD(value));
@@ -408,30 +483,40 @@ namespace EzTweak {
         }
     }
 
-    public class ServiceTweak : RegistryTweak {
-        public ServiceTweak(string service, string on_value, string off_value) : base(TweakType.DWORD, ServiceTweak.registry_path(service), on_value, off_value) {
+    public class ServiceTweak : RegistryTweak
+    {
+        public ServiceTweak(string service, string on_value, string off_value) : base(TweakType.DWORD, ServiceTweak.registry_path(service), on_value, off_value)
+        {
             this.name = $"[SERVICE] {service}='{on_value}'";
             this.path = () => ServiceTweak.registry_path(service);
-            this.status += () => {
+            this.on_value = on_value;
+            this.off_value = off_value;
+            this.status += () =>
+            {
                 var value = current_value();
                 return $"{service} is {alias(value)}";
             };
         }
 
-        private static string registry_path(string service) {
+        private static string registry_path(string service)
+        {
             return $@"HKLM\SYSTEM\CurrentControlSet\Services\{service}\Start";
         }
 
-        private static string alias(string value) {
-            if (sanitize("4", TweakType.DWORD) == value) {
+        private static string alias(string value)
+        {
+            if (sanitize("4", TweakType.DWORD) == value)
+            {
                 return "(Disabled)";
             }
 
-            if (sanitize("3", TweakType.DWORD) == value) {
+            if (sanitize("3", TweakType.DWORD) == value)
+            {
                 return "(Manual)";
             }
 
-            if (sanitize("2", TweakType.DWORD) == value) {
+            if (sanitize("2", TweakType.DWORD) == value)
+            {
                 return "(Automatic)";
             }
             return "";
@@ -455,41 +540,51 @@ namespace EzTweak {
 
         public static TaskTweak[] GetTasks()
         {
-           var tasks = taskService.AllTasks.OrderByDescending(t => t.LastRunTime);
+            var tasks = taskService.AllTasks.OrderByDescending(t => t.LastRunTime);
             return tasks.Select(task => new TaskTweak(task)).ToArray();
         }
     }
 
 
-    public class APPX_Tweak {
-        public static Container_Tweak[] ALL() {
+    public class APPX_Tweak
+    {
+        public static Container_Tweak[] ALL()
+        {
             var output = Powershell_Tweak.Start("Get-AppxPackage | Select-Object -ExpandProperty Name", true);
             var lines = output.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             var apps = lines.Where(x => x != "").OrderBy(x => x);
-            return apps.Select(app => new Container_Tweak($"{app}", "", new[] {new Powershell_Tweak(on_command: $"Get-AppxPackage *{app}* | Remove-AppxPackage")})).ToArray();
+            return apps.Select(app => new Container_Tweak($"{app}", "", new[] { new Powershell_Tweak(on_command: $"Get-AppxPackage *{app}* | Remove-AppxPackage") })).ToArray();
         }
     }
 
-    public class IRQ_Tweak {
+    public class IRQ_Tweak
+    {
 
-        public class IRQ {
-            public static Dictionary<string, SortedSet<ulong>> ReadDevices() {
+        public class IRQ
+        {
+            public static Dictionary<string, SortedSet<ulong>> ReadDevices()
+            {
                 Dictionary<string, SortedSet<ulong>> devices = new Dictionary<string, SortedSet<ulong>>();
                 foreach (ManagementObject Memory in new ManagementObjectSearcher(
-                                "select * from Win32_DeviceMemoryAddress").Get()) {
+                                "select * from Win32_DeviceMemoryAddress").Get())
+                {
                     // associate Memory addresses  with Pnp Devices
                     foreach (ManagementObject Pnp in new ManagementObjectSearcher(
-                        "ASSOCIATORS OF {Win32_DeviceMemoryAddress.StartingAddress='" + Memory["StartingAddress"] + "'} WHERE RESULTCLASS  = Win32_PnPEntity").Get()) {
+                        "ASSOCIATORS OF {Win32_DeviceMemoryAddress.StartingAddress='" + Memory["StartingAddress"] + "'} WHERE RESULTCLASS  = Win32_PnPEntity").Get())
+                    {
                         // associate Pnp Devices with IRQ
                         foreach (ManagementObject IRQ in new ManagementObjectSearcher(
-                            "ASSOCIATORS OF {Win32_PnPEntity.DeviceID='" + Pnp["PNPDeviceID"] + "'} WHERE RESULTCLASS  = Win32_IRQResource").Get()) {
+                            "ASSOCIATORS OF {Win32_PnPEntity.DeviceID='" + Pnp["PNPDeviceID"] + "'} WHERE RESULTCLASS  = Win32_IRQResource").Get())
+                        {
                             var key = Pnp["Caption"].ToString();
-                            if (!devices.TryGetValue(key, out SortedSet<ulong> val)) {
+                            if (!devices.TryGetValue(key, out SortedSet<ulong> val))
+                            {
                                 val = new SortedSet<ulong>();
                                 devices.Add(key, val);
                             }
                             var value = IRQ["IRQNumber"];
-                            if (value != null) {
+                            if (value != null)
+                            {
                                 val.Add((UInt32)value);
                             }
                         }
@@ -500,7 +595,8 @@ namespace EzTweak {
             }
         }
 
-        public static Container_Tweak[] ALL_IRQ() {
+        public static Container_Tweak[] ALL_IRQ()
+        {
             var values = new Dictionary<string, string> {
                 { Registry.DELETE_TAG, Registry.DELETE_TAG },
                 { "0 (highest)", "0" }, { "1", "1" }, { "2", "2" }, { "3", "3" }, { "4", "4" }, { "5", "5" },
@@ -511,8 +607,9 @@ namespace EzTweak {
             var devices_dict = IRQ.ReadDevices().OrderBy(set => set.Value.FirstOrDefault());
             return devices_dict.Aggregate(
                 new List<Container_Tweak> { },
-                (acc, pair) => {
-                    acc.AddRange(pair.Value.Select(irq => new Container_Tweak($"{pair.Key}", "" , new[]{new RegistryTweak(
+                (acc, pair) =>
+                {
+                    acc.AddRange(pair.Value.Select(irq => new Container_Tweak($"{pair.Key}", "", new[]{new RegistryTweak(
                         type: TweakType.DWORD,
                         path: $@"HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl\IRQ{irq}Priority",
                         values: values) })));
@@ -523,14 +620,20 @@ namespace EzTweak {
     }
 
 
-    public class Device_Tweak {
-        public class Device {
-            public static Device[] All() {
+    public class Device_Tweak
+    {
+        public class Device
+        {
+            public static Device[] All()
+            {
                 List<Device> devices = new List<Device>();
                 using (var searcher = new ManagementObjectSearcher(
-                    @"Select * From Win32_PNPEntity")) {
-                    using (ManagementObjectCollection collection = searcher.Get()) {
-                        foreach (var device in collection) {
+                    @"Select * From Win32_PNPEntity"))
+                {
+                    using (ManagementObjectCollection collection = searcher.Get())
+                    {
+                        foreach (var device in collection)
+                        {
                             var dev = new Device();
                             var keywords = new[] { "Name", "PNPDeviceID", "Status", "PNPClass", "Description", "Availability", "Caption", "ClassGuid", "ConfigManagerErrorCode", "ConfigManagerUserConfig", "CreationClassName", "DeviceID", "ErrorCleared", "ErrorDescription", "InstallDate", "LastErrorCode", "Manufacturer", "PowerManagementCapabilities", "PowerManagementSupported", "Present", "Service", "StatusInfo", "SystemCreationClassName", "SystemName" };
                             Array.ForEach(keywords, k => dev.values.Add(k, device.GetPropertyValue(k)?.ToString()));
@@ -541,7 +644,8 @@ namespace EzTweak {
                 return devices.ToArray();
             }
 
-            public object this[string a] {
+            public object this[string a]
+            {
                 get { return values[a]; }
                 set { values[a] = value.ToString(); }
             }
@@ -557,7 +661,8 @@ namespace EzTweak {
             public string FullInfo { get { return string.Join(Environment.NewLine, values.Select((p) => $"{p.Key}: {p.Value}")); } }
         }
 
-        public static Tweak DisableDeviceTweak(Device device) {
+        public static Tweak DisableDeviceTweak(Device device)
+        {
             var name = "Disable Driver";
             var description = $"Disable {device.Name}{Environment.NewLine}{Environment.NewLine}{device.FullInfo}";
             var status_command = $"pnputil /enum-devices /instanceid \"{device.PnpDeviceID}\" | findstr /c:\"Status:\"";
@@ -569,7 +674,8 @@ namespace EzTweak {
             return new Container_Tweak(name, description, tks);
         }
 
-        public static Tweak DeviceIdleRPIN(Device device) {
+        public static Tweak DeviceIdleRPIN(Device device)
+        {
             var name = "Disable AllowIdleIrpInD3";
             var description = "Disable power saving option";
             var path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\AllowIdleIrpInD3";
@@ -581,7 +687,8 @@ namespace EzTweak {
             return Registry.Exists(path) ? tk : null;
         }
 
-        public static Tweak EnhancedPowerManagementEnabled(Device device) {
+        public static Tweak EnhancedPowerManagementEnabled(Device device)
+        {
             var name = "Disable Enhanced Power Management";
             var description = "Disable Enhanced Power Management";
             var path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\EnhancedPowerManagementEnabled";
@@ -593,7 +700,8 @@ namespace EzTweak {
             return Registry.Exists(path) ? tk : null;
         }
 
-        public static Tweak MsiSupported(Device device) {
+        public static Tweak MsiSupported(Device device)
+        {
             var name = "Enable MSI";
             var description = "Enable MSI";
             var base_path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties";
@@ -606,7 +714,8 @@ namespace EzTweak {
             return Registry.Exists(path) ? tk : null;
         }
 
-        public static Tweak DevicePriority(Device device) {
+        public static Tweak DevicePriority(Device device)
+        {
             var name = "Device Priority High";
             var description = "Device Priority High";
             var base_path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
@@ -619,7 +728,8 @@ namespace EzTweak {
             return Registry.Exists(path) ? tk : null;
         }
 
-        public static Tweak AssignmentSetOverride(Device device) {
+        public static Tweak AssignmentSetOverride(Device device)
+        {
             var name = "Set Affinity";
             var description = "Set Affinity";
             var base_path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
@@ -632,7 +742,8 @@ namespace EzTweak {
             return Registry.Exists(path) ? tk : null;
         }
 
-        public static Tweak LinesLimitControl(Device device) {
+        public static Tweak LinesLimitControl(Device device)
+        {
             var name = "Message Number Limit";
             var description = "Set IRQ Limit";
             var base_path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";

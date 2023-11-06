@@ -12,10 +12,6 @@ using TextBox = System.Windows.Forms.TextBox;
 
 namespace EzTweak {
     partial class App {
-        public static int height = 25;
-        public static int width = 390;
-        public static Size button_size = new Size((int)(0.08 * width), height);
-
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -36,59 +32,11 @@ namespace EzTweak {
         private static FlowLayoutPanel CreateFlyoutPanel() {
             return new FlowLayoutPanel {
                 AutoSize = true,
-                MaximumSize = new Size(width, 0),
+                MaximumSize = TweakControl.flyout_panel_size,
                 Padding = new Padding(0),
                 Margin = new Padding(3)
             };
         }
-
-        private static FlowLayoutPanel CreateExpandFlyoutPanel() {
-            return new FlowLayoutPanel {
-                AutoSize = true,
-                //MaximumSize = new Size(width, 0),
-                //MinimumSize = new Size(width, 0),
-                //Size = new Size(width, 0),
-                Padding = new Padding(3),
-                Margin = new Padding(3),
-                Dock = DockStyle.Fill,
-                BorderStyle = BorderStyle.Fixed3D
-            };
-        }
-
-        
-
-      
-
-        public static LinkLabel Label(string text, Action on_click, int offset = 0) {
-            var label = new LinkLabel();
-            label.Font = new Font("Arial", 8.5F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
-            label.Text = text;
-            label.Margin = new Padding(0, 0, 0, 0);
-            label.Padding = new Padding(3, 3, 3, 3);
-            label.LinkColor = Color.Black;
-            label.AutoSize = true;
-            label.MaximumSize = new Size((int)(0.75 * width), height);
-            if (on_click != null)
-                label.LinkClicked += (x, y) => on_click();
-            return label;
-        }
-
-        public static Label TextLabel(string text, int offset = 0)
-        {
-            var label = new Label();
-            label.Font = new Font("Arial", 8.5F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
-            label.Text = text;
-            //label.Margin = new Padding(0, 6, 0, 0);
-            label.Padding = new Padding(3, 3, 3, 3);
-            label.AutoSize = true;
-            //label.MaximumSize = new Size((int)(0.75 * width), height);
-            label.SizeChanged += delegate (object sender, EventArgs e)
-            {
-                label.Left = (label.Parent.ClientSize.Width - label.Size.Width) / 2;
-            };
-            return label;
-        }
-
 
 
         private TabPage CreateTab(Tab tab) {
@@ -96,23 +44,15 @@ namespace EzTweak {
                 AutoScroll = true,
                 ForeColor = SystemColors.ControlText,
                 Font = new Font("Arial", 7F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0))),
-                Size = new Size(380, 300),
+                Size = TweakControl.tab_size,
                 Text = tab.name
             };
-            
-            new Thread(() => {
-                Thread.CurrentThread.IsBackground = true;
-                var controls = tab.sections.Select(CreateSection).ToArray();
-                this.Invoke((MethodInvoker)(() => {
-                    
-                    tab_control.Controls.AddRange(controls);
-                }));
-            }).Start();
+
+            var controls = tab.sections.Select(CreateSection).ToArray();
+            tab_control.Controls.AddRange(controls);
 
             return tab_control;
         }
-
-       
 
         private FlowLayoutPanel CreateSection(Section section) {
             var panel = CreateFlyoutPanel();
@@ -135,14 +75,14 @@ namespace EzTweak {
                     break;
                 case SectionType.DEVICES:
                     {
-                        panel.Controls.Add(TweakControl.CreateDevicesSection());
+                        //panel.Controls.Add(TweakControl.CreateDevicesSection());
                     }
                     break;
                 case SectionType.APPX:
                     {
                         var container_tweaks = WindowsResources.All_APPX;
                         var tweak_controls = container_tweaks.Select(t => new TweakControl(t, null)).ToArray();
-                        Array.ForEach(tweak_controls, tc => tc.run_button.Click += (a, b) => tc.Hide());
+                        Array.ForEach(tweak_controls, tc => tc.run_button.Click += (a, b) => tc?.Hide());
                         var controls = tweak_controls.Select(t => t.panel).ToArray();
                         panel.Controls.AddRange(controls);
                     }
@@ -159,20 +99,18 @@ namespace EzTweak {
             }
             panel.ResumeLayout();
             return panel;
-        }
-
-        
+        }  
 
         private ToolStripItem[] CreateMenuItem(Item item)
         {
             if (item.separator)
             {
-                return new[] { new ToolStripSeparator() { Size = new Size(177, 6) } };
+                return new[] { new ToolStripSeparator() { Size = TweakControl.toolstrip_size } };
             }
 
             var control = new ToolStripMenuItem
             {
-                Size = new Size(180, 22),
+                Size = TweakControl.toolstrip_item_size,
                 Text = item.name,
             };
 
@@ -244,29 +182,7 @@ namespace EzTweak {
             this.status_loading.Name = "status_loading";
             this.status_loading.Size = new System.Drawing.Size(59, 17);
             this.status_loading.Text = "";
-            // 
-            // App
-            // 
 
-            var tweaks_xml = Parser.xml_file;
-            var xmlDocument = Parser.loadXML(tweaks_xml);
-            var tabs = Parser.LoadTweakTabs(xmlDocument);
-            var items = Parser.LoadMenuItems(xmlDocument);
-
-            foreach (var item in items)
-            {
-                var context_items = CreateMenuItem(item);
-                this.menu.Items.AddRange(context_items);
-            }
-
-            foreach (var tab in tabs)
-            {
-                
-                var tab_control = CreateTab(tab);
-                this.tabs.Controls.Add(tab_control);
-            }
-
-            //
 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

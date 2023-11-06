@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace EzTweak {
     public class Toggle : CheckBox {
-        private Color onBackColor = Color.MediumSlateBlue;
+        private Color onBackColor = Color.CornflowerBlue;
         private Color onToggleColor = Color.WhiteSmoke;
         private Color offBackColor = Color.Gray;
         private Color offToggleColor = Color.Gainsboro;

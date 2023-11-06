@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Hardware.Info;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Management.Automation.Language;
+using System.Threading;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 using Action = System.Action;
 using Button = System.Windows.Forms.Button;
 using ComboBox = System.Windows.Forms.ComboBox;
@@ -11,7 +15,10 @@ using TextBox = System.Windows.Forms.TextBox;
 
 namespace EzTweak
 {
-    public class TweakControl {
+    public class TweakControl
+    {
+        public static List<TweakControl> tweakContols = new List<TweakControl> { };
+
         public Toggle toogle;
         public TextBox textBox;
         public ComboBox comboBox;
@@ -28,14 +35,28 @@ namespace EzTweak
         public Control tweak_control;
         public Toggle toggle;
         public FlowLayoutPanel expand_panel;
+        public FlowLayoutPanel action_panel;
         public TweakControl[] children = new TweakControl[] { };
         public TweakControl parent;
+
+        public static int line_height = 25;
+        public static int full_width = 400;
+        public static Size button_size = new Size(51, 24);
+        public static Size small_button_size = new Size(24, 24);
+        public static Size panel_size = new Size(24, 24);
+        public static Size toggle_size = new Size(45, 20);
+        public static Size name_label_size = new Size(300, 24);
+        public static Size error_label_size = new Size(51, 24);
+        public static Size combobox_size = new Size(100, 24);
+        public static Size tab_size = new Size(full_width, 300);
+        public static Size flyout_panel_size = new Size(full_width, 0);
+        public static Size toolstrip_size = new Size(177, 6);
+        public static Size toolstrip_item_size = new Size(180, 22);
+        public static Size expand_label_size = new Size(full_width, 0);
 
         public TweakControl(Tweak tweak, TweakControl parent)
         {
             this.tweak = tweak;
-            
-
             this.parent = parent;
             if (tweak is Container_Tweak et)
             {
@@ -44,17 +65,17 @@ namespace EzTweak
 
             panel = CreateFlyoutPanel();
             panel.SuspendLayout();
-            
-            var action_panel = CreateTweakPanel();
+            action_panel = CreateTweakPanel();
+            action_panel.SuspendLayout();
             tweak_control = CreatePanel();
             tweak_control.SuspendLayout();
             tweak_control.Controls.Add(action_panel);
             panel.Controls.Add(tweak_control);
+            action_panel.ResumeLayout();
             tweak_control.ResumeLayout();
-
-            Update();
-            UpdateChildren();
             panel.ResumeLayout();
+
+            tweakContols.Add(this);
         }
 
         FlowLayoutPanel CreateTweakPanel()
@@ -69,14 +90,16 @@ namespace EzTweak
             }
             else if (tweak.turn_on != null && tweak.turn_off != null)
             {
-                on_button = Button("✔", onOnClick, button_size, true);
-                off_button = Button("🗙", onOffClick, button_size, true);
+                on_button = Button("✔", onOnClick, small_button_size, true);
+                off_button = Button("🗙", onOffClick, small_button_size, true);
                 action_panel.Controls.Add(off_button);
                 action_panel.Controls.Add(on_button);
             }
             else if (tweak.turn_on != null)
             {
                 run_button = Button("✔", onRunClick, button_size, true);
+                run_button.BackColor = Color.Gray;
+                run_button.ForeColor = Color.Gainsboro;
                 action_panel.Controls.Add(run_button);
             }
             else if (tweak.activate_value != null && tweak.valid_values != null)
@@ -94,19 +117,58 @@ namespace EzTweak
                 action_panel.Controls.Add(textBox);
             }
 
-            label = Label(tweak.name, onLabelClick, 40);
+            label = Label(tweak.name, onLabelClick);
             action_panel.Controls.Add(label);
 
             action_panel.ResumeLayout();
             return action_panel;
         }
 
-        void Update()
+        void suspendLayout()
         {
+            panel?.SuspendLayout();
+            tweak_control?.SuspendLayout();
+            action_panel?.SuspendLayout();
+            expand_panel?.SuspendLayout();
+        }
+
+        void resumeLayout()
+        {
+            expand_panel?.ResumeLayout();
+            action_panel?.ResumeLayout();
+            tweak_control?.ResumeLayout();
+            panel?.ResumeLayout();
+        }
+
+        void Invalidate(string message)
+        {
+            System.Threading.ThreadPool.QueueUserWorkItem(delegate
+            {
+                while (!action_panel.IsHandleCreated)
+                    System.Threading.Thread.Sleep(100);
+
+                action_panel.Invoke(new Action(() =>
+                {
+                    action_panel.Controls.Clear();
+                    var error_label = Label("Error", () => MessageBox.Show(message, "Tweak Exception", MessageBoxButtons.OK, MessageBoxIcon.Error));
+                    error_label.LinkColor = Color.Red;
+                    error_label.MinimumSize = error_label_size;
+                    action_panel.Controls.Add(error_label);
+                    action_panel.Controls.Add(label);
+                }));
+            }, null);
+
+        }
+
+        public void Update()
+        {
+            suspendLayout();
             updateToggle();
             updateCurrentValue();
             updateComboValue();
             updateTextValue();
+            updateRunButton();
+            resumeLayout();
         }
 
         public void Hide()
@@ -123,34 +185,85 @@ namespace EzTweak
         {
             if (parent != null)
             {
+                suspendLayout();
                 parent.Update();
                 parent.UpdateParent();
+                resumeLayout();
             }
         }
 
         void updateTextValue()
         {
-            if (textBox != null && tweak.current_value != null) textBox.Text = tweak.current_value() ?? "";
+            try
+            {
+                if (textBox != null && tweak.current_value != null) textBox.Text = tweak.current_value() ?? "";
+
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
+        }
+
+        void updateRunButton()
+        {
+            try
+            {
+                if (run_button != null && tweak.is_on != null)
+                {
+                    var enabled = tweak.is_on();
+                    run_button.BackColor = enabled ? Color.CornflowerBlue : Color.Gray;
+                    run_button.ForeColor = enabled ? Color.WhiteSmoke : Color.Gainsboro;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
         }
 
         void updateToggle()
         {
-            if (toggle != null && tweak.is_on != null) toggle.Checked = tweak.is_on();
+            try
+            {
+                if (toggle != null && tweak.is_on != null) toggle.Checked = tweak.is_on();
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
+
         }
 
         void updateComboValue()
         {
-            if (comboBox != null && tweak.valid_values != null && tweak.current_value != null)
+            try
             {
-                var value = tweak.current_value();
-                var valid_values = tweak.valid_values();
-                comboBox.SelectedIndex = comboBox.FindStringExact(valid_values.FirstOrDefault(x => x.Value == value).Key);
+                if (comboBox != null && tweak.valid_values != null && tweak.current_value != null)
+                {
+                    var value = tweak.current_value();
+                    var valid_values = tweak.valid_values();
+                    comboBox.SelectedIndex = comboBox.FindStringExact(valid_values.FirstOrDefault(x => x.Value == value).Key);
+                }
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
             }
         }
 
         void updateCurrentValue()
         {
-            if (current_value != null) current_value.Text = tweak.current_value();
+            try
+            {
+                if (current_value != null) current_value.Text = tweak.current_value();
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
+
         }
 
         void createExpandPanel()
@@ -161,10 +274,16 @@ namespace EzTweak
             this.tweak.UpdateInfo();
             foreach (var pair in tweak.info)
             {
-                expand_panel.Controls.Add(BoldLabel(pair.Key));
+                var bold_label = BoldLabel(pair.Key);
+                bold_label.MinimumSize = expand_label_size;
+                expand_panel.Controls.Add(bold_label);
                 foreach (var func in pair.Value)
                 {
-                    expand_panel.Controls.Add(TextLabel(func()));
+                    var text_label = TextLabel(func());
+                    text_label.MinimumSize = expand_label_size;
+                    text_label.Font = new Font("Arial", 7.5F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
+
+                    expand_panel.Controls.Add(text_label);
                 }
             }
             expand_panel.Controls.AddRange(children.Select(child => child.panel).ToArray());
@@ -173,10 +292,12 @@ namespace EzTweak
 
         void UpdateChildren()
         {
+            suspendLayout();
             foreach (var child in children)
             {
                 child.Update();
             }
+            resumeLayout();
         }
 
         void UpdateAll()
@@ -188,27 +309,67 @@ namespace EzTweak
 
         bool isOn()
         {
-            return tweak.is_on != null ? tweak.is_on() : false;
+            try
+            {
+                return tweak.is_on != null ? tweak.is_on() : false;
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+                return false;
+            }
+
         }
 
         string readSelection()
         {
-            return tweak.valid_values().Where(o => o.Key == comboBox.SelectedItem.ToString()).First().Value;
+            try
+            {
+                return tweak.valid_values().Where(o => o.Key == comboBox.SelectedItem.ToString()).First().Value;
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+                return null;
+            }
         }
 
         string readText()
         {
-            return textBox.Text;
+            try
+            {
+                return textBox.Text;
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+                return null;
+            }
         }
 
         void setText(string text)
         {
-            tweak.activate_value(text);
+            try
+            {
+                tweak.activate_value(text);
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
         }
 
         void setSelection(string value)
         {
-            tweak.activate_value(value);
+            try
+            {
+                tweak.activate_value(value);
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
+
         }
 
         void onValueSet()
@@ -222,67 +383,103 @@ namespace EzTweak
 
         void onRunClick()
         {
-            Status.start(tweak.name, "...");
-            tweak.turn_on();
-            Status.done(tweak.name, "DONE");
-            UpdateAll();
+            try
+            {
+                Status.start(tweak.name, "...");
+                tweak.turn_on();
+                Status.done(tweak.name, "DONE");
+                UpdateAll();
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
+
         }
 
         void onOnClick()
         {
-            Status.start(tweak.name, "ON");
-            tweak.turn_on();
-            Status.done(tweak.name, "ON");
-            UpdateAll();
+            try
+            {
+                Status.start(tweak.name, "ON");
+                tweak.turn_on();
+                Status.done(tweak.name, "ON");
+                UpdateAll();
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
+
         }
 
         void onSelectChange()
         {
-            var selection = readSelection();
-            Status.start(tweak.name, selection);
-            setSelection(selection);
-            Status.done(tweak.name, selection);
-            UpdateAll();
+            try
+            {
+                var selection = readSelection();
+                Status.start(tweak.name, selection);
+                setSelection(selection);
+                Status.done(tweak.name, selection);
+                UpdateAll();
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
+
         }
 
         void onOffClick()
         {
-            Status.start(tweak.name, "OFF");
-            tweak.turn_off();
-            Status.done(tweak.name, "OFF");
-            UpdateAll();
+            try
+            {
+                Status.start(tweak.name, "OFF");
+                tweak.turn_off();
+                Status.done(tweak.name, "OFF");
+                UpdateAll();
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
         }
 
         void onLabelClick()
         {
-            if(expand_panel == null)
+            try
             {
-                createExpandPanel();
-            }
+                if (expand_panel == null)
+                {
+                    createExpandPanel();
+                }
 
-            if (panel.Contains(expand_panel))
-            {
-                panel.Controls.Remove(expand_panel);
-            }
-            else
-            {
-                panel.Controls.Add(expand_panel);
-            }
+                if (panel.Contains(expand_panel))
+                {
+                    panel.Controls.Remove(expand_panel);
+                }
+                else
+                {
+                    panel.Controls.Add(expand_panel);
+                }
 
-            Update();
-            UpdateChildren();
+                Update();
+                UpdateChildren();
+            }
+            catch (Exception ex)
+            {
+                Invalidate(ex.Message);
+            }
         }
 
-        public static int height = 25;
-        public static int width = 390;
-        public static Size button_size = new Size(24, 24);
+
 
         private static FlowLayoutPanel CreateFlyoutPanel()
         {
             return new FlowLayoutPanel
             {
                 AutoSize = true,
-                MaximumSize = new Size(width, 0),
+                MaximumSize = flyout_panel_size,
                 Padding = new Padding(0),
                 Margin = new Padding(3)
             };
@@ -293,9 +490,6 @@ namespace EzTweak
             return new FlowLayoutPanel
             {
                 AutoSize = true,
-                //MaximumSize = new Size(width, 0),
-                //MinimumSize = new Size(width, 0),
-                //Size = new Size(width, 0),
                 Padding = new Padding(3),
                 Margin = new Padding(3),
                 Dock = DockStyle.Fill,
@@ -327,9 +521,7 @@ namespace EzTweak
         {
             return new Panel
             {
-                Size = new Size(width, height),
-                //AutoSize = true,
-                MaximumSize = new Size(width, height),
+                Size = new Size(full_width, line_height),
                 Padding = new Padding(0),
                 Margin = new Padding(0)
             };
@@ -352,13 +544,13 @@ namespace EzTweak
         {
             var btn = new Button
             {
-                BackColor = active ? Color.CornflowerBlue : SystemColors.GrayText,
+                BackColor = active ? Color.CornflowerBlue : Color.Gray,
                 Margin = new Padding(0),
                 Padding = new Padding(0),
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Arial", 8F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0))),
                 Size = size,
-                ForeColor = Color.Gainsboro,
+                ForeColor = active ? Color.WhiteSmoke : Color.Gainsboro,
                 Text = text,
                 UseVisualStyleBackColor = false
             };
@@ -367,7 +559,7 @@ namespace EzTweak
             return btn;
         }
 
-        public static LinkLabel Label(string text, Action on_click, int offset = 0)
+        public static LinkLabel Label(string text, Action on_click)
         {
             var label = new LinkLabel();
             label.Font = new Font("Arial", 8.5F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
@@ -376,7 +568,7 @@ namespace EzTweak
             label.Padding = new Padding(3, 3, 3, 3);
             label.LinkColor = Color.Black;
             label.AutoSize = true;
-            label.MaximumSize = new Size((int)(0.75 * width), height);
+            label.MaximumSize = name_label_size;
             if (on_click != null)
                 label.LinkClicked += (x, y) => on_click();
             return label;
@@ -385,32 +577,25 @@ namespace EzTweak
         public static Toggle Toggle(string name, Action off_click, Action on_click, Func<bool> is_on)
         {
             var toggle = new Toggle();
-            toggle.MinimumSize = new Size((int)(0.14 * width), (int)(0.9 * height));
+            toggle.MinimumSize = toggle_size;
             toggle.AutoSize = true;
-            if (is_on != null)
-            {
-                toggle.Checked = is_on();
-            }
             toggle.OffBackColor = Color.Gray;
             toggle.OffToggleColor = Color.Gainsboro;
             toggle.OnBackColor = Color.CornflowerBlue;
             toggle.OnToggleColor = Color.WhiteSmoke;
             toggle.UseVisualStyleBackColor = true;
-            toggle.CheckedChanged += new System.EventHandler(delegate (Object o, EventArgs a) {
-                var active = is_on();
-                if (toggle.Checked == active)
-                {
-                    return;
-                }
 
-                if (active)
+            toggle.CheckedChanged += new System.EventHandler(delegate (Object o, EventArgs a)
+            {
+                var current = is_on();
+                if (current == toggle.Checked) { return; }
+
+                if (current)
                 {
-                    toggle.Checked = false;
                     off_click();
                 }
                 else
                 {
-                    toggle.Checked = true;
                     on_click();
                 }
 
@@ -428,7 +613,7 @@ namespace EzTweak
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 AutoSize = true,
                 Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0))),
-                MaximumSize = new Size(100, 22),
+                MaximumSize = combobox_size,
                 Padding = new Padding(0),
                 Margin = new Padding(0)
             };
@@ -438,7 +623,7 @@ namespace EzTweak
         private static LinkLabel CreateBigLabel(string name, Action on_click)
         {
             var label = Label(name == null ? "UNKNOWN" : $"{name.ToUpper()}", on_click);
-            label.MinimumSize = new Size(width, (int)(0.9 * height));
+            label.MinimumSize = name_label_size;
             label.Font = new Font("Arial", 10F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
             return label;
         }
@@ -452,7 +637,7 @@ namespace EzTweak
                 AutoSize = true,
                 Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0))),
                 MaximumSize = new Size(100, 22),
-                MinimumSize = new Size(width, 0),
+                MinimumSize = combobox_size,
                 Padding = new Padding(0),
                 Margin = new Padding(0)
             };
@@ -467,7 +652,9 @@ namespace EzTweak
             expand_panel.ResumeLayout();
 
             var tweak_panel = CreateFlyoutPanel();
-            Action on_click = () => {
+            tweak_panel.SuspendLayout();
+            Action on_click = () =>
+            {
                 if (tweak_panel.Contains(expand_panel))
                 {
                     tweak_panel.Controls.Remove(expand_panel);
@@ -479,13 +666,15 @@ namespace EzTweak
             };
 
             tweak_panel.Controls.Add(CreateBigLabel(name, on_click));
+            tweak_panel.ResumeLayout();
             return tweak_panel;
         }
 
         public static FlowLayoutPanel CreateDevicesSection()
         {
             Dictionary<string, List<Control>> controls_dict = new Dictionary<string, List<Control>> { };
-            Action<string, Control> Add = (key, control) => {
+            Action<string, Control> Add = (key, control) =>
+            {
                 if (controls_dict.ContainsKey(key))
                 {
                     controls_dict[key].Add(control);
@@ -559,7 +748,8 @@ namespace EzTweak
             }
             var comboBox = CreateFullComboBox();
             comboBox.Items.AddRange(controls_dict.Keys.ToArray());
-            comboBox.SelectionChangeCommitted += (s, ee) => {
+            comboBox.SelectionChangeCommitted += (s, ee) =>
+            {
                 p1.Controls.Clear();
                 p1.Controls.AddRange(controls_dict[comboBox.SelectedItem.ToString()].ToArray());
             };
@@ -573,6 +763,6 @@ namespace EzTweak
     }
 
 
-   
+
 
 }

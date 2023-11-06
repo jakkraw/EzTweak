@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Principal;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace EzTweak {
@@ -9,6 +10,19 @@ namespace EzTweak {
         /// </summary>
         [STAThread]
         static void Main() {
+            // Add the event handler for handling UI thread exceptions to the event.
+            Application.ThreadException += new
+            ThreadExceptionEventHandler(HandleUIException);
+
+            // Set the unhandled exception mode to force all Windows Forms errors
+            // to go through our handler.
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
+            // Add the event handler for handling non-UI thread exceptions to the event. 
+            AppDomain.CurrentDomain.UnhandledException += new
+            UnhandledExceptionEventHandler(HandleLogicException);
+
+
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length == 1 && !IsTrustedInstaller()) {
                 TrustedInstaller.StartAsChild(args);
@@ -21,6 +35,19 @@ namespace EzTweak {
             Application.Run(new App());
         }
 
+        private static void HandleUIException(object sender, ThreadExceptionEventArgs e)
+        {
+            var msg = e.Exception?.Message;
+            Log.WriteLine($"UI Exception: {msg}");
+            MessageBox.Show(msg, "UI Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private static void HandleLogicException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var msg = e.ExceptionObject?.ToString();
+            Log.WriteLine($"Exception: {msg}");
+            MessageBox.Show(msg, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
 
         public static bool IsTrustedInstaller() {
             var identity = WindowsIdentity.GetCurrent();

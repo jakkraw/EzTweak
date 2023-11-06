@@ -15,17 +15,17 @@
 				</DWORD>
 			</TWEAKS>
 			<DWORD name="Disable prefetcher">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters\EnablePrefetcher</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters\EnablePrefetcher</path>
 				<off>1</off>
 				<on>0</on>
 			</DWORD>
 			<DWORD name="Disabled NTFS Last Access Time">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsDisableLastAccessUpdate</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsDisableLastAccessUpdate</path>
 				<off>0x80000002</off>
 				<on>0x80000001</on>
 			</DWORD>
 			<DWORD name="Disable boot trace">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters\EnableBootTrace</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters\EnableBootTrace</path>
 				<off>1</off>
 				<on>0</on>
 			</DWORD>
@@ -132,7 +132,7 @@
 				<on>1</on>
 			</DWORD>
 			<BINARY name="Set performance Windows appearance">
-				<path>HKEY_CURRENT_USER\Control Panel\Desktop\UserPreferencesMask</path>
+				<path>HKCU\Control Panel\Desktop\UserPreferencesMask</path>
 				<on>90,12,03,80,10,00,00,00</on>
 				<off>9E,1E,07,80,12,00,00,00</off>
 			</BINARY>
@@ -213,42 +213,42 @@
 		</SECTION>
 		<SECTION name="Taskbar">
 			<DWORD name="Remove chat from taskbar">
-				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarMn</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarMn</path>
 				<off>1</off>
 				<on>0</on>
 			</DWORD>
 			<DWORD name="Remove task view from taskbar">
-				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ShowTaskViewButton</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ShowTaskViewButton</path>
 				<off>1</off>
 				<on>0</on>
 			</DWORD>
 			<DWORD name="Remove search from taskbar">
-				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Search\SearchboxTaskbarMode</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Search\SearchboxTaskbarMode</path>
 				<off>1</off>
 				<on>0</on>
 			</DWORD>
 			<DWORD name="Remove meet now">
-				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\HideSCAMeetNow</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\HideSCAMeetNow</path>
 				<off>🗑</off>
 				<on>1</on>
 			</DWORD>
 			<DWORD name="Remove action center">
-				<path>HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\Explorer\DisableNotificationCenter</path>
+				<path>HKCU\SOFTWARE\Policies\Microsoft\Windows\Explorer\DisableNotificationCenter</path>
 				<off>🗑</off>
 				<on>1</on>
 			</DWORD>
 			<DWORD name="Remove news and interests">
-				<path>HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds\EnableFeeds</path>
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds\EnableFeeds</path>
 				<off>1</off>
 				<on>0</on>
 			</DWORD>
 			<DWORD name="Remove taskbar pins">
-				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband</path>
-				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband\AuxilliaryPins</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband\AuxilliaryPins</path>
 				<on>🗑</on>
 			</DWORD>
 			<DWORD name="Show all taskbar icons">
-				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\EnableAutoTray</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\EnableAutoTray</path>
 				<off>1</off>
 				<on>0</on>
 			</DWORD>
@@ -256,27 +256,27 @@
 		<SECTION name="Start Menu">
 			<TWEAKS name="Always hide most used list in start menu">
 				<DWORD>
-					<path>HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer\ShowOrHideMostUsedApps</path>
+					<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer\ShowOrHideMostUsedApps</path>
 					<off>1</off>
 					<on>2</on>
 				</DWORD>
 				<REG_SZ>
-					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoStartMenuMFUprogramsList</path>
-					<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoInstrumentation</path>
-					<path>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoStartMenuMFUprogramsList</path>
-					<path>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoInstrumentation</path>
+					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoStartMenuMFUprogramsList</path>
+					<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoInstrumentation</path>
+					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoStartMenuMFUprogramsList</path>
+					<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoInstrumentation</path>
 					<on>-</on>
 					<off>🗑</off>
 				</REG_SZ>
 			</TWEAKS>
 			<DWORD name="Disable show recently added apps">
-				<path>HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer\HideRecentlyAddedApps</path>
-				<path>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\HideRecentlyAddedApps</path>
+				<path>HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer\HideRecentlyAddedApps</path>
+				<path>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\HideRecentlyAddedApps</path>
 				<off>0</off>
 				<on>1</on>
 			</DWORD>
 			<DWORD name="Disable show recently opened items in start, jump lists and file explorer">
-				<path>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\Start_TrackDocs</path>
+				<path>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\Start_TrackDocs</path>
 				<on>0</on>
 				<off>1</off>
 			</DWORD>
@@ -399,37 +399,37 @@
 		</SECTION>
 		<SECTION name="Thread Priority">
 			<DWORD name="NDIS">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NDIS\Parameters\ThreadPriority</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Services\NDIS\Parameters\ThreadPriority</path>
 				<off>🗑</off>
 				<on>31</on>
 			</DWORD>
 			<DWORD  name="Dxgkrnl">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Dxgkrnl\Parameters\ThreadPriority</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Services\Dxgkrnl\Parameters\ThreadPriority</path>
 				<off>🗑</off>
 				<on>31</on>
 			</DWORD>
 			<DWORD name="Mouhid">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Mouhid\Parameters\ThreadPriority</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Services\Mouhid\Parameters\ThreadPriority</path>
 				<off>🗑</off>
 				<on>31</on>
 			</DWORD>
 			<DWORD name="Usbxhci">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Usbxhci\Parameters\ThreadPriority</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Services\Usbxhci\Parameters\ThreadPriority</path>
 				<off>🗑</off>
 				<on>31</on>
 			</DWORD>
 			<DWORD name="Usbhub3">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Usbhub3\Parameters\ThreadPriority</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Services\Usbhub3\Parameters\ThreadPriority</path>
 				<off>🗑</off>
 				<on>31</on>
 			</DWORD>
 			<DWORD name="nvlddmkm">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\nvlddmkm\Parameters\ThreadPriority</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm\Parameters\ThreadPriority</path>
 				<off>🗑</off>
 				<on>31</on>
 			</DWORD>
 			<DWORD name="Amdkmdap">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Amdkmdap\Parameters\ThreadPriority</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Services\Amdkmdap\Parameters\ThreadPriority</path>
 				<off>🗑</off>
 				<on>31</on>
 			</DWORD>
@@ -478,12 +478,12 @@
 			</CMD>
 			<TWEAKS name="Disable Virtual Memory Pagefile Encryption">
 				<DWORD>
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsEncryptPagingFile</path>
+					<path>HKLM\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsEncryptPagingFile</path>
 					<on>0</on>
 					<off>1</off>
 				</DWORD>
 				<DWORD>
-					<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Policies\NtfsEncryptPagingFile</path>
+					<path>HKLM\SYSTEM\CurrentControlSet\Policies\NtfsEncryptPagingFile</path>
 					<on>🗑</on>
 					<off>🗑</off>
 				</DWORD>
@@ -1324,7 +1324,7 @@
 				<on>1</on>
 			</DWORD>
 			<DWORD name="Disable Write Combining">
-				<path>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\nvlddmkm\DisableWriteCombining</path>
+				<path>HKLM\SYSTEM\CurrentControlSet\Services\nvlddmkm\DisableWriteCombining</path>
 				<off>🗑</off>
 				<on>1</on>
 			</DWORD>
@@ -1449,7 +1449,7 @@
 				<off>🗑</off>
 			</DWORD>
 			<DWORD name="Stop Tablet mode from automatically enabling in Registry">
-				<path>HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell\ConvertibleSlateModePromptPreference</path>
+				<path>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell\ConvertibleSlateModePromptPreference</path>
 				<on>0</on>
 				<off>1</off>
 			</DWORD>
