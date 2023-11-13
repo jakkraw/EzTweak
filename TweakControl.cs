@@ -1,12 +1,9 @@
-﻿using Hardware.Info;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Management.Automation.Language;
-using System.Threading;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
+using static EzTweak.Device_Tweak;
 using Action = System.Action;
 using Button = System.Windows.Forms.Button;
 using ComboBox = System.Windows.Forms.ComboBox;
@@ -685,7 +682,7 @@ namespace EzTweak
                 }
             };
 
-            var devices = WindowsResources.All_DEVICES.GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
+            var devices = Device.All().GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
             var panel = CreateFlyoutPanel();
             panel.SuspendLayout();
             var p1 = CreateExpandFlyoutPanel();

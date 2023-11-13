@@ -1780,7 +1780,11 @@
 			</ITEM>
 		</ITEM>
 		<ITEM name="Logs">
-				<ARG>eztweak.log</ARG>
+			<ARG>eztweak.log</ARG>
+		</ITEM>
+		<ITEM name="Permissions">
+			<ITEM name="Restart as Trusted Installer" open_as_ti="true"></ITEM>
+			<ITEM name="Restart as Admin" open_as_admin="true"></ITEM>
 		</ITEM>
 	</MENU>
 </EZTWEAK>

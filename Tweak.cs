@@ -1,5 +1,4 @@
-﻿using Hardware.Info;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Microsoft.Win32.TaskScheduler;
 using System;
 using System.Collections.Generic;
@@ -10,14 +9,16 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Management.Automation;
-using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using static EzTweak.Device_Tweak;
 
 namespace EzTweak
 {
+
+
+
+
     public class Tweak
     {
         public string name;
@@ -756,13 +757,4 @@ namespace EzTweak
 
         }
     }
-
-    public static class WindowsResources
-    {
-        public static Device[] All_DEVICES = Device.All();
-        public static Container_Tweak[] All_IRQ = IRQ_Tweak.ALL_IRQ();
-        public static Container_Tweak[] All_APPX = APPX_Tweak.ALL();
-        public static TaskTweak[] All_TASKS = TaskTweak.GetTasks();
-    }
-
 }

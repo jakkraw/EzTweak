@@ -10,25 +10,11 @@ namespace EzTweak {
         /// </summary>
         [STAThread]
         static void Main() {
-            // Add the event handler for handling UI thread exceptions to the event.
             Application.ThreadException += new
             ThreadExceptionEventHandler(HandleUIException);
-
-            // Set the unhandled exception mode to force all Windows Forms errors
-            // to go through our handler.
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-
-            // Add the event handler for handling non-UI thread exceptions to the event. 
             AppDomain.CurrentDomain.UnhandledException += new
             UnhandledExceptionEventHandler(HandleLogicException);
-
-
-            string[] args = Environment.GetCommandLineArgs();
-            if (args.Length == 1 && !IsTrustedInstaller()) {
-                TrustedInstaller.StartAsChild(args);
-                return;
-            }
-
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -47,13 +33,6 @@ namespace EzTweak {
             var msg = e.ExceptionObject?.ToString();
             Log.WriteLine($"Exception: {msg}");
             MessageBox.Show(msg, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        public static bool IsTrustedInstaller() {
-            var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            var ti_sid = "S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464";
-            return principal.IsInRole(new SecurityIdentifier(ti_sid));
         }
     }
 

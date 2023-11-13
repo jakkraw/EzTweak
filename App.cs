@@ -9,6 +9,8 @@ namespace EzTweak {
             Status.pipe += (msg) => {
                 status_loading.Text = msg;
             };
+            Log.WriteLine($"User: {WindowsSystem.GetUserType()}");
+            status_user.Text = $"👤 {WindowsSystem.GetUserType()}";
         }
         protected override void OnFormClosing(FormClosingEventArgs e) {
             base.OnFormClosing(e);
@@ -36,6 +38,11 @@ namespace EzTweak {
             foreach (var item in TweakControl.tweakContols)
                 item.Update();
             
+        }
+
+        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

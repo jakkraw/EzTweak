@@ -55,6 +55,12 @@ namespace EzTweak {
         public bool separator { get; set; }
 
         [XmlAttribute]
+        public bool open_as_ti { get; set; }
+
+        [XmlAttribute]
+        public bool open_as_admin { get; set; }
+
+        [XmlAttribute]
         public string name { get; set; }
 
         [XmlText]
@@ -224,10 +230,14 @@ namespace EzTweak {
         public string[] command_line;
         public string value;
         public bool separator;
+        public bool open_as_ti;
+        public bool open_as_admin;
         public Item[] items;
 
         public Item(XmlItem xml)
         {
+            open_as_admin = xml.open_as_admin;
+            open_as_ti = xml.open_as_ti;
             separator = xml.separator;
             name = xml.name;
             value = xml.value?.Trim();

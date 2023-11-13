@@ -56,6 +56,5 @@ namespace EzTweak {
             Log.WriteLine(msg);
             Write(msg);
         }
-
     }
 }
