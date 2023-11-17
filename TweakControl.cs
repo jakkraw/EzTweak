@@ -37,12 +37,12 @@ namespace EzTweak
         public TweakControl parent;
 
         public static int line_height = 25;
-        public static int full_width = 400;
+        public static int full_width = 700;
         public static Size button_size = new Size(51, 24);
         public static Size small_button_size = new Size(24, 24);
         public static Size panel_size = new Size(24, 24);
         public static Size toggle_size = new Size(45, 20);
-        public static Size name_label_size = new Size(300, 24);
+        public static Size name_label_size = new Size(500, 24);
         public static Size error_label_size = new Size(51, 24);
         public static Size combobox_size = new Size(100, 24);
         public static Size tab_size = new Size(full_width, 300);
@@ -584,19 +584,32 @@ namespace EzTweak
 
             toggle.CheckedChanged += new System.EventHandler(delegate (Object o, EventArgs a)
             {
+                toggle.Enabled = false;
+                toggle.loading = true;
+                toggle.OffBackColor = Color.CornflowerBlue;
+                toggle.OffToggleColor = Color.Coral;
+                toggle.OnBackColor = Color.Gray;
+                toggle.OnToggleColor = Color.Coral;
+
                 var current = is_on();
-                if (current == toggle.Checked) { return; }
-
-                if (current)
-                {
-                    off_click();
+                if (current != toggle.Checked) {
+                    if (current)
+                    {
+                        off_click();
+                    }
+                    else
+                    {
+                        on_click();
+                    }
+                    toggle.Checked = is_on();
                 }
-                else
-                {
-                    on_click();
-                }
 
-                toggle.Checked = is_on();
+                toggle.OffBackColor = Color.Gray;
+                toggle.OffToggleColor = Color.Gainsboro;
+                toggle.OnBackColor = Color.CornflowerBlue;
+                toggle.OnToggleColor = Color.WhiteSmoke;
+                toggle.Enabled = true;
+                toggle.loading = false;
             });
 
             return toggle;

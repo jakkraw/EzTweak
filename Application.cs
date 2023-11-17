@@ -2,8 +2,8 @@
 using System.Windows.Forms;
 
 namespace EzTweak {
-    public partial class App : Form {
-        public App() {
+    public partial class Application : Form {
+        public Application() {
             Log.WriteLine("EzTweak Started");
             InitializeComponent();
             Status.pipe += (msg) => {

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
-using System.Security.Principal;
 using System.Windows.Forms;
 using Button = System.Windows.Forms.Button;
 
 namespace EzTweak
 {
-    partial class App {
+    partial class Application {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -133,8 +132,6 @@ namespace EzTweak
             return panel;
         }
 
-       
-
         private ToolStripItem[] CreateMenuItem(Item item)
         {
             if (item.separator)
@@ -158,7 +155,7 @@ namespace EzTweak
                 control.Click += (a, b) =>
                 {
                     WindowsSystem.StartAsTrustedInstaller();
-                    Application.Exit();
+                    System.Windows.Forms.Application.Exit();
                 };
                 return new[] { control };
             }
@@ -173,7 +170,7 @@ namespace EzTweak
                 control.Click += (a, b) =>
                 {
                     WindowsSystem.StartAsAdmin();
-                    Application.Exit();
+                    System.Windows.Forms.Application.Exit();
                 };
                 return new[] { control };
             }
@@ -202,8 +199,8 @@ namespace EzTweak
             this.tabs = new System.Windows.Forms.TabControl();
             this.menu = new System.Windows.Forms.MenuStrip();
             this.status = new System.Windows.Forms.StatusStrip();
-            this.status_loading = new System.Windows.Forms.ToolStripStatusLabel();
             this.status_user = new System.Windows.Forms.ToolStripStatusLabel();
+            this.status_loading = new System.Windows.Forms.ToolStripStatusLabel();
             this.status.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -212,13 +209,13 @@ namespace EzTweak
             this.tabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabs.Location = new System.Drawing.Point(0, 24);
+            this.tabs.Location = new System.Drawing.Point(0, 46);
             this.tabs.Margin = new System.Windows.Forms.Padding(0);
             this.tabs.Multiline = true;
             this.tabs.Name = "tabs";
             this.tabs.Padding = new System.Drawing.Point(0, 0);
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(727, 296);
+            this.tabs.Size = new System.Drawing.Size(736, 643);
             this.tabs.TabIndex = 9;
             // 
             // menu
@@ -234,25 +231,25 @@ namespace EzTweak
             // 
             this.status.ImageScalingSize = new System.Drawing.Size(28, 28);
             this.status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.status_user, this.status_loading
-            });
+            this.status_user,
+            this.status_loading});
             this.status.Location = new System.Drawing.Point(0, 689);
             this.status.Name = "status";
             this.status.Size = new System.Drawing.Size(736, 22);
             this.status.TabIndex = 12;
             // 
+            // status_user
+            // 
+            this.status_user.Enabled = false;
+            this.status_user.Name = "status_user";
+            this.status_user.Size = new System.Drawing.Size(118, 17);
+            this.status_user.Text = "toolStripStatusLabel1";
+            this.status_user.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
+            // 
             // status_loading
             // 
             this.status_loading.Name = "status_loading";
             this.status_loading.Size = new System.Drawing.Size(0, 17);
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.status_user.Enabled = false;
-            this.status_user.Name = "toolStripStatusLabel1";
-            this.status_user.Size = new System.Drawing.Size(118, 17);
-            this.status_user.Text = "toolStripStatusLabel1";
-            this.status_user.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
             // 
             // App
             // 

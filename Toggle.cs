@@ -10,6 +10,7 @@ namespace EzTweak {
         private Color offBackColor = Color.Gray;
         private Color offToggleColor = Color.Gainsboro;
         private bool solidStyle = true;
+        public bool loading = false;
 
         [Category("Color")]
         public Color OnBackColor {
@@ -108,14 +109,24 @@ namespace EzTweak {
                 if (solidStyle)
                     pevent.Graphics.FillPath(new SolidBrush(onBackColor), GetFigurePath());
                 else pevent.Graphics.DrawPath(new Pen(onBackColor, 2), GetFigurePath());
-                pevent.Graphics.FillEllipse(new SolidBrush(onToggleColor),
-                    new Rectangle(this.Width - this.Height + 1, 2, toggleSize, toggleSize));
+
+                if (loading)
+                    pevent.Graphics.FillEllipse(new SolidBrush(onToggleColor),
+                      new Rectangle((this.Width - this.Height + 1) / 2, 2, toggleSize, toggleSize));
+                else
+                    pevent.Graphics.FillEllipse(new SolidBrush(onToggleColor),
+                         new Rectangle(this.Width - this.Height + 1, 2, toggleSize, toggleSize));
             } else {
                 if (solidStyle)
                     pevent.Graphics.FillPath(new SolidBrush(offBackColor), GetFigurePath());
                 else pevent.Graphics.DrawPath(new Pen(offBackColor, 2), GetFigurePath());
-                pevent.Graphics.FillEllipse(new SolidBrush(offToggleColor),
-                    new Rectangle(2, 2, toggleSize, toggleSize));
+
+                if (loading)
+                    pevent.Graphics.FillEllipse(new SolidBrush(offToggleColor),
+                        new Rectangle((this.Width - this.Height + 1) / 2, 2, toggleSize, toggleSize));
+                else
+                    pevent.Graphics.FillEllipse(new SolidBrush(offToggleColor),
+                        new Rectangle(2, 2, toggleSize, toggleSize));
             }
         }
     }

@@ -10,15 +10,15 @@ namespace EzTweak {
         /// </summary>
         [STAThread]
         static void Main() {
-            Application.ThreadException += new
+            System.Windows.Forms.Application.ThreadException += new
             ThreadExceptionEventHandler(HandleUIException);
-            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             AppDomain.CurrentDomain.UnhandledException += new
             UnhandledExceptionEventHandler(HandleLogicException);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new App());
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+            System.Windows.Forms.Application.Run(new Application());
         }
 
         private static void HandleUIException(object sender, ThreadExceptionEventArgs e)

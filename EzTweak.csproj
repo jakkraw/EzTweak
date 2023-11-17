@@ -68,7 +68,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
+    <OutputPath>EzTweak_Build\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -83,6 +83,8 @@
   <ItemGroup>
     <Reference Include="Microsoft.Win32.TaskScheduler">
       <HintPath>TaskScheduler\Microsoft.Win32.TaskScheduler.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -100,11 +102,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App.cs">
+    <Compile Include="Application.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="App.Designer.cs">
-      <DependentUpon>App.cs</DependentUpon>
+    <Compile Include="Application.Designer.cs">
+      <DependentUpon>Application.cs</DependentUpon>
     </Compile>
     <Compile Include="EzTweak.cs" />
     <Compile Include="Log.cs" />
@@ -118,10 +120,10 @@
     <Compile Include="TrustedInstaller.cs" />
     <Compile Include="TweakControl.cs" />
     <Compile Include="Tweak.cs" />
-    <EmbeddedResource Include="App.resx">
-      <DependentUpon>App.cs</DependentUpon>
+    <EmbeddedResource Include="Application.resx">
+      <DependentUpon>Application.cs</DependentUpon>
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>App1.Designer.cs</LastGenOutput>
+      <LastGenOutput>Application1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -176,6 +178,13 @@
       <Version>1.1.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ILMerge" Version="3.0.29" />
+  </ItemGroup>
+  <Target Name="ILMerge">
+    <!-- the ILMergePath property points to the location of ILMerge.exe console application -->
+    <Exec Command="$(ILMergeConsolePath) EzTweak_Build\EzTweak.exe  /out:EzTweak_release.exe EzTweak_Build\Hardware.Info.dll EzTweak_Build\Microsoft.Win32.Registry.dll EzTweak_Build\System.CodeDom.dll EzTweak_Build\System.Diagnostics.PerformanceCounter.dll EzTweak_Build\System.Management.Automation.dll EzTweak_Build\System.Security.AccessControl.dll EzTweak_Build\System.Security.Principal.Windows.dll " />
+  </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions />
 </Project>

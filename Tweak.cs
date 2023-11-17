@@ -16,9 +16,6 @@ using System.Windows.Forms;
 namespace EzTweak
 {
 
-
-
-
     public class Tweak
     {
         public string name;
