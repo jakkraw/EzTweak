@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Management.Automation;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -20,6 +19,8 @@ namespace EzTweak
     {
         public string name;
         public string description;
+        public bool invalidate = false;
+        public string invalidate_message = "";
         public System.Action turn_on;
         public System.Action turn_off;
         public Action<string> activate_value;
@@ -46,8 +47,8 @@ namespace EzTweak
             if (on_value != null) info.Add("On Value", new Func<string>[] { () => on_value });
             if (off_value != null) info.Add("Off Value", new Func<string>[] { () => off_value });
             if (is_on != null) info.Add("Is On", new Func<string>[] { () => is_on() ? "True" : "False" });
-            if (current_value != null) info.Add("Current Value", new Func<string>[] { () => current_value() });
-            if (valid_values != null) info.Add("Valid Values", new Func<string>[] { () => valid_values.ToString() });
+            if (current_value != null) info.Add("Current Value", new Func<string>[] { () => current_value?.Invoke() });
+            if (valid_values != null) info.Add("Valid Values", new Func<string>[] { () => string.Join(Environment.NewLine, valid_values()?.Select(p => $"[\"{p.Key}\",\"{p.Value}\"]").ToArray()) });
             if (status != null) info.Add("Status", new Func<string>[] { () => status() });
             if (activate_command != null) info.Add("Activation Command", new Func<string>[] { () => activate_command() });
             if (cmd != null) info.Add("Command", new Func<string>[] { () => cmd() });
@@ -57,10 +58,21 @@ namespace EzTweak
             if (tweaks != null) info.Add("Sub Tweaks", new Func<string>[] { () => tweaks.Length.ToString() });
         }
 
+        public void Invalidate(string message)
+        {
+            invalidate_message = message;
+            invalidate = true;
+
+        }
+
     }
 
     public class Container_Tweak : Tweak
     {
+        public Container_Tweak(string name, string description, Tweak tweak) : this(name, description, new Tweak[] { tweak })
+        {
+        }
+
 
         public Container_Tweak(string name, string description, Tweak[] tweaks)
         {
@@ -96,12 +108,17 @@ namespace EzTweak
                 this.is_on = () => tweaks.All(t => t.is_on());
             }
 
-            if (tweaks.GroupBy(s => s.current_value).Count() == 1)
+            if (Array.TrueForAll(tweaks, t => t.status != null))
+            {
+                this.status = () => string.Join(Environment.NewLine, tweaks.Select(t => t.status()));
+            }
+
+            if (Array.TrueForAll(tweaks, t => t.current_value != null) && tweaks.GroupBy(s => s.current_value()).Count() == 1)
             {
                 this.current_value = tweaks[0].current_value;
             }
 
-            if (tweaks.GroupBy(s => s.valid_values).Count() == 1)
+            if (Array.TrueForAll(tweaks, t => t.valid_values != null) && tweaks.GroupBy(s => s.valid_values().Values.ToArray().Length).Count() == 1)
             {
                 this.valid_values = tweaks[0].valid_values;
             }
@@ -521,7 +538,6 @@ namespace EzTweak
         }
     }
 
-
     public class TaskTweak : Tweak
     {
         static public TaskService taskService = new TaskService();
@@ -530,15 +546,29 @@ namespace EzTweak
         {
             this.name = $"{task.Name}";
             this.description = $"Name: {task.Name}{Environment.NewLine}Path: {task.Path}{Environment.NewLine}Definition: {task.Definition}{Environment.NewLine}Task Service: {task.TaskService}{Environment.NewLine}Folder: {task.Folder}{Environment.NewLine}Last Run Time: {task.LastRunTime}{Environment.NewLine}State: {task.State}";
-            this.turn_on = () => { task.Stop(); task.Enabled = false; };
-            this.turn_off = () => { task.Enabled = true; };
+            this.turn_on = () =>
+            {
+                task.Stop();
+                task.Enabled = false;
+            };
+            this.turn_off = () =>
+            {
+                try
+                {
+                    task.Enabled = true;
+                }
+                catch (Exception ex)
+                {
+                    Invalidate(ex.Message);
+                }
+            };
             this.status = () => task.Enabled ? "Enabled" : "Disabled";
             this.is_on = () => !task.Enabled;
         }
 
         public static TaskTweak[] GetTasks()
         {
-            var tasks = taskService.AllTasks.OrderByDescending(t => t.LastRunTime);
+            var tasks = taskService.AllTasks.OrderByDescending(t => t?.LastRunTime);
             return tasks.Select(task => new TaskTweak(task)).ToArray();
         }
     }
@@ -557,7 +587,6 @@ namespace EzTweak
 
     public class IRQ_Tweak
     {
-
         public class IRQ
         {
             public static Dictionary<string, SortedSet<ulong>> ReadDevices()
@@ -596,7 +625,7 @@ namespace EzTweak
         public static Container_Tweak[] ALL_IRQ()
         {
             var values = new Dictionary<string, string> {
-                { Registry.DELETE_TAG, Registry.DELETE_TAG },
+                { "", Registry.DELETE_TAG },
                 { "0 (highest)", "0" }, { "1", "1" }, { "2", "2" }, { "3", "3" }, { "4", "4" }, { "5", "5" },
                 { "6", "6" }, { "7", "7" }, { "8", "8" }, { "9", "9" }, { "10", "10" }, { "11", "11" },
                 { "12", "12" }, { "13", "13" }, { "14", "14" }, { "15 (lowest)", "15" }
@@ -607,13 +636,37 @@ namespace EzTweak
                 new List<Container_Tweak> { },
                 (acc, pair) =>
                 {
-                    acc.AddRange(pair.Value.Select(irq => new Container_Tweak($"{pair.Key}", "", new[]{new RegistryTweak(
+                    acc.AddRange(pair.Value.Select(irq => new Container_Tweak($"{pair.Key}", "", new RegistryTweak(
                         type: TweakType.DWORD,
                         path: $@"HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl\IRQ{irq}Priority",
-                        values: values) })));
+                        values: values))));
                     return acc;
                 }
-               ).ToArray();
+               ).ToArray().GroupBy(t => t.name).Select(ts => new Container_Tweak(ts.ToArray()[0].name + $" x{ts.ToArray().Length}", null, ts.ToArray())).ToArray();
+        }
+
+
+        public static Container_Tweak[] ALL_IRQ2()
+        {
+            var values = new Dictionary<string, string> {
+                { "", Registry.DELETE_TAG },
+                { "0 (highest)", "0" }, { "1", "1" }, { "2", "2" }, { "3", "3" }, { "4", "4" }, { "5", "5" },
+                { "6", "6" }, { "7", "7" }, { "8", "8" }, { "9", "9" }, { "10", "10" }, { "11", "11" },
+                { "12", "12" }, { "13", "13" }, { "14", "14" }, { "15 (lowest)", "15" }
+            };
+
+            var devices_dict = IRQ.ReadDevices().OrderBy(set => set.Value.FirstOrDefault());
+            return devices_dict.Aggregate(
+                new List<Container_Tweak> { },
+                (acc, pair) =>
+                {
+                    acc.AddRange(pair.Value.Select(irq => new Container_Tweak($"{pair.Key}", "", new RegistryTweak(
+                        type: TweakType.DWORD,
+                        path: $@"HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl\IRQ{irq}Priority",
+                        values: values))));
+                    return acc;
+                }
+               ).ToArray().GroupBy(t => t.name).Select(ts => new Container_Tweak("IRQ Priority", ts.ToArray()[0].name, ts.ToArray())).ToArray();
         }
     }
 
@@ -659,99 +712,75 @@ namespace EzTweak
             public string FullInfo { get { return string.Join(Environment.NewLine, values.Select((p) => $"{p.Key}: {p.Value}")); } }
         }
 
-        public static Tweak DisableDeviceTweak(Device device)
+        public static Tweak DeviceTweaks(Device device, Tweak irq_tweak)
         {
-            var name = "Disable Driver";
-            var description = $"Disable {device.Name}{Environment.NewLine}{Environment.NewLine}{device.FullInfo}";
-            var status_command = $"pnputil /enum-devices /instanceid \"{device.PnpDeviceID}\" | findstr /c:\"Status:\"";
-            var status_regex = "Status:.*";
-            var is_on_regex = "Status:.*Disabled";
-            var on_command = $"pnputil /disable-device \"{device.PnpDeviceID}\"";
-            var off_command = $"pnputil /enable-device \"{device.PnpDeviceID}\"";
-            var tks = new Tweak[] { new CMD_Tweak(on_command, off_command, null, null, status_command, status_regex, is_on_regex) };
-            return new Container_Tweak(name, description, tks);
+            var tweaks = new List<Tweak> { };
+
+            var disable_tweak = new CMD_Tweak(
+                        $"pnputil /disable-device \"{device.PnpDeviceID}\"",
+                        $"pnputil /enable-device \"{device.PnpDeviceID}\"",
+                        null,
+                        null,
+                        $"pnputil /enum-devices /instanceid \"{device.PnpDeviceID}\" | findstr /c:\"Status:\"",
+                        "Status:(.*)",
+                        "Disabled"
+                    );
+
+            tweaks.Add(new Container_Tweak("Disable Driver", "", disable_tweak));
+
+            var disable_idle_path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\AllowIdleIrpInD3";
+            if (Registry.Exists(disable_idle_path))
+            {
+                var disable_idle_tweak = new RegistryTweak(TweakType.DWORD, disable_idle_path, "0", "1");
+                tweaks.Add(new Container_Tweak("Disable AllowIdleIrpInD3", "", disable_idle_tweak));
+            }
+
+            var disable_power_management_path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\EnhancedPowerManagementEnabled";
+            if (Registry.Exists(disable_power_management_path))
+            {
+                var disable_power_management_tweak = new RegistryTweak(TweakType.DWORD, disable_power_management_path, "0", "1");
+                tweaks.Add(new Container_Tweak("Disable Enhanced Power Management", "", disable_power_management_tweak));
+            }
+
+            var enable_msi_base = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties";
+            var enable_msi_path = $@"{enable_msi_base}\MSISupported";
+            if (Registry.Key_Exists(enable_msi_path))
+            {
+                var enable_msi_tweak = new RegistryTweak(TweakType.DWORD, enable_msi_path, "1", "0");
+                tweaks.Add(new Container_Tweak("Enable MSI", "", enable_msi_tweak));
+            }
+
+            var affinity_base = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management\Affinity Policy";
+            var device_priority_path = $@"{affinity_base}\DevicePriority";
+            if (Registry.Folder_Exists(affinity_base))
+            {
+                var values = new Dictionary<string, string> { { "", Registry.DELETE_TAG }, { "High", "0x3" }, { "Normal", "0x2" }, { "Low", "0x1" }, { "Undefined", "0x0" } };
+                var device_priority_tweak = new RegistryTweak(type: TweakType.DWORD, path: device_priority_path, values: values);
+                tweaks.Add(new Container_Tweak("Device Priority", "", device_priority_tweak));
+            }
+
+            var affinity_path = $@"{affinity_base}\AssignmentSetOverride";
+            if (Registry.Folder_Exists(affinity_base))
+            {
+                var affinity_tweak = new RegistryTweak(TweakType.BINARY, affinity_path);
+                tweaks.Add(new Container_Tweak("Set Affinity", "", affinity_tweak));
+            }
+
+            var irq_number_base = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties";
+            var irq_number_path = $@"{irq_number_base}\MessageNumberLimit";
+            if (Registry.Folder_Exists(irq_number_base))
+            {
+                var irq_number_tweak = new RegistryTweak(TweakType.DWORD, irq_number_path);
+                tweaks.Add(new Container_Tweak("IRQ Limit", "", irq_number_tweak));
+            }
+
+            if (irq_tweak != null)
+            {
+                tweaks.Add(irq_tweak);
+            }
+
+            return new Container_Tweak("Device: " + device.Name, device.Description, tweaks.ToArray());
         }
 
-        public static Tweak DeviceIdleRPIN(Device device)
-        {
-            var name = "Disable AllowIdleIrpInD3";
-            var description = "Disable power saving option";
-            var path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\AllowIdleIrpInD3";
-            var type = TweakType.DWORD;
-            var off_value = "1";
-            var on_value = "0";
-            var tks = new Tweak[] { new RegistryTweak(type, path, on_value, off_value) };
-            var tk = new Container_Tweak(name, description, tks);
-            return Registry.Exists(path) ? tk : null;
-        }
-
-        public static Tweak EnhancedPowerManagementEnabled(Device device)
-        {
-            var name = "Disable Enhanced Power Management";
-            var description = "Disable Enhanced Power Management";
-            var path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\EnhancedPowerManagementEnabled";
-            var type = TweakType.DWORD;
-            var off_value = "1";
-            var on_value = "0";
-            var tks = new Tweak[] { new RegistryTweak(type, path, on_value, off_value) };
-            var tk = new Container_Tweak(name, description, tks);
-            return Registry.Exists(path) ? tk : null;
-        }
-
-        public static Tweak MsiSupported(Device device)
-        {
-            var name = "Enable MSI";
-            var description = "Enable MSI";
-            var base_path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties";
-            var path = $@"{base_path}\MSISupported";
-            var type = TweakType.DWORD;
-            var off_value = "0x0";
-            var on_value = "0x1";
-            var tks = new Tweak[] { new RegistryTweak(type, path, on_value, off_value) };
-            var tk = new Container_Tweak(name, description, tks);
-            return Registry.Exists(path) ? tk : null;
-        }
-
-        public static Tweak DevicePriority(Device device)
-        {
-            var name = "Device Priority High";
-            var description = "Device Priority High";
-            var base_path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
-            var path = $@"{base_path}\Affinity Policy\DevicePriority";
-            var type = TweakType.DWORD;
-            var off_value = Registry.DELETE_TAG;
-            var on_value = "0x3";
-            var tks = new Tweak[] { new RegistryTweak(type, path, on_value, off_value) };
-            var tk = new Container_Tweak(name, description, tks);
-            return Registry.Exists(path) ? tk : null;
-        }
-
-        public static Tweak AssignmentSetOverride(Device device)
-        {
-            var name = "Set Affinity";
-            var description = "Set Affinity";
-            var base_path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
-            var path = $@"{base_path}\Affinity Policy\AssignmentSetOverride";
-            var type = TweakType.DWORD;
-            var off_value = Registry.DELETE_TAG;
-            var on_value = "0x3F";
-            var tks = new Tweak[] { new RegistryTweak(type, path, on_value, off_value) };
-            var tk = new Container_Tweak(name, description, tks);
-            return Registry.Exists(path) ? tk : null;
-        }
-
-        public static Tweak LinesLimitControl(Device device)
-        {
-            var name = "Message Number Limit";
-            var description = "Set IRQ Limit";
-            var base_path = $@"HKLM\SYSTEM\CurrentControlSet\Enum\{device.PnpDeviceID}\Device Parameters\Interrupt Management";
-            var existing_path = $@"{base_path}\MessageSignaledInterruptProperties";
-            var path = $@"{existing_path}\MessageNumberLimit";
-            var type = TweakType.DWORD;
-            var tks = new Tweak[] { new RegistryTweak(type, path) };
-            var tk = new Container_Tweak(name, description, tks);
-            return Registry.Exists(existing_path) ? tk : null;
-
-        }
     }
 }

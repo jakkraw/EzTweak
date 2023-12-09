@@ -3,8 +3,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
 
-namespace EzTweak {
-    internal class TrustedInstaller {
+namespace EzTweak
+{
+    internal class TrustedInstaller
+    {
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool CreateProcess(string lpApplicationName, string lpCommandLine, ref SECURITY_ATTRIBUTES lpProcessAttributes, ref SECURITY_ATTRIBUTES lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, [In] ref STARTUPINFOEX lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
@@ -33,7 +35,8 @@ namespace EzTweak {
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool DuplicateHandle(IntPtr hSourceProcessHandle, IntPtr hSourceHandle, IntPtr hTargetProcessHandle, ref IntPtr lpTargetHandle, uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwOptions);
 
-        public static void Run(int parentProcessId, string binaryPath) {
+        public static void Run(int parentProcessId, string binaryPath)
+        {
             const int PROC_THREAD_ATTRIBUTE_PARENT_PROCESS = 0x00020000;
 
             const uint EXTENDED_STARTUPINFO_PRESENT = 0x00080000;
@@ -70,13 +73,15 @@ namespace EzTweak {
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        struct STARTUPINFOEX {
+        struct STARTUPINFOEX
+        {
             public STARTUPINFO StartupInfo;
             public IntPtr lpAttributeList;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        struct STARTUPINFO {
+        struct STARTUPINFO
+        {
             public Int32 cb;
             public string lpReserved;
             public string lpDesktop;
@@ -98,7 +103,8 @@ namespace EzTweak {
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        internal struct PROCESS_INFORMATION {
+        internal struct PROCESS_INFORMATION
+        {
             public IntPtr hProcess;
             public IntPtr hThread;
             public int dwProcessId;
@@ -106,7 +112,8 @@ namespace EzTweak {
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct SECURITY_ATTRIBUTES {
+        public struct SECURITY_ATTRIBUTES
+        {
             public int nLength;
             public IntPtr lpSecurityDescriptor;
             [MarshalAs(UnmanagedType.Bool)]
@@ -114,7 +121,8 @@ namespace EzTweak {
         }
 
         [Flags]
-        public enum ProcessAccessFlags : uint {
+        public enum ProcessAccessFlags : uint
+        {
             All = 0x001F0FFF,
             Terminate = 0x00000001,
             CreateThread = 0x00000002,
@@ -131,14 +139,17 @@ namespace EzTweak {
         }
 
         [Flags]
-        enum HANDLE_FLAGS : uint {
+        enum HANDLE_FLAGS : uint
+        {
             None = 0,
             INHERIT = 1,
             PROTECT_FROM_CLOSE = 2
         }
 
-        public static void StartAsChild(string[] args) {
-            ServiceController sc = new ServiceController {
+        public static void StartAsChild(string[] args)
+        {
+            ServiceController sc = new ServiceController
+            {
                 ServiceName = "TrustedInstaller",
             };
             if (sc.Status != ServiceControllerStatus.Running)

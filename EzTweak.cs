@@ -1,15 +1,17 @@
 ﻿using System;
-using System.Security.Principal;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace EzTweak {
-    internal static class EzTweak {
+namespace EzTweak
+{
+    internal static class EzTweak
+    {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main() {
+        static void Main()
+        {
             System.Windows.Forms.Application.ThreadException += new
             ThreadExceptionEventHandler(HandleUIException);
             System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);

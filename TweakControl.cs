@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using static EzTweak.Device_Tweak;
 using Action = System.Action;
 using Button = System.Windows.Forms.Button;
 using ComboBox = System.Windows.Forms.ComboBox;
@@ -71,7 +70,7 @@ namespace EzTweak
             action_panel.ResumeLayout();
             tweak_control.ResumeLayout();
             panel.ResumeLayout();
-
+            Update();
             tweakContols.Add(this);
         }
 
@@ -102,7 +101,7 @@ namespace EzTweak
             else if (tweak.activate_value != null && tweak.valid_values != null)
             {
                 comboBox = CreateComboBox();
-                if (tweak.valid_values != null) comboBox.Items.AddRange(tweak.valid_values().Keys.ToArray());
+                comboBox.Items.AddRange(tweak.valid_values().Keys.ToArray());
                 comboBox.SelectionChangeCommitted += (s, e) => onSelectChange();
                 action_panel.Controls.Add(comboBox);
             }
@@ -165,6 +164,12 @@ namespace EzTweak
             updateComboValue();
             updateTextValue();
             updateRunButton();
+
+            if (tweak.invalidate)
+            {
+                Invalidate(tweak.invalidate_message);
+            }
+
             resumeLayout();
         }
 
@@ -193,8 +198,11 @@ namespace EzTweak
         {
             try
             {
-                if (textBox != null && tweak.current_value != null) textBox.Text = tweak.current_value() ?? "";
-
+                if (textBox != null && tweak.current_value != null)
+                {
+                    var val = tweak.current_value() ?? "";
+                    textBox.Text = val == Registry.DELETE_TAG ? "" : val;
+                }
             }
             catch (Exception ex)
             {
@@ -592,7 +600,8 @@ namespace EzTweak
                 toggle.OnToggleColor = Color.Coral;
 
                 var current = is_on();
-                if (current != toggle.Checked) {
+                if (current != toggle.Checked)
+                {
                     if (current)
                     {
                         off_click();
@@ -638,21 +647,6 @@ namespace EzTweak
             return label;
         }
 
-        private static ComboBox CreateFullComboBox()
-        {
-            return new ComboBox
-            {
-                FormattingEnabled = true,
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                AutoSize = true,
-                Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0))),
-                MaximumSize = new Size(100, 22),
-                MinimumSize = combobox_size,
-                Padding = new Padding(0),
-                Margin = new Padding(0)
-            };
-        }
-
         public static Control Divider(string name, string description = "")
         {
             var expand_panel = CreateExpandFlyoutPanel();
@@ -679,100 +673,6 @@ namespace EzTweak
             tweak_panel.ResumeLayout();
             return tweak_panel;
         }
-
-        public static FlowLayoutPanel CreateDevicesSection()
-        {
-            Dictionary<string, List<Control>> controls_dict = new Dictionary<string, List<Control>> { };
-            Action<string, Control> Add = (key, control) =>
-            {
-                if (controls_dict.ContainsKey(key))
-                {
-                    controls_dict[key].Add(control);
-                }
-                else
-                {
-                    controls_dict.Add(key, new List<Control> { control });
-                }
-            };
-
-            var devices = Device.All().GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
-            var panel = CreateFlyoutPanel();
-            panel.SuspendLayout();
-            var p1 = CreateExpandFlyoutPanel();
-            p1.SuspendLayout();
-
-            foreach (var pair in devices)
-            {
-                foreach (var device in pair.Value)
-                {
-                    var p3 = CreateFlyoutPanel();
-                    p3.SuspendLayout();
-                    p3.Controls.Add(Divider(device.Name, device.FullInfo));
-                    p3.Controls.Add(new TweakControl(Device_Tweak.DisableDeviceTweak(device), null).panel);
-
-                    var deviceIdleRPIN = Device_Tweak.DeviceIdleRPIN(device);
-                    if (deviceIdleRPIN != null)
-                    {
-                        p3.Controls.Add(new TweakControl(deviceIdleRPIN, null).panel);
-                        Add("# IDLE R PIN", p3);
-                    }
-
-                    var enhancedPowerManagementEnabled = Device_Tweak.EnhancedPowerManagementEnabled(device);
-                    if (enhancedPowerManagementEnabled != null)
-                    {
-                        p3.Controls.Add(new TweakControl(enhancedPowerManagementEnabled, null).panel);
-                        Add("# Power Management", p3);
-                    }
-
-                    var MSISupported = Device_Tweak.MsiSupported(device);
-                    if (MSISupported != null)
-                    {
-                        p3.Controls.Add(new TweakControl(MSISupported, null).panel);
-                        Add("# MSISupported", p3);
-                    }
-
-                    var devicePriority = Device_Tweak.DevicePriority(device);
-                    if (devicePriority != null)
-                    {
-                        p3.Controls.Add(new TweakControl(devicePriority, null).panel);
-                        Add("# DevicePriority", p3);
-                    }
-
-                    var linesLimit = Device_Tweak.LinesLimitControl(device);
-                    if (linesLimit != null)
-                    {
-                        p3.Controls.Add(new TweakControl(linesLimit, null).panel);
-                        Add("# LinesLimitControl", p3);
-                    }
-
-                    var AssignmentSetOverride = Device_Tweak.AssignmentSetOverride(device);
-                    if (AssignmentSetOverride != null)
-                    {
-                        p3.Controls.Add(new TweakControl(AssignmentSetOverride, null).panel);
-                        Add("# AssignmentSetOverride_label", p3);
-                    }
-
-                    p3.ResumeLayout();
-                    Add(pair.Key, p3);
-                }
-            }
-            var comboBox = CreateFullComboBox();
-            comboBox.Items.AddRange(controls_dict.Keys.ToArray());
-            comboBox.SelectionChangeCommitted += (s, ee) =>
-            {
-                p1.Controls.Clear();
-                p1.Controls.AddRange(controls_dict[comboBox.SelectedItem.ToString()].ToArray());
-            };
-            panel.Controls.Add(comboBox);
-            panel.Controls.Add(p1);
-            p1.ResumeLayout(false);
-            panel.ResumeLayout();
-            return panel;
-        }
-
     }
-
-
-
 
 }

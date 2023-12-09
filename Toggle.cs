@@ -3,8 +3,10 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace EzTweak {
-    public class Toggle : CheckBox {
+namespace EzTweak
+{
+    public class Toggle : CheckBox
+    {
         private Color onBackColor = Color.CornflowerBlue;
         private Color onToggleColor = Color.WhiteSmoke;
         private Color offBackColor = Color.Gray;
@@ -13,80 +15,100 @@ namespace EzTweak {
         public bool loading = false;
 
         [Category("Color")]
-        public Color OnBackColor {
-            get {
+        public Color OnBackColor
+        {
+            get
+            {
                 return onBackColor;
             }
 
-            set {
+            set
+            {
                 onBackColor = value;
                 this.Invalidate();
             }
         }
 
         [Category("Color")]
-        public Color OnToggleColor {
-            get {
+        public Color OnToggleColor
+        {
+            get
+            {
                 return onToggleColor;
             }
 
-            set {
+            set
+            {
                 onToggleColor = value;
                 this.Invalidate();
             }
         }
 
         [Category("Color")]
-        public Color OffBackColor {
-            get {
+        public Color OffBackColor
+        {
+            get
+            {
                 return offBackColor;
             }
 
-            set {
+            set
+            {
                 offBackColor = value;
                 this.Invalidate();
             }
         }
 
         [Category("Color")]
-        public Color OffToggleColor {
-            get {
+        public Color OffToggleColor
+        {
+            get
+            {
                 return offToggleColor;
             }
 
-            set {
+            set
+            {
                 offToggleColor = value;
                 this.Invalidate();
             }
         }
 
         [Browsable(false)]
-        public override string Text {
-            get {
+        public override string Text
+        {
+            get
+            {
                 return base.Text;
             }
 
-            set {
+            set
+            {
 
             }
         }
 
         [Category("Color")]
         [DefaultValue(true)]
-        public bool SolidStyle {
-            get {
+        public bool SolidStyle
+        {
+            get
+            {
                 return solidStyle;
             }
 
-            set {
+            set
+            {
                 solidStyle = value;
                 this.Invalidate();
             }
         }
-        public Toggle() {
+        public Toggle()
+        {
 
         }
-        private GraphicsPath GetFigurePath() {
+        private GraphicsPath GetFigurePath()
+        {
             int arcSize = this.Height - 1;
             Rectangle leftArc = new Rectangle(0, 0, arcSize, arcSize);
             Rectangle rightArc = new Rectangle(this.Width - arcSize - 2, 0, arcSize, arcSize);
@@ -100,12 +122,14 @@ namespace EzTweak {
             return path;
         }
 
-        protected override void OnPaint(PaintEventArgs pevent) {
+        protected override void OnPaint(PaintEventArgs pevent)
+        {
             int toggleSize = this.Height - 5;
             pevent.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             pevent.Graphics.Clear(this.Parent.BackColor);
 
-            if (this.Checked) {
+            if (this.Checked)
+            {
                 if (solidStyle)
                     pevent.Graphics.FillPath(new SolidBrush(onBackColor), GetFigurePath());
                 else pevent.Graphics.DrawPath(new Pen(onBackColor, 2), GetFigurePath());
@@ -116,7 +140,9 @@ namespace EzTweak {
                 else
                     pevent.Graphics.FillEllipse(new SolidBrush(onToggleColor),
                          new Rectangle(this.Width - this.Height + 1, 2, toggleSize, toggleSize));
-            } else {
+            }
+            else
+            {
                 if (solidStyle)
                     pevent.Graphics.FillPath(new SolidBrush(offBackColor), GetFigurePath());
                 else pevent.Graphics.DrawPath(new Pen(offBackColor, 2), GetFigurePath());

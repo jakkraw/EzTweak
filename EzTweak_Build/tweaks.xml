@@ -64,8 +64,8 @@
 				<off>2</off>
 			</POWERCFG>
 			<POWERCFG name="Disable Processor Idle States" sub_proc_guid="54533251-82be-4824-96c1-47b60b740d00" option_guid="5d76a2ca-e8c0-402f-a133-2158492d58ad">
-				<on>0</on>
-				<off>1</off>
+				<on>1</on>
+				<off>0</off>
 			</POWERCFG>
 			<POWERCFG name="Disable Deep Sleep" sub_proc_guid="2e601130-5351-4d9d-8e04-252966bad054" option_guid="d502f7ee-1dc7-4efd-a55d-f04b6f5c0545">
 				<on>0</on>
@@ -294,7 +294,7 @@
 				<off>15</off>
 			</POWERCFG>
 			<TWEAKS name="NDIS Affinity (2,3 core)">
-				
+
 				<DWORD>
 					<path>HKLM\SYSTEM\CurrentControlSet\Services\NDIS\Parameters\ProcessorAffinityMask</path>
 					<off>🗑</off>
@@ -1697,7 +1697,7 @@
 	</TAB>
 	<MENU>
 		<ITEM name="Windows">
-			
+
 			<ITEM name="Registry Editor">
 				<ARG>regedit</ARG>
 			</ITEM>
@@ -1710,11 +1710,11 @@
 				<ARG>optionalfeatures</ARG>
 			</ITEM>
 			<ITEM name="Add/Remove Programs">
-				<ARG>appwiz.cpl</ARG>		
+				<ARG>appwiz.cpl</ARG>
 			</ITEM>
 			<ITEM name="Task Scheduler">
 				<ARG>taskschd.msc</ARG>
-			</ITEM>				
+			</ITEM>
 			<ITEM name="Group Policy">
 				<ARG>gpedit.msc</ARG>
 			</ITEM>
@@ -1754,28 +1754,34 @@
 			<ITEM name="Appearance and performance">
 				<ARG>SystemPropertiesPerformance.exe</ARG>
 			</ITEM>
+			<ITEM name="Performance Monitoring">
+				<ARG>perfmon</ARG>
+			</ITEM>
+			<ITEM name="Resource Monitor">
+				<ARG>resmon</ARG>
+			</ITEM>
 		</ITEM>
 		<ITEM name="Tools">
-		<ITEM name="Activate Windows">
-			<ARG>cmd</ARG>
-			<ARG>/c</ARG>
-			<ARG>slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato</ARG>
-		</ITEM>
-		<ITEM name="Restart PC">
-			<ARG>cmd</ARG>
-			<ARG>/c</ARG>
-			<ARG>shutdown -r</ARG>
-		</ITEM>
-		<ITEM name="Create restore point">
-			<ARG>cmd</ARG>
-			<ARG>/c</ARG>
-			<ARG>wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "EzTweak restore point", 100, 7</ARG>
-		</ITEM>
-		<ITEM name="Install timer resolution service">
-			<ARG>cmd</ARG>
-			<ARG>/c</ARG>
-			<ARG>echo Remember to Install C++ runtime before! https://aka.ms/vs/17/release/vc_redist.x64.exe &amp; _SetTimerResolutionService.exe -install &amp; sc config STR start=auto &amp; net start STR</ARG>
-		</ITEM>
+			<ITEM name="Activate Windows">
+				<ARG>cmd</ARG>
+				<ARG>/c</ARG>
+				<ARG>slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX &amp; slmgr /skms kms8.msguides.com &amp; slmgr /ato</ARG>
+			</ITEM>
+			<ITEM name="Restart PC">
+				<ARG>cmd</ARG>
+				<ARG>/c</ARG>
+				<ARG>shutdown -r</ARG>
+			</ITEM>
+			<ITEM name="Create restore point">
+				<ARG>cmd</ARG>
+				<ARG>/c</ARG>
+				<ARG>wmic.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "EzTweak restore point", 100, 7</ARG>
+			</ITEM>
+			<ITEM name="Install timer resolution service">
+				<ARG>cmd</ARG>
+				<ARG>/c</ARG>
+				<ARG>echo Remember to Install C++ runtime before! https://aka.ms/vs/17/release/vc_redist.x64.exe &amp; _SetTimerResolutionService.exe -install &amp; sc config STR start=auto &amp; net start STR</ARG>
+			</ITEM>
 		</ITEM>
 		<ITEM name="Console">
 			<ITEM name="Cmd">

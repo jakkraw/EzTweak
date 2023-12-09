@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using System.Management.Automation;
 using System.Windows.Forms;
 using Button = System.Windows.Forms.Button;
 
 namespace EzTweak
 {
-    partial class Application {
+    partial class Application
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -17,15 +19,19 @@ namespace EzTweak
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         /// 
-        protected override void Dispose(bool disposing) {
-            if (disposing && (components != null)) {
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
                 components.Dispose();
             }
             base.Dispose(disposing);
         }
 
-        private static FlowLayoutPanel CreateFlyoutPanel() {
-            return new FlowLayoutPanel {
+        private static FlowLayoutPanel CreateFlyoutPanel()
+        {
+            return new FlowLayoutPanel
+            {
                 AutoSize = true,
                 MaximumSize = TweakControl.flyout_panel_size,
                 Padding = new Padding(0),
@@ -33,21 +39,6 @@ namespace EzTweak
             };
         }
 
-
-        private TabPage CreateTab(Tab tab) {
-            var tab_control = new TabPage {
-                AutoScroll = true,
-                ForeColor = SystemColors.ControlText,
-                Font = new Font("Arial", 7F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0))),
-                Size = TweakControl.tab_size,
-                Text = tab.name
-            };
-
-            var controls = tab.sections.Select(CreateSection).ToArray();
-            tab_control.Controls.AddRange(controls);
-
-            return tab_control;
-        }
 
         private Button LoadingButton(Panel panel, Action<Panel> action)
         {
@@ -74,62 +65,6 @@ namespace EzTweak
             };
 
             return btn;
-        }
-
-        private FlowLayoutPanel CreateSection(Section section) {
-            var panel = CreateFlyoutPanel();
-            panel.SuspendLayout();
-            panel.Controls.Add(TweakControl.Divider(section.name, ""));
-            switch (section.type) {
-                case SectionType.SECTION: {
-                        var tweaks = section.tweaks.Select(t => new TweakControl(t, null)).ToArray();
-                        var controls = tweaks.Select(t => t.panel).ToArray();
-                        panel.Controls.AddRange(controls);
-                    }
-                    break;
-                case SectionType.IRQPRIORITY:
-                    {
-                        panel.Controls.Add(LoadingButton(panel, (p) => {
-                            var container_tweaks = IRQ_Tweak.ALL_IRQ();
-                            var tweak_controls = container_tweaks.Select(t => new TweakControl(t, null)).ToArray();
-                            var controls = tweak_controls.Select(t => t.panel).ToArray();
-                            p.Controls.AddRange(controls);
-                        }));     
-                    }
-                    break;
-                case SectionType.DEVICES:
-                    {
-                        panel.Controls.Add(LoadingButton(panel, (p) => {
-                            p.Controls.Add(TweakControl.CreateDevicesSection());
-                        }));
-                    }
-                    break;
-                case SectionType.APPX:
-                    {
-                        panel.Controls.Add(LoadingButton(panel, (p) => {
-                            var container_tweaks = APPX_Tweak.ALL();
-                            var tweak_controls = container_tweaks.Select(t => new TweakControl(t, null)).ToArray();
-                            Array.ForEach(tweak_controls, tc => tc.run_button.Click += (a, b) => tc?.Hide());
-                            var controls = tweak_controls.Select(t => t.panel).ToArray();
-                            p.Controls.AddRange(controls);
-                        }));
-                        
-                    }
-                    break;
-                case SectionType.SCHEDULED_TASKS:
-                    {
-                        panel.Controls.Add(LoadingButton(panel, (p) => {
-                            var tasks = TaskTweak.GetTasks();
-                            var tweak_controls = tasks.Select(tweak => new TweakControl(tweak, null)).ToArray();
-                            var controls = tweak_controls.Select(t => t.panel).ToArray();
-                            p.Controls.AddRange(controls);
-                        }));
-                    }
-                    break;
-                default: break;
-            }
-            panel.ResumeLayout();
-            return panel;
         }
 
         private ToolStripItem[] CreateMenuItem(Item item)
@@ -180,12 +115,12 @@ namespace EzTweak
                 control.Click += (a, b) => CMD_Tweak.Open(item.command_line);
             }
 
-            var children = item.items?.SelectMany(i=> CreateMenuItem(i)).ToArray();
-            if(children != null)
+            var children = item.items?.SelectMany(i => CreateMenuItem(i)).ToArray();
+            if (children != null)
             {
                 control.DropDownItems.AddRange(children);
             }
-            
+
             return new[] { control };
         }
 
@@ -195,7 +130,8 @@ namespace EzTweak
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.tabs = new System.Windows.Forms.TabControl();
             this.menu = new System.Windows.Forms.MenuStrip();
             this.status = new System.Windows.Forms.StatusStrip();
@@ -206,16 +142,16 @@ namespace EzTweak
             // 
             // tabs
             // 
-            this.tabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabs.Location = new System.Drawing.Point(0, 46);
+            this.tabs.Location = new System.Drawing.Point(0, 24);
             this.tabs.Margin = new System.Windows.Forms.Padding(0);
             this.tabs.Multiline = true;
             this.tabs.Name = "tabs";
             this.tabs.Padding = new System.Drawing.Point(0, 0);
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(736, 643);
+            this.tabs.Size = new System.Drawing.Size(736, 526);
             this.tabs.TabIndex = 9;
             // 
             // menu
@@ -233,7 +169,7 @@ namespace EzTweak
             this.status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.status_user,
             this.status_loading});
-            this.status.Location = new System.Drawing.Point(0, 689);
+            this.status.Location = new System.Drawing.Point(0, 550);
             this.status.Name = "status";
             this.status.Size = new System.Drawing.Size(736, 22);
             this.status.TabIndex = 12;
@@ -244,26 +180,25 @@ namespace EzTweak
             this.status_user.Name = "status_user";
             this.status_user.Size = new System.Drawing.Size(118, 17);
             this.status_user.Text = "toolStripStatusLabel1";
-            this.status_user.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
             // 
             // status_loading
             // 
             this.status_loading.Name = "status_loading";
             this.status_loading.Size = new System.Drawing.Size(0, 17);
             // 
-            // App
+            // Application
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(736, 711);
+            this.ClientSize = new System.Drawing.Size(736, 572);
             this.Controls.Add(this.status);
             this.Controls.Add(this.tabs);
             this.Controls.Add(this.menu);
             this.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = global::EzTweak.Properties.Resources.icon;
-            this.Name = "App";
+            this.Name = "Application";
             this.Text = "EzTweak";
             this.Load += new System.EventHandler(this.App_Load);
             this.status.ResumeLayout(false);
@@ -272,6 +207,7 @@ namespace EzTweak
             this.PerformLayout();
 
         }
+
 
         #endregion
         private TabControl tabs;

@@ -3,11 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using System.Xml.Serialization;
 
-namespace EzTweak {
-    public enum TweakType {
+namespace EzTweak
+{
+    public enum TweakType
+    {
         [XmlEnum("DWORD")]
         DWORD = RegistryValueKind.DWord,
         [XmlEnum("REG_SZ")]
@@ -28,7 +29,8 @@ namespace EzTweak {
         TWEAKS
     }
 
-    public enum SectionType {
+    public enum SectionType
+    {
         [XmlEnum("SECTION")]
         SECTION,
         [XmlEnum("IRQPRIORITY")]
@@ -79,7 +81,8 @@ namespace EzTweak {
         public XmlItem[] items { get; set; }
     }
 
-    public class XmlTweak {
+    public class XmlTweak
+    {
         [XmlAttribute]
         public string name { get; set; } = "";
 
@@ -169,7 +172,8 @@ namespace EzTweak {
 
     }
 
-    public class XmlSection {
+    public class XmlSection
+    {
         [XmlAttribute]
         public string name { get; set; }
 
@@ -189,7 +193,8 @@ namespace EzTweak {
         public TweakType[] tweakTypes { get; set; }
     }
 
-    public class XmlTab {
+    public class XmlTab
+    {
         [XmlAttribute]
         public string name { get; set; }
 
@@ -206,7 +211,8 @@ namespace EzTweak {
     }
 
     [XmlRoot("EZTWEAK")]
-    public class XmlDoc {
+    public class XmlDoc
+    {
         [XmlElement("TAB")]
         public XmlTab[] tabs { get; set; }
 
@@ -214,11 +220,13 @@ namespace EzTweak {
         public XmlMenu menu { get; set; }
     }
 
-    public class Tab {
+    public class Tab
+    {
         public string name;
         public Section[] sections;
 
-        public Tab(XmlTab xml) {
+        public Tab(XmlTab xml)
+        {
             name = xml.name;
             sections = xml.sections?.Zip(xml.sectionTypes, (x, st) => new Section(x, st)).ToArray() ?? new Section[] { };
         }
@@ -242,32 +250,38 @@ namespace EzTweak {
             name = xml.name;
             value = xml.value?.Trim();
             command_line = xml.command_line;
-            items = xml.items?.Select(item => new Item(item)).ToArray();  
+            items = xml.items?.Select(item => new Item(item)).ToArray();
         }
     }
 
-    public class Section {
+    public class Section
+    {
         public string name;
         public SectionType type { get; set; }
         public Tweak[] tweaks;
 
-        public Section(XmlSection xml, SectionType stype) {
+        public Section(XmlSection xml, SectionType stype)
+        {
             name = xml.name;
             type = stype;
             tweaks = xml.tweaks?.Zip(xml.tweakTypes, (t, at) => new Container_Tweak(t.name, t.description, t.parse2(at))).ToArray() ?? new Tweak[] { };
         }
     }
 
-    public class Parser {
+    public class Parser
+    {
         public static string xml_file = "tweaks.xml";
-        public static XmlDoc loadXML(string filename) {
-            using (StreamReader reader = new StreamReader(filename)) {
+        public static XmlDoc loadXML(string filename)
+        {
+            using (StreamReader reader = new StreamReader(filename))
+            {
                 XmlSerializer serializer = new XmlSerializer(typeof(XmlDoc));
                 return (XmlDoc)serializer.Deserialize(reader);
             }
         }
 
-        public static Tab[] LoadTweakTabs(XmlDoc xmlDocument) {
+        public static Tab[] LoadTweakTabs(XmlDoc xmlDocument)
+        {
             return xmlDocument.tabs.Select(xml => new Tab(xml)).ToArray();
         }
 

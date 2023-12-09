@@ -1,25 +1,33 @@
 ﻿using System;
 using System.IO;
 
-namespace EzTweak {
-    public static class Log {
+namespace EzTweak
+{
+    public static class Log
+    {
         public static string log_file = "eztweak.log";
 
-        public static Action<string> pipe = (text) => {
+        public static Action<string> pipe = (text) =>
+        {
             Console.Out.Write(text);
 
         };
-        public static void Write(string text) {
+        public static void Write(string text)
+        {
             pipe(text);
-            try {
+            try
+            {
                 File.AppendAllText(log_file, text);
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 e.ToString();
             }
 
         }
 
-        public static void WriteLine(string text) {
+        public static void WriteLine(string text)
+        {
             var level = "info";
             Write($"{DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss")} {level}: {text}{Environment.NewLine}");
         }
@@ -27,7 +35,8 @@ namespace EzTweak {
 
     public static class Status
     {
-        public static Action<string> pipe = (text) => {
+        public static Action<string> pipe = (text) =>
+        {
             Console.Out.Write(text);
         };
         public static void Write(string text)
