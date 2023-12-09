@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Windows.Forms;
 using static EzTweak.Device_Tweak;
 
@@ -82,65 +83,80 @@ namespace EzTweak
                 return;
             }
 
+            selected_tab.SuspendLayout();
             selected_tab.Controls.Clear();
             selected_tab.Controls.Add(Label("Loading..."));
+            selected_tab.ResumeLayout();
 
-            var panel = CreateFlyoutPanel();
-            panel.SuspendLayout();
-
-            foreach (var section in tab.sections)
+            System.Threading.ThreadPool.QueueUserWorkItem(delegate
             {
-                var section_panel = CreateFlyoutPanel();
-                section_panel.SuspendLayout();
-                section_panel.Controls.Add(TweakControl.Divider(section.name, ""));
+                while (!selected_tab.IsHandleCreated)
+                    System.Threading.Thread.Sleep(100);
 
-                switch (section.type)
+                var panel = CreateFlyoutPanel();
+                panel.SuspendLayout();
+
+                foreach (var section in tab.sections)
                 {
-                    case SectionType.SECTION:
-                        {
-                            var tweaks = section.tweaks.Select(t => new TweakControl(t, null)).ToArray();
-                            var controls = tweaks.Select(t => t.panel).ToArray();
-                            section_panel.Controls.AddRange(controls);
-                        }
-                        break;
-                    case SectionType.IRQPRIORITY:
-                        {
-                            var container_tweaks = IRQ_Tweak.ALL_IRQ().Select(t => new TweakControl(t, null));
-                            section_panel.Controls.AddRange(container_tweaks.Select(t => t.panel).ToArray());
-                        }
-                        break;
-                    case SectionType.DEVICES:
-                        {
-                            var irqs = IRQ_Tweak.ALL_IRQ2();
-                            var devices = Device.All().GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
-                            section_panel.Controls.AddRange(devices.SelectMany(pair => pair.Value.Select(d => new TweakControl(DeviceTweaks(d, irqs.Where(i => i.description == d.Name).FirstOrDefault()), null)).Select(t => t.panel)).ToArray());
-                        }
-                        break;
-                    case SectionType.APPX:
-                        {
-                            var container_tweaks = APPX_Tweak.ALL();
-                            var tweak_controls = container_tweaks.Select(ts => new TweakControl(ts, null)).ToArray();
-                            Array.ForEach(tweak_controls, tc => tc.run_button.Click += (a, b) => tc?.Hide());
-                            var controls = tweak_controls.Select(t => t.panel).ToArray();
-                            section_panel.Controls.AddRange(controls);
-                        }
-                        break;
-                    case SectionType.SCHEDULED_TASKS:
-                        {
-                            var tasks = TaskTweak.GetTasks();
-                            section_panel.Controls.AddRange(tasks.Select(t => new TweakControl(t, null).panel).ToArray());
-                        }
-                        break;
-                    default: break;
+                    var section_panel = CreateFlyoutPanel();
+                    section_panel.SuspendLayout();
+                    section_panel.Controls.Add(TweakControl.Divider(section.name, ""));
+
+                    switch (section.type)
+                    {
+                        case SectionType.SECTION:
+                            {
+                                var tweaks = section.tweaks.Select(t => new TweakControl(t, null)).ToArray();
+                                var controls = tweaks.Select(t => t.panel).ToArray();
+                                section_panel.Controls.AddRange(controls);
+                            }
+                            break;
+                        case SectionType.IRQPRIORITY:
+                            {
+                                var container_tweaks = IRQ_Tweak.ALL_IRQ().Select(t => new TweakControl(t, null));
+                                section_panel.Controls.AddRange(container_tweaks.Select(t => t.panel).ToArray());
+                            }
+                            break;
+                        case SectionType.DEVICES:
+                            {
+                                var irqs = IRQ_Tweak.ALL_IRQ2();
+                                var devices = Device.All().GroupBy(x => x.PNPClass ?? "Unknown").ToDictionary(x => x.Key, x => x.ToList());
+                                section_panel.Controls.AddRange(devices.SelectMany(pair => pair.Value.Select(d => new TweakControl(DeviceTweaks(d, irqs.Where(i => i.description == d.Name).FirstOrDefault()), null)).Select(t => t.panel)).ToArray());
+                            }
+                            break;
+                        case SectionType.APPX:
+                            {
+                                var container_tweaks = APPX_Tweak.ALL();
+                                var tweak_controls = container_tweaks.Select(ts => new TweakControl(ts, null)).ToArray();
+                                Array.ForEach(tweak_controls, tc => tc.run_button.Click += (a, b) => tc?.Hide());
+                                var controls = tweak_controls.Select(t => t.panel).ToArray();
+                                section_panel.Controls.AddRange(controls);
+                            }
+                            break;
+                        case SectionType.SCHEDULED_TASKS:
+                            {
+                                var tasks = TaskTweak.GetTasks();
+                                section_panel.Controls.AddRange(tasks.Select(t => new TweakControl(t, null).panel).ToArray());
+                            }
+                            break;
+                        default: break;
+                    }
+                    section_panel.ResumeLayout();
+
+                    panel.Controls.Add(section_panel);
                 }
-                section_panel.ResumeLayout();
 
-                panel.Controls.Add(section_panel);
-            }
+                panel.ResumeLayout();
 
-            panel.ResumeLayout();
-            selected_tab.Controls.Clear();
-            selected_tab.Controls.Add(panel);
+                selected_tab.Invoke(new Action(() =>
+                {
+                    selected_tab.SuspendLayout();
+                    selected_tab.Controls.Clear();
+                    selected_tab.Controls.Add(panel);
+                    selected_tab.ResumeLayout();
+                }));
+            }, null);
+
         }
 
     }
